@@ -1,0 +1,12 @@
+{
+  "name": "iqtest",
+  "version": "1.0.0",
+  "description": "Быстрый IQ тест онлайн",
+  "scripts": {
+    "capture:screens": "node scripts/capture-screenshots.js"
+  },
+  "keywords": ["iq", "test", "intelligence"],
+  "author": "",
+  "license": "MIT"
+}
+
