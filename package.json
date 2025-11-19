@@ -7,6 +7,9 @@
   },
   "keywords": ["iq", "test", "intelligence"],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  }
 }
 
