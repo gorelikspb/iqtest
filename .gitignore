@@ -23,9 +23,13 @@ build/
 *.min.js
 *.min.css
 
+# Dependencies
+node_modules/
+package-lock.json
+
 # Instructions (private)
 instructions/
 
 # Screenshots (if private)
-screenshots/
+# screenshots/  # Раскомментируйте если не хотите коммитить скриншоты
 
