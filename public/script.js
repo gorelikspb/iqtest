@@ -397,7 +397,7 @@ async function handleSendResultsSubmit(e) {
         
         if (result.success) {
             // Показываем алерт пользователю
-            alert(`Спасибо, ${userName}! Результаты вашего теста (IQ ≈ ${iqResult.estimated}) отправлены на email. Проверьте почту!`);
+            alert(`Спасибо, ${userName}! Результаты вашего теста (IQ ≈ ${iqResult.estimated}) будут скоро отправлены на email.`);
             
             // Показываем успешное сообщение
             document.getElementById('sendResultsForm').style.display = 'none';
