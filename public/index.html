@@ -31,6 +31,47 @@
 
             <button class="btn-primary" id="startBtn">Начать тест</button>
             
+            <!-- Форма сбора контактов на главной странице -->
+            <div class="cta-box-start" id="ctaBoxStart">
+                <div class="cta-icon">🎯</div>
+                <h3>Хотите получить расширенные IQ тесты?</h3>
+                <p class="cta-text">
+                    Оставьте контакт, и мы отправим вам все бесплатные варианты расширенных тестов интеллекта (15-60 минут) 
+                    и специальных тестов для детей на email.
+                </p>
+                
+                <form id="contactFormStart" class="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="userNameStart" placeholder="Ваше имя" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="userEmailStart" placeholder="Ваш email" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-checkboxes">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="extendedTestStart" checked>
+                            <span>Расширенные тесты (15-60 минут)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="kidsTestStart">
+                            <span>Тесты для детей</span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary btn-cta">
+                        Получить бесплатные тесты
+                    </button>
+                    <p class="form-note">Мы не спамим. Отправим только полезные материалы.</p>
+                </form>
+                
+                <div class="cta-success" id="ctaSuccessStart" style="display: none;">
+                    <div class="success-icon">✅</div>
+                    <h3>Спасибо!</h3>
+                    <p>Мы отправим вам все бесплатные варианты тестов на указанный email.</p>
+                </div>
+            </div>
+            
             <!-- Поделиться и закладки на стартовой странице -->
             <div class="share-box-start" id="shareBoxStart">
                 <div class="share-buttons-start">

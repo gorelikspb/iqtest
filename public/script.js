@@ -104,6 +104,9 @@ if (contactForm) {
 // Инициализация кнопок поделиться на стартовой странице
 initStartPageShareButtons();
 
+// Инициализация формы на стартовой странице
+initStartPageContactForm();
+
 function startTest() {
     welcomeScreen.style.display = 'none';
     testScreen.style.display = 'block';
@@ -561,6 +564,79 @@ function checkUrlParams() {
             max: params.get('max')
         });
     }
+}
+
+// Инициализация формы на стартовой странице
+function initStartPageContactForm() {
+    const contactFormStart = document.getElementById('contactFormStart');
+    if (contactFormStart) {
+        contactFormStart.addEventListener('submit', handleStartPageFormSubmit);
+    }
+}
+
+function handleStartPageFormSubmit(e) {
+    e.preventDefault();
+    
+    const userName = document.getElementById('userNameStart').value;
+    const userEmail = document.getElementById('userEmailStart').value;
+    const extendedTest = document.getElementById('extendedTestStart').checked;
+    const kidsTest = document.getElementById('kidsTestStart').checked;
+    
+    // Проверяем, что выбран хотя бы один вариант
+    if (!extendedTest && !kidsTest) {
+        alert('Пожалуйста, выберите хотя бы один тип теста');
+        return;
+    }
+    
+    // Подготавливаем данные для отправки
+    const contactData = {
+        type: 'full-tests',
+        name: userName,
+        email: userEmail,
+        extendedTest: extendedTest,
+        kidsTest: kidsTest,
+        sendResults: false,
+        source: 'start-page',
+        timestamp: new Date().toISOString()
+    };
+    
+    // Сохраняем в localStorage (бэкап)
+    let contacts = JSON.parse(localStorage.getItem('iqTestContacts') || '[]');
+    contacts.push(contactData);
+    localStorage.setItem('iqTestContacts', JSON.stringify(contacts));
+    
+    // Отправляем на Worker
+    try {
+        const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(contactData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Показываем успешное сообщение
+            document.getElementById('contactFormStart').style.display = 'none';
+            document.getElementById('ctaSuccessStart').style.display = 'block';
+        } else {
+            console.error('Ошибка отправки:', result.error);
+            alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+            
+            // Все равно показываем успех
+            document.getElementById('contactFormStart').style.display = 'none';
+            document.getElementById('ctaSuccessStart').style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Ошибка отправки на Worker:', error);
+        alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+        
+        // Все равно показываем успех
+        document.getElementById('contactFormStart').style.display = 'none';
+        document.getElementById('ctaSuccessStart').style.display = 'block';
+    }
+    
+    console.log('Contact saved:', contactData);
 }
 
 // Вызываем при загрузке
