@@ -20,6 +20,17 @@ export default {
         const data = await request.json();
         
         // Структура данных из форм:
+        // Форма отправки результатов на email (send-results-only):
+        // {
+        //   type: 'send-results-only',
+        //   name: 'Имя',
+        //   email: 'email@example.com',
+        //   iqResult: { estimated: 120, min: 100, max: 160, score: 5, total: 7 },
+        //   shareUrl: 'https://...',
+        //   source: 'result-page',
+        //   timestamp: '...'
+        // }
+        //
         // Форма на странице результатов (script.js):
         // {
         //   type: 'iq-test',
@@ -27,10 +38,9 @@ export default {
         //   email: 'email@example.com',
         //   extendedTest: true/false,
         //   kidsTest: true/false,
-        //   sendResults: true/false,
-        //   iqResult: { estimated: 120, min: 100, max: 160, score: 5, total: 7 },
+        //   sendResults: false,
+        //   iqResult: null,
         //   source: 'result-page',
-        //   shareUrl: 'https://...',
         //   timestamp: '...'
         // }
         //
@@ -46,8 +56,8 @@ export default {
         //   timestamp: '...'
         // }
 
-        // 1. Email пользователю с результатами (если sendResults = true и есть iqResult)
-        if (data.sendResults && data.iqResult) {
+        // 1. Email пользователю с результатами (если type = 'send-results-only' и есть iqResult)
+        if (data.type === 'send-results-only' && data.iqResult) {
           const shareUrl = data.shareUrl || `https://iqtestemails.gorelikgo.workers.dev/?iq=${data.iqResult.estimated}&min=${data.iqResult.min}&max=${data.iqResult.max}`;
           
           // Определяем уровень IQ для описания
@@ -190,7 +200,6 @@ export default {
                 <ul>
                   <li>Расширенные тесты (15-60 минут): ${data.extendedTest ? '✅ Да' : '❌ Нет'}</li>
                   <li>Тесты для детей: ${data.kidsTest ? '✅ Да' : '❌ Нет'}</li>
-                  <li>Отправить результаты на email: ${data.sendResults ? '✅ Да' : '❌ Нет'}</li>
                 </ul>
               </div>
               
@@ -206,6 +215,12 @@ export default {
                   <div class="data-row">
                     <span class="data-label">Правильных ответов:</span> ${data.iqResult.score || 'N/A'} из ${data.iqResult.total || 'N/A'}
                   </div>
+                </div>
+              ` : ''}
+              
+              ${data.type === 'send-results-only' ? `
+                <div class="data-box" style="background: #e0e7ff; margin-top: 15px;">
+                  <p><strong>Тип запроса:</strong> Отправка результатов теста на email</p>
                 </div>
               ` : ''}
               
