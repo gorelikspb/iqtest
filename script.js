@@ -93,8 +93,7 @@ nextBtn.addEventListener('click', nextQuestion);
 restartBtn.addEventListener('click', restartTest);
 
 // Worker URL для отправки email
-// Замени на свой URL после создания Worker в Cloudflare
-const WORKER_URL = 'https://iqtest-email.gorelikgo.workers.dev';
+const WORKER_URL = 'https://iqtestemails.gorelikgo.workers.dev';
 
 // Обработчик формы (добавляем один раз)
 const contactForm = document.getElementById('contactForm');
