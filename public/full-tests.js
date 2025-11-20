@@ -51,6 +51,9 @@ function handleFormSubmit(e) {
         const result = await response.json();
         
         if (result.success) {
+            // Показываем алерт пользователю
+            alert(`Спасибо, ${userName}! Мы получили ваш email и отправим вам все варианты тестов.`);
+            
             // Показываем успешное сообщение
             contactForm.style.display = 'none';
             ctaSuccess.style.display = 'block';

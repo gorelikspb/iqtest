@@ -616,6 +616,9 @@ function handleStartPageFormSubmit(e) {
         const result = await response.json();
         
         if (result.success) {
+            // Показываем алерт пользователю
+            alert(`Спасибо, ${userName}! Мы получили ваш email и отправим вам все варианты тестов.`);
+            
             // Показываем успешное сообщение
             document.getElementById('contactFormStart').style.display = 'none';
             document.getElementById('ctaSuccessStart').style.display = 'block';
