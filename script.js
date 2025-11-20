@@ -92,6 +92,10 @@ startBtn.addEventListener('click', startTest);
 nextBtn.addEventListener('click', nextQuestion);
 restartBtn.addEventListener('click', restartTest);
 
+// Worker URL для отправки email
+// Замени на свой URL после создания Worker в Cloudflare
+const WORKER_URL = 'https://iqtest-email.gorelikgo.workers.dev';
+
 // Обработчик формы (добавляем один раз)
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
@@ -272,43 +276,69 @@ function handleFormSubmit(e) {
         return;
     }
     
-    // Сохраняем в localStorage (в реальном проекте здесь будет отправка на сервер)
+    // Подготавливаем данные для отправки
     const contactData = {
+        type: 'iq-test',
         name: userName,
         email: userEmail,
         extendedTest: extendedTest,
         kidsTest: kidsTest,
         sendResults: sendResults,
-        iqResult: iqResult,
+        iqResult: iqResult ? {
+            estimated: iqResult.estimated,
+            min: iqResult.min,
+            max: iqResult.max,
+            score: score,
+            total: questions.length
+        } : null,
+        source: 'result-page',
+        shareUrl: iqResult ? getShareUrl() : null,
         timestamp: new Date().toISOString()
     };
     
-    // Сохраняем в localStorage (массив всех контактов)
+    // Сохраняем в localStorage (бэкап)
     let contacts = JSON.parse(localStorage.getItem('iqTestContacts') || '[]');
     contacts.push(contactData);
     localStorage.setItem('iqTestContacts', JSON.stringify(contacts));
     
-    // Показываем успешное сообщение
-    document.getElementById('contactForm').style.display = 'none';
-    document.getElementById('ctaSuccess').style.display = 'block';
-    
-    // Показываем информацию об отправке результатов
-    const emailResultsNote = document.getElementById('emailResultsNote');
-    if (sendResults && iqResult) {
-        emailResultsNote.textContent = `Результаты вашего теста (IQ ≈ ${iqResult.estimated}) будут отправлены на email.`;
+    // Отправляем на Worker
+    try {
+        const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(contactData)
+        });
         
-        // В реальном проекте здесь будет отправка email:
-        sendResultsEmail(userEmail, userName, iqResult);
-    } else {
-        emailResultsNote.textContent = '';
+        const result = await response.json();
+        
+        if (result.success) {
+            // Показываем успешное сообщение
+            document.getElementById('contactForm').style.display = 'none';
+            document.getElementById('ctaSuccess').style.display = 'block';
+            
+            // Показываем информацию об отправке результатов
+            const emailResultsNote = document.getElementById('emailResultsNote');
+            if (sendResults && iqResult) {
+                emailResultsNote.textContent = `Результаты вашего теста (IQ ≈ ${iqResult.estimated}) отправлены на email. Проверьте почту!`;
+            } else {
+                emailResultsNote.textContent = 'Спасибо! Мы отправим вам все варианты тестов на указанный email.';
+            }
+        } else {
+            console.error('Ошибка отправки:', result.error);
+            alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+            
+            // Все равно показываем успех, но с предупреждением
+            document.getElementById('contactForm').style.display = 'none';
+            document.getElementById('ctaSuccess').style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Ошибка отправки на Worker:', error);
+        alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+        
+        // Все равно показываем успех
+        document.getElementById('contactForm').style.display = 'none';
+        document.getElementById('ctaSuccess').style.display = 'block';
     }
-    
-    // В реальном проекте здесь будет отправка на сервер:
-    // fetch('/api/contacts', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(contactData)
-    // });
     
     console.log('Contact saved:', contactData);
 }
@@ -401,50 +431,8 @@ function showShareSuccess() {
     }
 }
 
-// Функция для отправки результатов на email (для реального проекта)
-function sendResultsEmail(email, name, iqResult) {
-    // В реальном проекте здесь будет отправка через API (EmailJS, Resend, etc.)
-    const emailContent = generateEmailContent(name, iqResult);
-    
-    console.log('Email would be sent to:', email);
-    console.log('Email content:', emailContent);
-    
-    // Пример для EmailJS:
-    // emailjs.send('service_id', 'template_id', {
-    //     to_email: email,
-    //     to_name: name,
-    //     iq_value: iqResult.estimated,
-    //     iq_range: `${iqResult.min}-${iqResult.max}`,
-    //     share_url: getShareUrl(),
-    //     message: emailContent
-    // });
-}
-
-function generateEmailContent(name, iqResult) {
-    const shareUrl = getShareUrl();
-    return `
-Привет, ${name}!
-
-Ты прошел быстрый IQ тест и получил результат:
-
-🎯 Твой примерный IQ: ≈ ${iqResult.estimated}
-📊 Диапазон: ${iqResult.min} - ${iqResult.max}
-✅ Правильных ответов: ${score} из ${questions.length}
-
-Поделись результатом с друзьями и сравните результаты!
-${shareUrl}
-
-Хочешь узнать свой IQ точнее? Мы готовим расширенные тесты интеллекта (15-60 минут) и специальные тесты для детей. Когда они будут готовы, мы отправим тебе все варианты бесплатно!
-
-Также можешь пройти расширенные тесты:
-${window.location.origin}/full-tests.html
-
-Удачи в развитии интеллекта! 🧠
-
----
-Это автоматическое письмо. Если ты не проходил тест, просто проигнорируй это сообщение.
-    `.trim();
-}
+// Функции sendResultsEmail и generateEmailContent больше не нужны - 
+// отправка происходит через Worker в handleFormSubmit
 
 // Функции для поделиться на стартовой странице
 function initStartPageShareButtons() {
