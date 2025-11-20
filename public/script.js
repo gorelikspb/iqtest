@@ -234,6 +234,19 @@ function showResult() {
     // Инициализируем кнопки поделиться
     initShareButtons();
     
+    // Инициализация формы отправки результатов
+    const sendResultsForm = document.getElementById('sendResultsForm');
+    const sendResultsSuccess = document.getElementById('sendResultsSuccess');
+    if (sendResultsForm && sendResultsSuccess) {
+        sendResultsForm.style.display = 'block';
+        sendResultsSuccess.style.display = 'none';
+        // Убеждаемся, что обработчик добавлен
+        if (!sendResultsForm.hasAttribute('data-handler-attached')) {
+            sendResultsForm.addEventListener('submit', handleSendResultsSubmit);
+            sendResultsForm.setAttribute('data-handler-attached', 'true');
+        }
+    }
+    
     // Добавляем предупреждение
     const warning = document.createElement('div');
     warning.className = 'result-warning';
@@ -263,18 +276,17 @@ function showContactForm() {
     }
 }
 
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
     e.preventDefault();
     
     const userName = document.getElementById('userName').value;
     const userEmail = document.getElementById('userEmail').value;
     const extendedTest = document.getElementById('extendedTest').checked;
     const kidsTest = document.getElementById('kidsTest').checked;
-    const sendResults = document.getElementById('sendResults').checked;
     
     // Проверяем, что выбран хотя бы один вариант
-    if (!extendedTest && !kidsTest && !sendResults) {
-        alert('Пожалуйста, выберите хотя бы один вариант');
+    if (!extendedTest && !kidsTest) {
+        alert('Пожалуйста, выберите хотя бы один тип теста');
         return;
     }
     
@@ -285,16 +297,9 @@ function handleFormSubmit(e) {
         email: userEmail,
         extendedTest: extendedTest,
         kidsTest: kidsTest,
-        sendResults: sendResults,
-        iqResult: iqResult ? {
-            estimated: iqResult.estimated,
-            min: iqResult.min,
-            max: iqResult.max,
-            score: score,
-            total: questions.length
-        } : null,
+        sendResults: false,
+        iqResult: null,
         source: 'result-page',
-        shareUrl: iqResult ? getShareUrl() : null,
         timestamp: new Date().toISOString()
     };
     
@@ -305,26 +310,24 @@ function handleFormSubmit(e) {
     
     // Отправляем на Worker
     try {
+        console.log('Отправка данных на Worker:', contactData);
         const response = await fetch(WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(contactData)
         });
         
+        console.log('Ответ от Worker:', response.status, response.statusText);
         const result = await response.json();
+        console.log('Результат от Worker:', result);
         
         if (result.success) {
+            // Показываем алерт пользователю
+            alert(`Спасибо, ${userName}! Мы получили ваш email и отправим вам все варианты тестов.`);
+            
             // Показываем успешное сообщение
             document.getElementById('contactForm').style.display = 'none';
             document.getElementById('ctaSuccess').style.display = 'block';
-            
-            // Показываем информацию об отправке результатов
-            const emailResultsNote = document.getElementById('emailResultsNote');
-            if (sendResults && iqResult) {
-                emailResultsNote.textContent = `Результаты вашего теста (IQ ≈ ${iqResult.estimated}) отправлены на email. Проверьте почту!`;
-            } else {
-                emailResultsNote.textContent = 'Спасибо! Мы отправим вам все варианты тестов на указанный email.';
-            }
         } else {
             console.error('Ошибка отправки:', result.error);
             alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
@@ -343,6 +346,72 @@ function handleFormSubmit(e) {
     }
     
     console.log('Contact saved:', contactData);
+}
+
+// Обработка отправки результатов на email
+async function handleSendResultsSubmit(e) {
+    e.preventDefault();
+    
+    const userName = document.getElementById('sendResultsName').value;
+    const userEmail = document.getElementById('sendResultsEmail').value;
+    
+    if (!iqResult) {
+        alert('Ошибка: результаты теста не найдены');
+        return;
+    }
+    
+    // Подготавливаем данные для отправки
+    const sendResultsData = {
+        type: 'send-results-only',
+        name: userName,
+        email: userEmail,
+        iqResult: {
+            estimated: iqResult.estimated,
+            min: iqResult.min,
+            max: iqResult.max,
+            score: score,
+            total: questions.length
+        },
+        shareUrl: getShareUrl(),
+        source: 'result-page',
+        timestamp: new Date().toISOString()
+    };
+    
+    // Сохраняем в localStorage (бэкап)
+    let contacts = JSON.parse(localStorage.getItem('iqTestContacts') || '[]');
+    contacts.push(sendResultsData);
+    localStorage.setItem('iqTestContacts', JSON.stringify(contacts));
+    
+    // Отправляем на Worker
+    try {
+        console.log('Отправка результатов на email:', sendResultsData);
+        const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sendResultsData)
+        });
+        
+        console.log('Ответ от Worker (отправка результатов):', response.status, response.statusText);
+        const result = await response.json();
+        console.log('Результат от Worker (отправка результатов):', result);
+        
+        if (result.success) {
+            // Показываем алерт пользователю
+            alert(`Спасибо, ${userName}! Результаты вашего теста (IQ ≈ ${iqResult.estimated}) отправлены на email. Проверьте почту!`);
+            
+            // Показываем успешное сообщение
+            document.getElementById('sendResultsForm').style.display = 'none';
+            document.getElementById('sendResultsSuccess').style.display = 'block';
+        } else {
+            console.error('Ошибка отправки:', result.error);
+            alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+        }
+    } catch (error) {
+        console.error('Ошибка отправки на Worker:', error);
+        alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+    }
+    
+    console.log('Send results saved:', sendResultsData);
 }
 
 function restartTest() {
@@ -574,7 +643,7 @@ function initStartPageContactForm() {
     }
 }
 
-function handleStartPageFormSubmit(e) {
+async function handleStartPageFormSubmit(e) {
     e.preventDefault();
     
     const userName = document.getElementById('userNameStart').value;
@@ -607,13 +676,16 @@ function handleStartPageFormSubmit(e) {
     
     // Отправляем на Worker
     try {
+        console.log('Отправка данных на Worker (стартовая страница):', contactData);
         const response = await fetch(WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(contactData)
         });
         
+        console.log('Ответ от Worker (стартовая страница):', response.status, response.statusText);
         const result = await response.json();
+        console.log('Результат от Worker (стартовая страница):', result);
         
         if (result.success) {
             // Показываем алерт пользователю
@@ -641,6 +713,34 @@ function handleStartPageFormSubmit(e) {
     
     console.log('Contact saved:', contactData);
 }
+
+// Сворачивание/разворачивание блока "Важно"
+function toggleWarning() {
+    const warningBox = document.getElementById('warningBox');
+    if (warningBox) {
+        warningBox.classList.toggle('collapsed');
+        const toggleText = warningBox.querySelector('.toggle-text');
+        if (toggleText) {
+            if (warningBox.classList.contains('collapsed')) {
+                toggleText.textContent = 'Развернуть';
+            } else {
+                toggleText.textContent = 'Свернуть';
+            }
+        }
+    }
+}
+
+// Делаем функцию доступной глобально
+window.toggleWarning = toggleWarning;
+
+// Инициализация: блок "Важно" свернут по умолчанию
+// Класс collapsed уже добавлен в HTML, но убеждаемся что он есть
+(function() {
+    const warningBox = document.getElementById('warningBox');
+    if (warningBox) {
+        warningBox.classList.add('collapsed');
+    }
+})();
 
 // Вызываем при загрузке
 checkUrlParams();

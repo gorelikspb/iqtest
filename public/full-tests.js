@@ -9,7 +9,7 @@ if (contactForm) {
     contactForm.addEventListener('submit', handleFormSubmit);
 }
 
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
     e.preventDefault();
     
     const userName = document.getElementById('userName').value;
@@ -42,13 +42,16 @@ function handleFormSubmit(e) {
     
     // Отправляем на Worker
     try {
+        console.log('Отправка данных на Worker (расширенные тесты):', contactData);
         const response = await fetch(WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(contactData)
         });
         
+        console.log('Ответ от Worker (расширенные тесты):', response.status, response.statusText);
         const result = await response.json();
+        console.log('Результат от Worker (расширенные тесты):', result);
         
         if (result.success) {
             // Показываем алерт пользователю
