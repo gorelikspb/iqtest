@@ -90,7 +90,7 @@ export default {
                 
                 <div class="result-box">
                   <div class="iq-value">≈ ${data.iqResult.estimated}</div>
-                  <div class="iq-range">Диапазон: ${data.iqResult.estimated - 40} - ${data.iqResult.estimated + 40}</div>
+                  <div class="iq-range">Диапазон: ${data.iqResult.min} - ${data.iqResult.max}</div>
                   <div class="iq-level">${iqLevel}</div>
                   <p style="margin-top: 15px; color: #666;">Правильных ответов: ${data.iqResult.score || 'N/A'} из ${data.iqResult.total || 'N/A'}</p>
                 </div>
