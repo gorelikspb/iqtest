@@ -109,7 +109,7 @@ export default {
           <p style="color: #666; font-size: 12px;">Все данные сохранены. Можно добавить в табличку для ручной рассылки расширенных тестов.</p>
         `;
 
-        await fetch('https://api.resend.com/emails', {
+        const adminEmailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${env.RESEND_API_KEY}`,
@@ -122,6 +122,24 @@ export default {
             html: adminEmailHtml
           })
         });
+
+        if (!adminEmailResponse.ok) {
+          const error = await adminEmailResponse.json();
+          console.error('Ошибка отправки email админу:', error);
+          return new Response(JSON.stringify({ 
+            success: false, 
+            error: `Ошибка отправки email админу: ${error.message || 'Unknown error'}` 
+          }), {
+            status: 500,
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
+          });
+        }
+
+        const adminEmailResult = await adminEmailResponse.json();
+        console.log('Email админу отправлен:', adminEmailResult);
 
         return new Response(JSON.stringify({ success: true }), {
           headers: {
