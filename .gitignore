@@ -30,6 +30,9 @@ package-lock.json
 # Instructions (private)
 instructions/
 
+# Documentation (private)
+docs/
+
 # Screenshots (if private)
 # screenshots/  # Раскомментируйте если не хотите коммитить скриншоты
 

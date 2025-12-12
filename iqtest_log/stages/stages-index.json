@@ -1,0 +1,13 @@
+[
+  {
+    "id": "01",
+    "file": "01-mvp-quick-test.md",
+    "date": "2025-11-20",
+    "title": "Создание MVP быстрого IQ теста",
+    "published": false,
+    "screenshots": {
+      "ru": ["01-welcome-screen.png", "02-test-question.png", "03-result-screen.png", "04-share-buttons.png", "05-contact-form.png", "06-full-tests-page.png"]
+    }
+  }
+]
+

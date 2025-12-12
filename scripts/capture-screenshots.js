@@ -1,245 +1,337 @@
+// Скрипт для автоматической генерации скриншотов IQ теста
+// Использует Puppeteer с file:// протоколом
 const puppeteer = require('puppeteer');
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 
-const screenshotsDir = path.join(__dirname, '..', 'screenshots');
-const ruDir = path.join(screenshotsDir, 'ru');
-const enDir = path.join(screenshotsDir, 'en');
+// ========== НАСТРОЙКИ ПРОЕКТА ==========
+const PROJECT_ROOT = path.resolve(__dirname, '..');
+const PUBLIC_DIR = path.join(PROJECT_ROOT, 'public');
+const INDEX_HTML_RU = path.join(PUBLIC_DIR, 'ru', 'index.html');
+const INDEX_HTML_EN = path.join(PUBLIC_DIR, 'en', 'index.html');
+const FULL_TESTS_HTML_RU = path.join(PUBLIC_DIR, 'ru', 'full-tests.html');
+const FULL_TESTS_HTML_EN = path.join(PUBLIC_DIR, 'en', 'full-tests.html');
+const SCREENSHOTS_DIR = path.join(PROJECT_ROOT, 'iqtest_log', 'screenshots');
+const LANGUAGES = ['ru', 'en'];
 
-// Создаем папки если их нет
-if (!fs.existsSync(screenshotsDir)) fs.mkdirSync(screenshotsDir, { recursive: true });
-if (!fs.existsSync(ruDir)) fs.mkdirSync(ruDir, { recursive: true });
-if (!fs.existsSync(enDir)) fs.mkdirSync(enDir, { recursive: true });
-
-// Секции для скриншотов
-const sections = [
-  {
-    name: '01-welcome-screen',
-    selector: '.welcome-screen',
-    description: 'Главная страница - приветственный экран'
-  },
-  {
-    name: '02-test-question',
-    selector: '.test-screen',
-    description: 'Экран с вопросом теста',
-    waitFor: 1000 // Ждем загрузки
-  },
-  {
-    name: '03-result-screen',
-    selector: '.result-screen',
-    description: 'Экран с результатами',
-    waitFor: 1000
-  },
-  {
-    name: '04-share-buttons',
-    selector: '.share-box',
-    description: 'Блок с кнопками поделиться'
-  },
-  {
-    name: '05-contact-form',
-    selector: '.cta-box',
-    description: 'Форма сбора контактов'
-  },
-  {
-    name: '06-full-tests-page',
-    file: 'full-tests.html',
-    selector: '.full-tests-screen',
-    description: 'Страница расширенных тестов'
-  }
-];
+// ========== ОСНОВНОЙ КОД ==========
 
 async function captureScreenshots() {
-  const browser = await puppeteer.launch({
-    headless: 'new',
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
-
-  try {
-    // Скриншоты главной страницы (index.html)
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1200, height: 1600 }); // Увеличиваем высоту для полного скриншота
-    
-    const fileUrl = `file://${path.join(__dirname, '..', 'index.html').replace(/\\/g, '/')}`;
-    await page.goto(fileUrl, { waitUntil: 'networkidle0' });
-    await page.waitForTimeout(500);
-
-    // 1. Приветственный экран
-    console.log('Снимаю скриншот: Приветственный экран...');
-    await page.waitForSelector('.welcome-screen', { visible: true, timeout: 5000 });
-    const welcomeElement = await page.$('.welcome-screen');
-    if (welcomeElement) {
-      // Делаем скриншот элемента с padding
-      await welcomeElement.screenshot({
-        path: path.join(ruDir, '01-welcome-screen.png'),
-        captureBeyondViewport: true
-      });
-    } else {
-      // Fallback - полный скриншот страницы
-      await page.screenshot({
-        path: path.join(ruDir, '01-welcome-screen.png'),
-        fullPage: true
-      });
-    }
-
-    // 2. Нажимаем "Начать тест" и делаем скриншот вопроса
-    console.log('Снимаю скриншот: Экран с вопросом...');
-    await page.click('#startBtn');
-    await page.waitForSelector('.test-screen', { visible: true });
-    await page.waitForTimeout(500);
-    
-    await page.screenshot({
-      path: path.join(ruDir, '02-test-question.png'),
-      fullPage: false
+    // Создаем папки если их нет
+    LANGUAGES.forEach(lang => {
+        const dir = path.join(SCREENSHOTS_DIR, lang);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
     });
 
-    // 3. Отвечаем на все вопросы и делаем скриншот результатов
-    console.log('Прохожу тест для скриншота результатов...');
-    for (let i = 0; i < 7; i++) {
-      try {
-        await page.waitForSelector('.option', { visible: true, timeout: 5000 });
-        // Выбираем первый вариант (не важно правильный или нет для скриншота)
-        await page.click('.option');
-        await page.waitForTimeout(800);
+    // Проверяем наличие файлов
+    if (!fs.existsSync(INDEX_HTML_RU) || !fs.existsSync(INDEX_HTML_EN)) {
+        console.error('❌ Файлы не найдены:', INDEX_HTML_RU, INDEX_HTML_EN);
+        process.exit(1);
+    }
+    
+    try {
+        const browser = await puppeteer.launch({ 
+            headless: true,
+            args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox',
+                '--disable-web-security',
+                '--allow-file-access-from-files'
+            ]
+        });
         
-        // Ждем появления кнопки "Следующий"
-        if (i < 6) {
-          await page.waitForSelector('#nextBtn', { visible: true, timeout: 5000 });
-          await page.click('#nextBtn');
-          await page.waitForTimeout(1000);
-        } else {
-          // Последний вопрос - ждем автоматического перехода или нажимаем кнопку если есть
-          await page.waitForTimeout(1000);
-          // Проверяем, есть ли кнопка "Следующий" на последнем вопросе
-          const nextBtn = await page.$('#nextBtn');
-          if (nextBtn) {
-            const isVisible = await page.evaluate(el => {
-              const style = window.getComputedStyle(el);
-              return style.display !== 'none' && style.visibility !== 'hidden';
-            }, nextBtn);
-            if (isVisible) {
-              await page.click('#nextBtn');
-              await page.waitForTimeout(1000);
+        for (const lang of LANGUAGES) {
+            console.log(`\n=== Язык: ${lang.toUpperCase()} ===`);
+            const page = await browser.newPage();
+            await page.setViewport({ width: 1920, height: 1080 });
+            
+            // Включаем логирование консоли для отладки
+            page.on('console', msg => {
+                if (msg.type() === 'error') {
+                    console.log(`  [Console Error]: ${msg.text()}`);
+                }
+            });
+            
+            // Загружаем страницу один раз
+            const indexHtml = lang === 'ru' ? INDEX_HTML_RU : INDEX_HTML_EN;
+            const fileUrl = `file://${indexHtml.replace(/\\/g, '/')}`;
+            console.log(`Загрузка страницы (${lang})...`);
+            await page.goto(fileUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+            
+            // Ждем загрузки скриптов
+            await page.waitForFunction(() => {
+                return typeof window.getCurrentLanguage === 'function' && 
+                       typeof window.getQuestions === 'function';
+            }, { timeout: 15000 });
+            
+            // Устанавливаем язык и инициализируем вопросы
+            await page.evaluate((lang) => {
+                // Устанавливаем язык
+                if (typeof window.setLanguage === 'function') {
+                    window.setLanguage(lang);
+                }
+                
+                // Инициализируем вопросы
+                if (typeof window.getQuestions === 'function') {
+                    window.questions = window.getQuestions();
+                }
+                
+                // Применяем переводы, если функция доступна
+                if (typeof window.applyTranslations === 'function') {
+                    window.applyTranslations();
+                }
+            }, lang);
+            
+            // Ждем применения переводов и рендеринга
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // Проверяем, что язык установлен правильно
+            const currentLang = await page.evaluate(() => {
+                return typeof window.getCurrentLanguage === 'function' ? window.getCurrentLanguage() : 'ru';
+            });
+            console.log(`  Текущий язык: ${currentLang}`);
+            
+            // Дополнительно ждем, пока текст на странице обновится
+            await page.waitForFunction((expectedLang) => {
+                const h1 = document.querySelector('h1');
+                if (!h1) return false;
+                
+                // Проверяем, что текст соответствует языку
+                if (expectedLang === 'en') {
+                    return h1.textContent.includes('Quick IQ Test') || h1.textContent.includes('IQ');
+                } else {
+                    return h1.textContent.includes('Быстрый IQ Тест') || h1.textContent.includes('IQ');
+                }
+            }, { timeout: 10000 }, lang);
+            
+            // 1. Скриншот welcome-screen
+            console.log('Скриншот: welcome-screen...');
+            await page.waitForSelector('.welcome-screen', { timeout: 10000 });
+            await new Promise(resolve => setTimeout(resolve, 500));
+            const welcomeElement = await page.$('.welcome-screen');
+            if (welcomeElement) {
+                await welcomeElement.screenshot({ path: path.join(SCREENSHOTS_DIR, lang, '01-welcome-screen.png') });
+                console.log(`  ✅ Сохранено: 01-welcome-screen.png`);
             }
-          }
+            
+            // 2. Переключаем на экран теста вручную и делаем скриншот test-question
+            console.log('Скриншот: test-question...');
+            
+            await page.evaluate(() => {
+                const welcomeScreen = document.querySelector('.welcome-screen');
+                const testScreen = document.querySelector('.test-screen');
+                const questionText = document.getElementById('questionText');
+                const optionsContainer = document.getElementById('optionsContainer');
+                const currentQuestionSpan = document.getElementById('currentQuestion');
+                const totalQuestionsSpan = document.getElementById('totalQuestions');
+                const progressFill = document.getElementById('progressFill');
+                
+                if (welcomeScreen && testScreen && window.questions && window.questions.length > 0) {
+                    welcomeScreen.style.display = 'none';
+                    testScreen.style.display = 'block';
+                    
+                    // Инициализируем тест
+                    window.currentQuestionIndex = 0;
+                    window.score = 0;
+                    window.selectedAnswer = null;
+                    
+                    const question = window.questions[0];
+                    
+                    // Обновляем счетчик
+                    if (currentQuestionSpan) currentQuestionSpan.textContent = 1;
+                    if (totalQuestionsSpan) totalQuestionsSpan.textContent = window.questions.length;
+                    
+                    // Обновляем прогресс
+                    if (progressFill) {
+                        const progress = (1 / window.questions.length) * 100;
+                        progressFill.style.width = progress + '%';
+                    }
+                    
+                    // Показываем вопрос
+                    if (questionText) {
+                        let questionHTML = `<h2>${question.question}</h2>`;
+                        if (question.data) {
+                            questionHTML += `<div class="question-data">${question.data}</div>`;
+                        }
+                        questionText.innerHTML = questionHTML;
+                    }
+                    
+                    // Показываем варианты ответов
+                    if (optionsContainer) {
+                        optionsContainer.innerHTML = '';
+                        question.options.forEach((option, index) => {
+                            const optionDiv = document.createElement('div');
+                            optionDiv.className = 'option';
+                            optionDiv.textContent = option;
+                            optionsContainer.appendChild(optionDiv);
+                        });
+                    }
+                }
+            });
+            
+            // Ждем появления вопроса и вариантов ответов
+            await page.waitForSelector('.question', { timeout: 10000 });
+            await page.waitForSelector('.option', { timeout: 10000 });
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const testElement = await page.$('.test-screen');
+            if (testElement) {
+                await testElement.screenshot({ path: path.join(SCREENSHOTS_DIR, lang, '02-test-question.png') });
+                console.log(`  ✅ Сохранено: 02-test-question.png`);
+            }
+            
+            // 3. Проходим все вопросы (7 вопросов) и переходим на экран результатов
+            console.log('Прохождение теста...');
+            
+            for (let i = 0; i < 7; i++) {
+                // Ждем появления вариантов ответов
+                await page.waitForSelector('.option', { timeout: 10000 });
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                // Кликаем на первый вариант
+                const firstOption = await page.$('.option');
+                if (firstOption) {
+                    await firstOption.click();
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                
+                // Если не последний вопрос, переходим к следующему
+                if (i < 6) {
+                    await page.evaluate((currentIndex) => {
+                        window.currentQuestionIndex = currentIndex + 1;
+                        const question = window.questions[window.currentQuestionIndex];
+                        const questionText = document.getElementById('questionText');
+                        const optionsContainer = document.getElementById('optionsContainer');
+                        const currentQuestionSpan = document.getElementById('currentQuestion');
+                        const progressFill = document.getElementById('progressFill');
+                        
+                        // Обновляем счетчик
+                        if (currentQuestionSpan) currentQuestionSpan.textContent = window.currentQuestionIndex + 1;
+                        
+                        // Обновляем прогресс
+                        if (progressFill) {
+                            const progress = ((window.currentQuestionIndex + 1) / window.questions.length) * 100;
+                            progressFill.style.width = progress + '%';
+                        }
+                        
+                        // Показываем вопрос
+                        if (questionText) {
+                            let questionHTML = `<h2>${question.question}</h2>`;
+                            if (question.data) {
+                                questionHTML += `<div class="question-data">${question.data}</div>`;
+                            }
+                            questionText.innerHTML = questionHTML;
+                        }
+                        
+                        // Показываем варианты ответов
+                        if (optionsContainer) {
+                            optionsContainer.innerHTML = '';
+                            question.options.forEach((option, index) => {
+                                const optionDiv = document.createElement('div');
+                                optionDiv.className = 'option';
+                                optionDiv.textContent = option;
+                                optionsContainer.appendChild(optionDiv);
+                            });
+                        }
+                    }, i);
+                    
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                }
+            }
+            
+            // 4. Переключаем на экран результатов
+            console.log('Скриншот: result-screen...');
+            await page.evaluate(() => {
+                const testScreen = document.querySelector('.test-screen');
+                const resultScreen = document.querySelector('.result-screen');
+                const iqValue = document.getElementById('iqValue');
+                const iqRange = document.getElementById('iqRange');
+                const iqDescription = document.getElementById('iqDescription');
+                
+                if (testScreen && resultScreen) {
+                    testScreen.style.display = 'none';
+                    resultScreen.style.display = 'block';
+                    
+                    // Рассчитываем результат
+                    const score = 3; // Примерный результат
+                    const total = window.questions.length;
+                    const percentage = (score / total) * 100;
+                    const baseIQ = 100;
+                    const iqRange = 30;
+                    const estimatedIQ = baseIQ + ((percentage - 50) / 50) * iqRange;
+                    const roundedIQ = Math.round(estimatedIQ / 5) * 5;
+                    const range = 40;
+                    const minIQ = Math.max(70, roundedIQ - range);
+                    const maxIQ = Math.min(160, roundedIQ + range);
+                    
+                    // Обновляем результаты
+                    if (iqValue) iqValue.textContent = `≈ ${roundedIQ}`;
+                    if (iqRange) iqRange.textContent = `${window.getCurrentLanguage() === 'en' ? 'Range:' : 'Диапазон:'} ${minIQ} - ${maxIQ}`;
+                    if (iqDescription && typeof window.getIQDescription === 'function') {
+                        iqDescription.textContent = window.getIQDescription(roundedIQ);
+                    }
+                }
+            });
+            
+            await page.waitForSelector('.result-screen', { timeout: 10000 });
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const resultElement = await page.$('.result-screen');
+            if (resultElement) {
+                await resultElement.screenshot({ path: path.join(SCREENSHOTS_DIR, lang, '03-result-screen.png') });
+                console.log(`  ✅ Сохранено: 03-result-screen.png`);
+            }
+            
+            // 5. Скриншот share-buttons (на странице результатов)
+            console.log('Скриншот: share-buttons...');
+            await page.waitForSelector('.share-box', { timeout: 5000 });
+            await new Promise(resolve => setTimeout(resolve, 500));
+            const shareElement = await page.$('.share-box');
+            if (shareElement) {
+                await shareElement.screenshot({ path: path.join(SCREENSHOTS_DIR, lang, '04-share-buttons.png') });
+                console.log(`  ✅ Сохранено: 04-share-buttons.png`);
+            }
+            
+            // 6. Скриншот contact-form (на странице результатов)
+            console.log('Скриншот: contact-form...');
+            await page.waitForSelector('.cta-box', { timeout: 5000 });
+            await new Promise(resolve => setTimeout(resolve, 500));
+            const ctaElement = await page.$('.cta-box');
+            if (ctaElement) {
+                await ctaElement.screenshot({ path: path.join(SCREENSHOTS_DIR, lang, '05-contact-form.png') });
+                console.log(`  ✅ Сохранено: 05-contact-form.png`);
+            }
+            
+            await page.close();
+            
+            // 7. Скриншот full-tests-page (отдельная страница)
+            console.log('Скриншот: full-tests-page...');
+            const fullTestsPage = await browser.newPage();
+            await fullTestsPage.setViewport({ width: 1920, height: 1080 });
+            const fullTestsHtml = lang === 'ru' ? FULL_TESTS_HTML_RU : FULL_TESTS_HTML_EN;
+            const fullTestsUrl = `file://${fullTestsHtml.replace(/\\/g, '/')}`;
+            await fullTestsPage.goto(fullTestsUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            await fullTestsPage.waitForSelector('.full-tests-screen', { timeout: 5000 });
+            const fullTestsElement = await fullTestsPage.$('.full-tests-screen');
+            if (fullTestsElement) {
+                await fullTestsElement.screenshot({ path: path.join(SCREENSHOTS_DIR, lang, '06-full-tests-page.png') });
+                console.log(`  ✅ Сохранено: 06-full-tests-page.png`);
+            }
+            
+            await fullTestsPage.close();
         }
-      } catch (error) {
-        console.log(`Ошибка на вопросе ${i + 1}:`, error.message);
-        // Продолжаем дальше
-      }
-    }
-    
-    // Дополнительная проверка - ждем появления экрана результатов
-    console.log('Ожидаю появления экрана результатов...');
-    await page.waitForTimeout(2000);
 
-    // Скриншот результатов
-    console.log('Снимаю скриншот: Экран с результатами...');
-    await page.setViewport({ width: 1200, height: 2000 }); // Увеличиваем для результатов
-    try {
-      await page.waitForSelector('.result-screen', { visible: true, timeout: 15000 });
-      await page.waitForTimeout(1500);
-      
-      // Прокручиваем страницу вверх для полного скриншота
-      await page.evaluate(() => window.scrollTo(0, 0));
-      await page.waitForTimeout(500);
-      
-      const resultElement = await page.$('.result-screen');
-      if (resultElement) {
-        await resultElement.screenshot({
-          path: path.join(ruDir, '03-result-screen.png'),
-          captureBeyondViewport: true
-        });
-      } else {
-        await page.screenshot({
-          path: path.join(ruDir, '03-result-screen.png'),
-          fullPage: true
-        });
-      }
+        await browser.close();
+        console.log('\n✅ Скриншоты созданы для всех языков в:', SCREENSHOTS_DIR);
     } catch (error) {
-      console.log('Не удалось сделать скриншот результатов, пробую полный скриншот страницы...');
-      await page.screenshot({
-        path: path.join(ruDir, '03-result-screen.png'),
-        fullPage: true
-      });
+        console.error('❌ Ошибка:', error.message);
+        console.error(error.stack);
+        process.exit(1);
     }
-
-    // 4. Скриншот блока поделиться
-    console.log('Снимаю скриншот: Блок поделиться...');
-    try {
-      // Прокручиваем к блоку поделиться
-      await page.evaluate(() => {
-        const shareBox = document.querySelector('.share-box');
-        if (shareBox) shareBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      });
-      await page.waitForTimeout(1000);
-      
-      await page.waitForSelector('.share-box', { visible: true, timeout: 5000 });
-      const shareBox = await page.$('.share-box');
-      if (shareBox) {
-        await shareBox.screenshot({
-          path: path.join(ruDir, '04-share-buttons.png'),
-          captureBeyondViewport: true
-        });
-      } else {
-        console.log('Блок поделиться не найден, пропускаем...');
-      }
-    } catch (error) {
-      console.log('Ошибка при скриншоте блока поделиться:', error.message);
-    }
-
-    // 5. Скриншот формы сбора контактов
-    console.log('Снимаю скриншот: Форма сбора контактов...');
-    try {
-      // Прокручиваем к форме
-      await page.evaluate(() => {
-        const ctaBox = document.querySelector('.cta-box');
-        if (ctaBox) ctaBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      });
-      await page.waitForTimeout(1000);
-      
-      await page.waitForSelector('.cta-box', { visible: true, timeout: 5000 });
-      const ctaBox = await page.$('.cta-box');
-      if (ctaBox) {
-        await ctaBox.screenshot({
-          path: path.join(ruDir, '05-contact-form.png'),
-          captureBeyondViewport: true
-        });
-      } else {
-        console.log('Форма сбора контактов не найдена, пропускаем...');
-      }
-    } catch (error) {
-      console.log('Ошибка при скриншоте формы:', error.message);
-    }
-
-    // 6. Скриншот страницы расширенных тестов
-    console.log('Снимаю скриншот: Страница расширенных тестов...');
-    const fullTestsUrl = `file://${path.join(__dirname, '..', 'full-tests.html').replace(/\\/g, '/')}`;
-    await page.goto(fullTestsUrl, { waitUntil: 'networkidle0' });
-    await page.waitForTimeout(500);
-    await page.setViewport({ width: 1200, height: 2000 }); // Увеличиваем для полного скриншота
-    
-    const fullTestsElement = await page.$('.full-tests-screen');
-    if (fullTestsElement) {
-      await fullTestsElement.screenshot({
-        path: path.join(ruDir, '06-full-tests-page.png'),
-        captureBeyondViewport: true
-      });
-    } else {
-      await page.screenshot({
-        path: path.join(ruDir, '06-full-tests-page.png'),
-        fullPage: true
-      });
-    }
-
-    console.log('✅ Все скриншоты созданы в папке screenshots/ru/');
-
-  } catch (error) {
-    console.error('Ошибка при создании скриншотов:', error);
-    process.exit(1);
-  } finally {
-    await browser.close();
-  }
 }
 
-captureScreenshots();
-
+captureScreenshots().catch(console.error);

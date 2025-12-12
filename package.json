@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Быстрый IQ тест онлайн",
   "scripts": {
+    "screenshots": "node scripts/capture-screenshots.js",
     "capture:screens": "node scripts/capture-screenshots.js"
   },
   "keywords": ["iq", "test", "intelligence"],

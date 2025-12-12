@@ -1,13 +1,5 @@
-// Вопросы теста
-const questions = [
-    {
-        type: 'sequence',
-        question: 'Какое число должно быть следующим в последовательности?',
-        data: '2, 4, 8, 16, ?',
-        options: ['24', '32', '28', '20'],
-        correct: 1, // 32
-        explanation: 'Каждое число умножается на 2'
-    },
+// Вопросы теста (загружаются из translations.js)
+let questions = [];
     {
         type: 'analogy',
         question: 'Выберите слово, которое логически завершает аналогию:',
@@ -85,8 +77,183 @@ const progressFill = document.getElementById('progressFill');
 const currentQuestionSpan = document.getElementById('currentQuestion');
 const totalQuestionsSpan = document.getElementById('totalQuestions');
 
+// Инициализация языка и переводов
+let currentLang = getCurrentLanguage();
+questions = getQuestions();
+
+// Применяем переводы к интерфейсу
+function applyTranslations() {
+    currentLang = getCurrentLanguage();
+    questions = getQuestions();
+    
+    // Обновляем lang атрибут HTML
+    document.documentElement.lang = currentLang;
+    
+    // Обновляем meta теги
+    if (currentLang === 'en') {
+        document.getElementById('pageTitle').textContent = 'IQ Test Online - Quick IQ Test in 2-3 minutes | Free';
+        document.getElementById('pageDescription').content = 'Take a quick free online IQ test. 7 questions in 2-3 minutes. Find out your approximate IQ level with result and range. Free intelligence test without registration.';
+        document.getElementById('pageKeywords').content = 'iq test, online iq test, quick iq test, intelligence test, free iq test, check iq';
+    } else {
+        document.getElementById('pageTitle').textContent = 'IQ Тест Онлайн - Быстрый тест IQ за 2-3 минуты | Бесплатно';
+        document.getElementById('pageDescription').content = 'Пройдите быстрый IQ тест онлайн бесплатно. 7 вопросов за 2-3 минуты. Узнайте примерный уровень вашего IQ с результатом и диапазоном. Бесплатный тест интеллекта без регистрации.';
+        document.getElementById('pageKeywords').content = 'iq тест, тест iq онлайн, быстрый iq тест, тест интеллекта, бесплатный iq тест, проверить iq';
+    }
+    
+    // Обновляем HTML элементы
+    const welcomeTitle = document.querySelector('#welcomeScreen h1');
+    if (welcomeTitle) welcomeTitle.textContent = t('ui.welcomeTitle');
+    
+    const welcomeSubtitle = document.querySelector('#welcomeScreen .subtitle');
+    if (welcomeSubtitle) welcomeSubtitle.textContent = t('ui.welcomeSubtitle');
+    
+    const infoItems = document.querySelectorAll('#welcomeScreen .info-box li');
+    const infoTexts = t('ui.infoItems');
+    infoItems.forEach((item, i) => {
+        if (infoTexts[i]) item.textContent = infoTexts[i];
+    });
+    
+    const warningImportant = document.querySelector('#warningBox .warning-content p strong');
+    if (warningImportant) warningImportant.textContent = t('ui.warningImportant');
+    
+    const warningTexts = document.querySelectorAll('#warningBox .warning-content p');
+    if (warningTexts[0]) {
+        warningTexts[0].innerHTML = `<strong>${t('ui.warningImportant')}</strong> ${t('ui.warningText')}`;
+    }
+    if (warningTexts[1]) {
+        warningTexts[1].innerHTML = `<strong>${t('ui.disclaimer')}</strong> ${t('ui.disclaimerText')}`;
+    }
+    
+    const toggleText = document.querySelector('#warningToggle .toggle-text');
+    if (toggleText) toggleText.textContent = t('ui.expand');
+    
+    if (startBtn) startBtn.textContent = t('ui.startTest');
+    if (nextBtn) nextBtn.textContent = t('ui.nextQuestion');
+    if (restartBtn) restartBtn.textContent = t('ui.restartTest');
+    
+    // Обновляем формы и другие элементы
+    updateFormTranslations();
+    updateResultScreenTranslations();
+}
+
+function updateFormTranslations() {
+    // Форма на стартовой странице
+    const ctaStartTitle = document.querySelector('#ctaBoxStart h3');
+    if (ctaStartTitle) ctaStartTitle.textContent = t('ui.ctaStartTitle');
+    
+    const ctaStartText = document.querySelector('#ctaBoxStart .cta-text');
+    if (ctaStartText) ctaStartText.textContent = t('ui.ctaStartText');
+    
+    const userNameStart = document.getElementById('userNameStart');
+    if (userNameStart) userNameStart.placeholder = t('ui.yourName');
+    
+    const userEmailStart = document.getElementById('userEmailStart');
+    if (userEmailStart) userEmailStart.placeholder = t('ui.yourEmail');
+    
+    const extendedTestStartLabel = document.querySelector('#extendedTestStart').nextElementSibling;
+    if (extendedTestStartLabel) extendedTestStartLabel.textContent = t('ui.extendedTests');
+    
+    const kidsTestStartLabel = document.querySelector('#kidsTestStart').nextElementSibling;
+    if (kidsTestStartLabel) kidsTestStartLabel.textContent = t('ui.kidsTests');
+    
+    const getFreeTestsStart = document.querySelector('#contactFormStart button');
+    if (getFreeTestsStart) getFreeTestsStart.textContent = t('ui.getFreeTests');
+    
+    const noSpamStart = document.querySelector('#contactFormStart .form-note');
+    if (noSpamStart) noSpamStart.textContent = t('ui.noSpam');
+    
+    const thanksStart = document.querySelector('#ctaSuccessStart h3');
+    if (thanksStart) thanksStart.textContent = t('ui.thanks');
+    
+    const thanksTextStart = document.querySelector('#ctaSuccessStart p');
+    if (thanksTextStart) thanksTextStart.textContent = t('ui.thanksText');
+    
+    // Форма на странице результатов
+    const ctaTitle = document.querySelector('#ctaBox h3');
+    if (ctaTitle) ctaTitle.textContent = t('ui.ctaTitle');
+    
+    const ctaText = document.querySelector('#ctaBox .cta-text');
+    if (ctaText) ctaText.textContent = t('ui.ctaText');
+    
+    const userName = document.getElementById('userName');
+    if (userName) userName.placeholder = t('ui.yourName');
+    
+    const userEmail = document.getElementById('userEmail');
+    if (userEmail) userEmail.placeholder = t('ui.yourEmail');
+    
+    const extendedTestLabel = document.querySelector('#extendedTest').nextElementSibling;
+    if (extendedTestLabel) extendedTestLabel.textContent = t('ui.extendedTests');
+    
+    const kidsTestLabel = document.querySelector('#kidsTest').nextElementSibling;
+    if (kidsTestLabel) kidsTestLabel.textContent = t('ui.kidsTests');
+    
+    const getFreeTests = document.querySelector('#contactForm button');
+    if (getFreeTests) getFreeTests.textContent = t('ui.getFreeTests');
+    
+    const noSpam = document.querySelector('#contactForm .form-note');
+    if (noSpam) noSpam.textContent = t('ui.noSpam');
+    
+    const thanks = document.querySelector('#ctaSuccess h3');
+    if (thanks) thanks.textContent = t('ui.thanks');
+    
+    const thanksText = document.querySelector('#ctaSuccess p');
+    if (thanksText) thanksText.textContent = t('ui.thanksText');
+    
+    // Кнопки поделиться
+    const shareLinkStart = document.getElementById('shareLinkStart');
+    if (shareLinkStart) shareLinkStart.innerHTML = `<span>${t('ui.copyLink')}</span>`;
+    
+    const bookmarkBtn = document.getElementById('bookmarkBtn');
+    if (bookmarkBtn) bookmarkBtn.innerHTML = `<span>${t('ui.addToBookmarks')}</span>`;
+    
+    const fullTestsLink = document.querySelector('.full-test-link a');
+    if (fullTestsLink) fullTestsLink.textContent = t('ui.fullTestsLink');
+}
+
+function updateResultScreenTranslations() {
+    const resultTitle = document.querySelector('#resultScreen h1');
+    if (resultTitle) resultTitle.textContent = t('ui.testComplete');
+    
+    const sendResultsTitle = document.querySelector('#sendResultsBox h3');
+    if (sendResultsTitle) sendResultsTitle.textContent = t('ui.sendResultsTitle');
+    
+    const sendResultsText = document.querySelector('#sendResultsBox .send-results-text');
+    if (sendResultsText) sendResultsText.textContent = t('ui.sendResultsText');
+    
+    const sendResultsName = document.getElementById('sendResultsName');
+    if (sendResultsName) sendResultsName.placeholder = t('ui.yourName');
+    
+    const sendResultsEmail = document.getElementById('sendResultsEmail');
+    if (sendResultsEmail) sendResultsEmail.placeholder = t('ui.yourEmail');
+    
+    const sendResultsBtn = document.querySelector('#sendResultsForm button');
+    if (sendResultsBtn) sendResultsBtn.textContent = t('ui.sendResults');
+    
+    const resultsWillBeSent = document.querySelector('#sendResultsSuccess p');
+    if (resultsWillBeSent) resultsWillBeSent.textContent = t('ui.resultsWillBeSent');
+    
+    const shareTitle = document.querySelector('#shareBox h3');
+    if (shareTitle) shareTitle.textContent = t('ui.shareTitle');
+    
+    const shareText = document.querySelector('#shareBox .share-text');
+    if (shareText) shareText.textContent = t('ui.shareText');
+    
+    const shareLink = document.getElementById('shareLink');
+    if (shareLink) shareLink.innerHTML = `<span>${t('ui.copyLink')}</span>`;
+}
+
 // Инициализация
-totalQuestionsSpan.textContent = questions.length;
+function init() {
+    applyTranslations();
+    totalQuestionsSpan.textContent = questions.length;
+    
+    // Обновляем счетчик вопросов
+    const questionCounter = document.querySelector('.question-counter');
+    if (questionCounter) {
+        const parts = questionCounter.textContent.split(' ');
+        questionCounter.innerHTML = `${t('ui.questionCounter')} <span id="currentQuestion">1</span> ${t('ui.questionOf')} <span id="totalQuestions">${questions.length}</span>`;
+    }
+}
 
 startBtn.addEventListener('click', startTest);
 nextBtn.addEventListener('click', nextQuestion);
@@ -114,6 +281,9 @@ function startTest() {
     score = 0;
     showQuestion();
 }
+
+// Делаем функцию доступной глобально для Puppeteer
+window.startTest = startTest;
 
 function showQuestion() {
     const question = questions[currentQuestionIndex];
@@ -211,15 +381,7 @@ function calculateIQ(score, total) {
     };
 }
 
-function getIQDescription(iq) {
-    if (iq < 80) return 'Ниже среднего';
-    if (iq < 90) return 'Немного ниже среднего';
-    if (iq < 110) return 'Средний уровень';
-    if (iq < 120) return 'Выше среднего';
-    if (iq < 130) return 'Высокий уровень';
-    if (iq < 140) return 'Очень высокий уровень';
-    return 'Исключительно высокий уровень';
-}
+// getIQDescription теперь используется из translations.js
 
 function showResult() {
     testScreen.style.display = 'none';
@@ -228,7 +390,7 @@ function showResult() {
     iqResult = calculateIQ(score, questions.length);
     
     document.getElementById('iqValue').textContent = `≈ ${iqResult.estimated}`;
-    document.getElementById('iqRange').textContent = `Диапазон: ${iqResult.min} - ${iqResult.max}`;
+    document.getElementById('iqRange').textContent = `${t('ui.range')} ${iqResult.min} - ${iqResult.max}`;
     document.getElementById('iqDescription').textContent = getIQDescription(iqResult.estimated);
     
     // Инициализируем кнопки поделиться
@@ -251,12 +413,9 @@ function showResult() {
     const warning = document.createElement('div');
     warning.className = 'result-warning';
     warning.innerHTML = `
-        <p><strong>Помните:</strong> Это упрощенный тест для быстрой оценки. 
-        Для более точного определения IQ обычно используются более длительные и детальные тесты, 
-        проводимые сертифицированными специалистами.</p>
-        <p style="margin-top: 10px;"><strong>Дисклеймер:</strong> Данный онлайн IQ тест не является официальным или стандартизированным тестом IQ (таким как WAIS, Stanford-Binet, Raven). 
-        Результаты носят ознакомительный характер и не могут использоваться для официальной оценки интеллекта.</p>
-        <p style="margin-top: 10px;">Правильных ответов: ${score} из ${questions.length}</p>
+        <p><strong>${t('ui.remember')}</strong> ${t('ui.rememberText')}</p>
+        <p style="margin-top: 10px;"><strong>${t('ui.disclaimer')}</strong> ${t('ui.disclaimerText')}</p>
+        <p style="margin-top: 10px;">${t('ui.correctAnswers')} ${score} ${t('ui.of')} ${questions.length}</p>
     `;
     resultScreen.querySelector('.result-box').appendChild(warning);
     
@@ -330,7 +489,7 @@ async function handleFormSubmit(e) {
             document.getElementById('ctaSuccess').style.display = 'block';
         } else {
             console.error('Ошибка отправки:', result.error);
-            alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+            alert(t('ui.errorSending'));
             
             // Все равно показываем успех, но с предупреждением
             document.getElementById('contactForm').style.display = 'none';
@@ -338,7 +497,7 @@ async function handleFormSubmit(e) {
         }
     } catch (error) {
         console.error('Ошибка отправки на Worker:', error);
-        alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+        alert(t('ui.errorSending'));
         
         // Все равно показываем успех
         document.getElementById('contactForm').style.display = 'none';
@@ -356,7 +515,7 @@ async function handleSendResultsSubmit(e) {
     const userEmail = document.getElementById('sendResultsEmail').value;
     
     if (!iqResult) {
-        alert('Ошибка: результаты теста не найдены');
+        alert(t('ui.errorResults'));
         return;
     }
     
@@ -397,18 +556,18 @@ async function handleSendResultsSubmit(e) {
         
         if (result.success) {
             // Показываем алерт пользователю
-            alert(`Спасибо, ${userName}! Результаты вашего теста (IQ ≈ ${iqResult.estimated}) будут скоро отправлены на email.`);
+            alert(t('ui.thanksResults', { name: userName, iq: iqResult.estimated }));
             
             // Показываем успешное сообщение
             document.getElementById('sendResultsForm').style.display = 'none';
             document.getElementById('sendResultsSuccess').style.display = 'block';
         } else {
             console.error('Ошибка отправки:', result.error);
-            alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+            alert(t('ui.errorSending'));
         }
     } catch (error) {
         console.error('Ошибка отправки на Worker:', error);
-        alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+        alert(t('ui.errorSending'));
     }
     
     console.log('Send results saved:', sendResultsData);
@@ -426,20 +585,38 @@ function restartTest() {
 
 // Функции для поделиться результатами
 function initShareButtons() {
-    const shareVK = document.getElementById('shareVK');
-    const shareTelegram = document.getElementById('shareTelegram');
-    const shareWhatsApp = document.getElementById('shareWhatsApp');
-    const shareLink = document.getElementById('shareLink');
+    const currentLang = getCurrentLanguage();
     
-    if (shareVK) shareVK.addEventListener('click', () => shareToVK());
-    if (shareTelegram) shareTelegram.addEventListener('click', () => shareToTelegram());
-    if (shareWhatsApp) shareWhatsApp.addEventListener('click', () => shareToWhatsApp());
-    if (shareLink) shareLink.addEventListener('click', () => copyShareLink());
+    // Для русской версии
+    if (currentLang === 'ru') {
+        const shareVK = document.getElementById('shareVK');
+        const shareTelegram = document.getElementById('shareTelegram');
+        const shareWhatsApp = document.getElementById('shareWhatsApp');
+        const shareLink = document.getElementById('shareLink');
+        
+        if (shareVK) shareVK.addEventListener('click', () => shareToVK());
+        if (shareTelegram) shareTelegram.addEventListener('click', () => shareToTelegram());
+        if (shareWhatsApp) shareWhatsApp.addEventListener('click', () => shareToWhatsApp());
+        if (shareLink) shareLink.addEventListener('click', () => copyShareLink());
+    } else {
+        // Для английской версии
+        const shareFacebook = document.getElementById('shareFacebook');
+        const shareTwitter = document.getElementById('shareTwitter');
+        const shareWhatsApp = document.getElementById('shareWhatsApp');
+        const shareLink = document.getElementById('shareLink');
+        const shareTelegram = document.getElementById('shareTelegram');
+        
+        if (shareFacebook) shareFacebook.addEventListener('click', () => shareToFacebook());
+        if (shareTwitter) shareTwitter.addEventListener('click', () => shareToTwitter());
+        if (shareWhatsApp) shareWhatsApp.addEventListener('click', () => shareToWhatsApp());
+        if (shareLink) shareLink.addEventListener('click', () => copyShareLink());
+        if (shareTelegram) shareTelegram.addEventListener('click', () => shareToTelegram());
+    }
 }
 
 function getShareText() {
     if (!iqResult) return '';
-    return `Я прошел IQ тест и получил результат ≈ ${iqResult.estimated} (диапазон: ${iqResult.min}-${iqResult.max})! Пройди и сравни свой результат: `;
+    return t('ui.shareResultText', { iq: iqResult.estimated, min: iqResult.min, max: iqResult.max });
 }
 
 function getShareUrl() {
@@ -472,6 +649,18 @@ function shareToWhatsApp() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text + url)}`, '_blank');
 }
 
+function shareToFacebook() {
+    const url = getShareUrl();
+    const text = getShareText() + url;
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`, '_blank', 'width=600,height=400');
+}
+
+function shareToTwitter() {
+    const url = getShareUrl();
+    const text = getShareText() + url;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
+}
+
 function copyShareLink() {
     const url = getShareUrl();
     const text = getShareText() + url;
@@ -495,6 +684,7 @@ function copyShareLink() {
 function showShareSuccess() {
     const shareSuccess = document.getElementById('shareSuccess');
     if (shareSuccess) {
+        shareSuccess.textContent = t('ui.linkCopied');
         shareSuccess.style.display = 'block';
         setTimeout(() => {
             shareSuccess.style.display = 'none';
@@ -507,21 +697,40 @@ function showShareSuccess() {
 
 // Функции для поделиться на стартовой странице
 function initStartPageShareButtons() {
-    const shareVKStart = document.getElementById('shareVKStart');
-    const shareTelegramStart = document.getElementById('shareTelegramStart');
-    const shareWhatsAppStart = document.getElementById('shareWhatsAppStart');
-    const shareLinkStart = document.getElementById('shareLinkStart');
+    const currentLang = getCurrentLanguage();
     const bookmarkBtn = document.getElementById('bookmarkBtn');
     
-    if (shareVKStart) shareVKStart.addEventListener('click', () => shareToVKStart());
-    if (shareTelegramStart) shareTelegramStart.addEventListener('click', () => shareToTelegramStart());
-    if (shareWhatsAppStart) shareWhatsAppStart.addEventListener('click', () => shareToWhatsAppStart());
-    if (shareLinkStart) shareLinkStart.addEventListener('click', () => copyShareLinkStart());
     if (bookmarkBtn) bookmarkBtn.addEventListener('click', () => addToBookmarks());
+    
+    // Для русской версии
+    if (currentLang === 'ru') {
+        const shareVKStart = document.getElementById('shareVKStart');
+        const shareTelegramStart = document.getElementById('shareTelegramStart');
+        const shareWhatsAppStart = document.getElementById('shareWhatsAppStart');
+        const shareLinkStart = document.getElementById('shareLinkStart');
+        
+        if (shareVKStart) shareVKStart.addEventListener('click', () => shareToVKStart());
+        if (shareTelegramStart) shareTelegramStart.addEventListener('click', () => shareToTelegramStart());
+        if (shareWhatsAppStart) shareWhatsAppStart.addEventListener('click', () => shareToWhatsAppStart());
+        if (shareLinkStart) shareLinkStart.addEventListener('click', () => copyShareLinkStart());
+    } else {
+        // Для английской версии
+        const shareFacebookStart = document.getElementById('shareFacebookStart');
+        const shareTwitterStart = document.getElementById('shareTwitterStart');
+        const shareWhatsAppStart = document.getElementById('shareWhatsAppStart');
+        const shareLinkStart = document.getElementById('shareLinkStart');
+        const shareTelegramStart = document.getElementById('shareTelegramStart');
+        
+        if (shareFacebookStart) shareFacebookStart.addEventListener('click', () => shareToFacebookStart());
+        if (shareTwitterStart) shareTwitterStart.addEventListener('click', () => shareToTwitterStart());
+        if (shareWhatsAppStart) shareWhatsAppStart.addEventListener('click', () => shareToWhatsAppStart());
+        if (shareLinkStart) shareLinkStart.addEventListener('click', () => copyShareLinkStart());
+        if (shareTelegramStart) shareTelegramStart.addEventListener('click', () => shareToTelegramStart());
+    }
 }
 
 function getStartPageShareText() {
-    return 'Пройди быстрый IQ тест онлайн бесплатно! Узнай свой примерный уровень интеллекта за 2-3 минуты: ';
+    return t('ui.shareStartText');
 }
 
 function getStartPageShareUrl() {
@@ -544,6 +753,18 @@ function shareToWhatsAppStart() {
     const url = getStartPageShareUrl();
     const text = getStartPageShareText() + url;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+}
+
+function shareToFacebookStart() {
+    const url = getStartPageShareUrl();
+    const text = getStartPageShareText() + url;
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`, '_blank', 'width=600,height=400');
+}
+
+function shareToTwitterStart() {
+    const url = getStartPageShareUrl();
+    const text = getStartPageShareText() + url;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
 }
 
 function copyShareLinkStart() {
@@ -569,6 +790,7 @@ function copyShareLinkStart() {
 function showShareSuccessStart() {
     const shareSuccess = document.getElementById('shareSuccessStart');
     if (shareSuccess) {
+        shareSuccess.textContent = t('ui.linkCopied');
         shareSuccess.style.display = 'block';
         setTimeout(() => {
             shareSuccess.style.display = 'none';
@@ -578,7 +800,7 @@ function showShareSuccessStart() {
 
 function addToBookmarks() {
     const url = window.location.href;
-    const title = 'IQ Тест Онлайн - Быстрый тест IQ за 2-3 минуты';
+    const title = currentLang === 'en' ? 'IQ Test Online - Quick IQ Test in 2-3 minutes' : 'IQ Тест Онлайн - Быстрый тест IQ за 2-3 минуты';
     
     // Проверяем поддержку API закладок
     if (window.sidebar && window.sidebar.addPanel) {
@@ -602,7 +824,7 @@ function addToBookmarks() {
         // Показываем инструкцию
         const bookmarkSuccess = document.getElementById('bookmarkSuccess');
         if (bookmarkSuccess) {
-            bookmarkSuccess.innerHTML = 'Нажмите Ctrl+D (или Cmd+D на Mac) для добавления в закладки';
+            bookmarkSuccess.innerHTML = t('ui.bookmarkInstruction');
             bookmarkSuccess.style.display = 'block';
             setTimeout(() => {
                 bookmarkSuccess.style.display = 'none';
@@ -614,7 +836,7 @@ function addToBookmarks() {
 function showBookmarkSuccess() {
     const bookmarkSuccess = document.getElementById('bookmarkSuccess');
     if (bookmarkSuccess) {
-        bookmarkSuccess.innerHTML = '✅ Добавлено в закладки!';
+        bookmarkSuccess.innerHTML = t('ui.bookmarkAdded');
         bookmarkSuccess.style.display = 'block';
         setTimeout(() => {
             bookmarkSuccess.style.display = 'none';
@@ -689,14 +911,14 @@ async function handleStartPageFormSubmit(e) {
         
         if (result.success) {
             // Показываем алерт пользователю
-            alert(`Спасибо, ${userName}! Мы получили ваш email и отправим вам все варианты тестов.`);
+            alert(t('ui.thanksName', { name: userName }));
             
             // Показываем успешное сообщение
             document.getElementById('contactFormStart').style.display = 'none';
             document.getElementById('ctaSuccessStart').style.display = 'block';
         } else {
             console.error('Ошибка отправки:', result.error);
-            alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+            alert(t('ui.errorSending'));
             
             // Все равно показываем успех
             document.getElementById('contactFormStart').style.display = 'none';
@@ -704,7 +926,7 @@ async function handleStartPageFormSubmit(e) {
         }
     } catch (error) {
         console.error('Ошибка отправки на Worker:', error);
-        alert('Произошла ошибка при отправке. Данные сохранены локально. Попробуйте позже.');
+        alert(t('ui.errorSending'));
         
         // Все равно показываем успех
         document.getElementById('contactFormStart').style.display = 'none';
@@ -722,9 +944,9 @@ function toggleWarning() {
         const toggleText = warningBox.querySelector('.toggle-text');
         if (toggleText) {
             if (warningBox.classList.contains('collapsed')) {
-                toggleText.textContent = 'Развернуть';
+                toggleText.textContent = t('ui.expand');
             } else {
-                toggleText.textContent = 'Свернуть';
+                toggleText.textContent = t('ui.collapse');
             }
         }
     }
@@ -743,5 +965,6 @@ window.toggleWarning = toggleWarning;
 })();
 
 // Вызываем при загрузке
+init();
 checkUrlParams();
 

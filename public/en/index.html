@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQ Test Online - Quick IQ Test in 2-3 Minutes | Free</title>
+    <meta name="description" content="Take a free online IQ test. 7 questions in 2-3 minutes. Find out your approximate IQ level with result and range. Free intelligence test without registration.">
+    <meta name="keywords" content="iq test, online iq test, quick iq test, intelligence test, free iq test, check iq">
+    
+    <!-- hreflang для SEO -->
+    <link rel="alternate" hreflang="ru" href="https://iqtest-1id.pages.dev/ru/index.html">
+    <link rel="alternate" hreflang="en" href="https://iqtest-1id.pages.dev/en/index.html">
+    <link rel="alternate" hreflang="x-default" href="https://iqtest-1id.pages.dev/ru/index.html">
+    <link rel="canonical" href="https://iqtest-1id.pages.dev/en/index.html">
+    
+    <!-- Переключатель языков -->
+    <style>
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+        .lang-switcher a {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+        .lang-switcher a.active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        .lang-switcher a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+    
+    <link rel="stylesheet" href="../style.css">
+    
+    <!-- Microsoft Clarity -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "u96eyi524z");
+    </script>
+</head>
+<body>
+    <nav class="lang-switcher">
+        <a href="../ru/index.html">RU</a>
+        <a href="../en/index.html" class="active">EN</a>
+    </nav>
+    
+    <div class="container">
+        <div class="welcome-screen" id="welcomeScreen">
+            <h1>🧠 Quick IQ Test Online</h1>
+            <p class="subtitle">Approximate IQ assessment in 2-3 min.</p>
+            
+            <div class="info-box">
+                <ul>
+                    <li>✅ 7 logic questions for IQ</li>
+                    <li>⏱️ 2-3 minutes to complete</li>
+                    <li>📊 IQ range assessment</li>
+                    <li>🎯 Free, no registration</li>
+                </ul>
+            </div>
+
+            <div class="warning-box collapsed" id="warningBox">
+                <div class="warning-content">
+                    <p><strong>Important:</strong> This is a simplified IQ test for quick assessment. For more accurate IQ determination, longer tests with more questions conducted by specialists are usually used.</p>
+                    <p style="margin-top: 10px; font-size: 0.85em;"><strong>Disclaimer:</strong> This online IQ test is not an official or standardized IQ test (such as WAIS, Stanford-Binet, Raven). Results are for informational purposes only and cannot be used for official intelligence assessment.</p>
+                </div>
+                <button class="warning-toggle" id="warningToggle" onclick="toggleWarning()">
+                    <span class="toggle-text">Expand</span>
+                    <span class="toggle-icon">▼</span>
+                </button>
+            </div>
+
+            <button class="btn-primary" id="startBtn">Start Test</button>
+            
+            <!-- Форма сбора контактов на главной странице -->
+            <div class="cta-box-start" id="ctaBoxStart">
+                <div class="cta-icon">🎯</div>
+                <h3>Want to get extended IQ tests?</h3>
+                <p class="cta-text">
+                    Leave your contact, and we will send you all free options of extended intelligence tests (15-60 minutes) 
+                    and special tests for children by email.
+                </p>
+                
+                <form id="contactFormStart" class="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="userNameStart" placeholder="Your name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="userEmailStart" placeholder="Your email" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-checkboxes">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="extendedTestStart" checked>
+                            <span>Extended Tests (15-60 minutes)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="kidsTestStart">
+                            <span>Tests for Children</span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary btn-cta">
+                        Get Free Tests
+                    </button>
+                    <p class="form-note">We don't spam. We'll only send useful materials.</p>
+                </form>
+                
+                <div class="cta-success" id="ctaSuccessStart" style="display: none;">
+                    <div class="success-icon">✅</div>
+                    <h3>Thank you!</h3>
+                    <p>We will send you all free test options to the specified email.</p>
+                </div>
+            </div>
+            
+            <!-- Поделиться и закладки на стартовой странице -->
+            <div class="share-box-start" id="shareBoxStart">
+                <div class="share-buttons-start">
+                    <button class="btn-share-start btn-share-facebook" id="shareFacebookStart">
+                        <span>Facebook</span>
+                    </button>
+                    <button class="btn-share-start btn-share-twitter" id="shareTwitterStart">
+                        <span>Twitter</span>
+                    </button>
+                    <button class="btn-share-start btn-share-whatsapp" id="shareWhatsAppStart">
+                        <span>WhatsApp</span>
+                    </button>
+                    <button class="btn-share-start btn-share-link" id="shareLinkStart">
+                        <span>📋 Copy Link</span>
+                    </button>
+                    <button class="btn-share-start btn-share-telegram" id="shareTelegramStart">
+                        <span>Telegram</span>
+                    </button>
+                    <button class="btn-share-start btn-share-bookmark" id="bookmarkBtn">
+                        <span>⭐ Bookmark</span>
+                    </button>
+                </div>
+                <div class="share-success-start" id="shareSuccessStart" style="display: none;">
+                    ✅ Link copied!
+                </div>
+                <div class="bookmark-success" id="bookmarkSuccess" style="display: none;">
+                    ✅ Added to bookmarks!
+                </div>
+            </div>
+            
+            <div class="full-test-link">
+                <a href="full-tests.html">Extended IQ Tests (15-60 minutes) and IQ Tests for Children →</a>
+            </div>
+        </div>
+
+        <div class="test-screen" id="testScreen" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-counter">
+                Question <span id="currentQuestion">1</span> of <span id="totalQuestions">7</span>
+            </div>
+
+            <div class="question-container">
+                <div class="question" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <button class="btn-primary" id="nextBtn" style="display: none;">Next Question</button>
+        </div>
+
+        <div class="result-screen" id="resultScreen" style="display: none;">
+            <h1>🎉 Test Complete!</h1>
+            <div class="result-box">
+                <div class="iq-value" id="iqValue"></div>
+                <div class="iq-range" id="iqRange"></div>
+                <div class="iq-description" id="iqDescription"></div>
+            </div>
+            
+            <!-- Отправить результаты на email -->
+            <div class="send-results-box" id="sendResultsBox">
+                <h3>📧 Send Results to Email</h3>
+                <p class="send-results-text">Get your test results by email</p>
+                <form id="sendResultsForm" class="send-results-form">
+                    <div class="form-group">
+                        <input type="text" id="sendResultsName" placeholder="Your name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="sendResultsEmail" placeholder="Your email" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn-primary btn-send-results">
+                        Send Results to Email
+                    </button>
+                </form>
+                <div class="send-results-success" id="sendResultsSuccess" style="display: none;">
+                    <div class="success-icon">✅</div>
+                    <p>Results will be sent to your email soon.</p>
+                </div>
+            </div>
+            
+            <!-- Поделиться результатами -->
+            <div class="share-box" id="shareBox">
+                <h3>Share Your Result</h3>
+                <p class="share-text">Compare your result with friends!</p>
+                <div class="share-buttons">
+                    <button class="btn-share btn-share-facebook" id="shareFacebook">
+                        <span>Facebook</span>
+                    </button>
+                    <button class="btn-share btn-share-twitter" id="shareTwitter">
+                        <span>Twitter</span>
+                    </button>
+                    <button class="btn-share btn-share-whatsapp" id="shareWhatsApp">
+                        <span>WhatsApp</span>
+                    </button>
+                    <button class="btn-share btn-share-link" id="shareLink">
+                        <span>📋 Copy Link</span>
+                    </button>
+                    <button class="btn-share btn-share-telegram" id="shareTelegram">
+                        <span>Telegram</span>
+                    </button>
+                </div>
+                <div class="share-success" id="shareSuccess" style="display: none;">
+                    ✅ Link copied!
+                </div>
+            </div>
+            
+            <!-- Форма сбора контактов -->
+            <div class="cta-box" id="ctaBox">
+                <div class="cta-icon">🎯</div>
+                <h3>Want to know your IQ more accurately?</h3>
+                <p class="cta-text">
+                    Get free access to extended IQ tests (15-60 minutes) 
+                    and special IQ tests for children. We will send you all options by email.
+                </p>
+                
+                <form id="contactForm" class="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="userName" placeholder="Your name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="userEmail" placeholder="Your email" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-checkboxes">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="extendedTest" checked>
+                            <span>Extended Tests (15-60 minutes)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="kidsTest">
+                            <span>Tests for Children</span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary btn-cta">
+                        Get Free Tests
+                    </button>
+                    <p class="form-note">We don't spam. We'll only send useful materials.</p>
+                </form>
+                
+                <div class="cta-success" id="ctaSuccess" style="display: none;">
+                    <div class="success-icon">✅</div>
+                    <h3>Thank you!</h3>
+                    <p>We will send you all free test options to the specified email.</p>
+                    <p id="emailResultsNote" style="margin-top: 10px; font-size: 0.9em; color: #666;"></p>
+                </div>
+            </div>
+            
+            <button class="btn-secondary" id="restartBtn">Take Test Again</button>
+        </div>
+    </div>
+
+    <script src="../translations.js"></script>
+    <script>
+        // Устанавливаем язык на английский
+        if (typeof setLanguage === 'function') {
+            setLanguage('en');
+        }
+    </script>
+    <script src="../script.js"></script>
+</body>
+</html>
+

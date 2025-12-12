@@ -6,30 +6,124 @@
     <title>IQ Тест Онлайн - Быстрый тест IQ за 2-3 минуты | Бесплатно</title>
     <meta name="description" content="Пройдите быстрый IQ тест онлайн бесплатно. 7 вопросов за 2-3 минуты. Узнайте примерный уровень вашего IQ с результатом и диапазоном. Бесплатный тест интеллекта без регистрации.">
     <meta name="keywords" content="iq тест, тест iq онлайн, быстрый iq тест, тест интеллекта, бесплатный iq тест, проверить iq">
-    <link rel="stylesheet" href="style.css">
+    
+    <!-- hreflang для SEO -->
+    <link rel="alternate" hreflang="ru" href="https://iqtest-1id.pages.dev/ru/index.html">
+    <link rel="alternate" hreflang="en" href="https://iqtest-1id.pages.dev/en/index.html">
+    <link rel="alternate" hreflang="x-default" href="https://iqtest-1id.pages.dev/ru/index.html">
+    <link rel="canonical" href="https://iqtest-1id.pages.dev/ru/index.html">
+    
+    <!-- Переключатель языков -->
+    <style>
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+        .lang-switcher a {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+        .lang-switcher a.active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        .lang-switcher a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+    
+    <link rel="stylesheet" href="../style.css">
+    
+    <!-- Microsoft Clarity -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "u96eyi524z");
+    </script>
 </head>
 <body>
+    <nav class="lang-switcher">
+        <a href="../ru/index.html" class="active">RU</a>
+        <a href="../en/index.html">EN</a>
+    </nav>
+    
     <div class="container">
         <div class="welcome-screen" id="welcomeScreen">
             <h1>🧠 Быстрый IQ Тест Онлайн</h1>
-            <p class="subtitle">Примерная оценка вашего IQ за 2-3 минуты</p>
+            <p class="subtitle">Примерная оценка IQ за 2-3 мин.</p>
             
             <div class="info-box">
-                <h2>Что вас ждет в этом IQ тесте:</h2>
                 <ul>
-                    <li>✅ 7 логических задач для оценки IQ</li>
-                    <li>⏱️ 2-3 минуты на прохождение теста</li>
-                    <li>📊 Примерный результат IQ с диапазоном</li>
-                    <li>🎯 Бесплатный IQ тест без регистрации</li>
+                    <li>✅ 7 логических задач для IQ</li>
+                    <li>⏱️ 2-3 минуты на прохождение</li>
+                    <li>📊 Оценка диапазона IQ</li>
+                    <li>🎯 Бесплатно, без регистрации</li>
                 </ul>
             </div>
 
-            <div class="warning-box">
-                <p><strong>Важно:</strong> Это упрощенный IQ тест для быстрой оценки. Для более точного определения IQ обычно используются более длительные тесты с большим количеством вопросов, проводимые специалистами.</p>
-                <p style="margin-top: 10px; font-size: 0.85em;"><strong>Дисклеймер:</strong> Данный онлайн IQ тест не является официальным или стандартизированным тестом IQ (таким как WAIS, Stanford-Binet, Raven). Результаты носят ознакомительный характер и не могут использоваться для официальной оценки интеллекта.</p>
+            <div class="warning-box collapsed" id="warningBox">
+                <div class="warning-content">
+                    <p><strong>Важно:</strong> Это упрощенный IQ тест для быстрой оценки. Для более точного определения IQ обычно используются более длительные тесты с большим количеством вопросов, проводимые специалистами.</p>
+                    <p style="margin-top: 10px; font-size: 0.85em;"><strong>Дисклеймер:</strong> Данный онлайн IQ тест не является официальным или стандартизированным тестом IQ (таким как WAIS, Stanford-Binet, Raven). Результаты носят ознакомительный характер и не могут использоваться для официальной оценки интеллекта.</p>
+                </div>
+                <button class="warning-toggle" id="warningToggle" onclick="toggleWarning()">
+                    <span class="toggle-text">Развернуть</span>
+                    <span class="toggle-icon">▼</span>
+                </button>
             </div>
 
             <button class="btn-primary" id="startBtn">Начать тест</button>
+            
+            <!-- Форма сбора контактов на главной странице -->
+            <div class="cta-box-start" id="ctaBoxStart">
+                <div class="cta-icon">🎯</div>
+                <h3>Хотите получить расширенные IQ тесты?</h3>
+                <p class="cta-text">
+                    Оставьте контакт, и мы отправим вам все бесплатные варианты расширенных тестов интеллекта (15-60 минут) 
+                    и специальных тестов для детей на email.
+                </p>
+                
+                <form id="contactFormStart" class="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="userNameStart" placeholder="Ваше имя" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="userEmailStart" placeholder="Ваш email" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-checkboxes">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="extendedTestStart" checked>
+                            <span>Расширенные тесты (15-60 минут)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="kidsTestStart">
+                            <span>Тесты для детей</span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary btn-cta">
+                        Получить бесплатные тесты
+                    </button>
+                    <p class="form-note">Мы не спамим. Отправим только полезные материалы.</p>
+                </form>
+                
+                <div class="cta-success" id="ctaSuccessStart" style="display: none;">
+                    <div class="success-icon">✅</div>
+                    <h3>Спасибо!</h3>
+                    <p>Мы отправим вам все бесплатные варианты тестов на указанный email.</p>
+                </div>
+            </div>
             
             <!-- Поделиться и закладки на стартовой странице -->
             <div class="share-box-start" id="shareBoxStart">
@@ -87,6 +181,27 @@
                 <div class="iq-description" id="iqDescription"></div>
             </div>
             
+            <!-- Отправить результаты на email -->
+            <div class="send-results-box" id="sendResultsBox">
+                <h3>📧 Отправить результаты на email</h3>
+                <p class="send-results-text">Получите результаты теста на свою почту</p>
+                <form id="sendResultsForm" class="send-results-form">
+                    <div class="form-group">
+                        <input type="text" id="sendResultsName" placeholder="Ваше имя" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="sendResultsEmail" placeholder="Ваш email" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn-primary btn-send-results">
+                        Отправить результаты на email
+                    </button>
+                </form>
+                <div class="send-results-success" id="sendResultsSuccess" style="display: none;">
+                    <div class="success-icon">✅</div>
+                    <p>Результаты будут скоро отправлены на email.</p>
+                </div>
+            </div>
+            
             <!-- Поделиться результатами -->
             <div class="share-box" id="shareBox">
                 <h3>Поделитесь результатом</h3>
@@ -136,10 +251,6 @@
                             <input type="checkbox" id="kidsTest">
                             <span>Тесты для детей</span>
                         </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="sendResults" checked>
-                            <span>Отправить результаты теста на email</span>
-                        </label>
                     </div>
                     
                     <button type="submit" class="btn-primary btn-cta">
@@ -160,7 +271,14 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="../translations.js"></script>
+    <script>
+        // Устанавливаем язык на русский
+        if (typeof setLanguage === 'function') {
+            setLanguage('ru');
+        }
+    </script>
+    <script src="../script.js"></script>
 </body>
 </html>
 

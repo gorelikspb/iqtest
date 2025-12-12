@@ -566,6 +566,24 @@ h1 {
     transform: translateY(-2px);
 }
 
+.btn-share-facebook {
+    background: #1877F2;
+}
+
+.btn-share-facebook:hover {
+    background: #166fe5;
+    transform: translateY(-2px);
+}
+
+.btn-share-twitter {
+    background: #1DA1F2;
+}
+
+.btn-share-twitter:hover {
+    background: #1a91da;
+    transform: translateY(-2px);
+}
+
 .btn-share-link {
     background: #667eea;
 }
@@ -663,6 +681,24 @@ h1 {
 
 .btn-share-start.btn-share-whatsapp:hover {
     background: #1da851;
+    transform: translateY(-2px);
+}
+
+.btn-share-start.btn-share-facebook {
+    background: #1877F2;
+}
+
+.btn-share-start.btn-share-facebook:hover {
+    background: #166fe5;
+    transform: translateY(-2px);
+}
+
+.btn-share-start.btn-share-twitter {
+    background: #1DA1F2;
+}
+
+.btn-share-start.btn-share-twitter:hover {
+    background: #1a91da;
     transform: translateY(-2px);
 }
 
