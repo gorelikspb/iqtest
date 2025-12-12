@@ -272,16 +272,25 @@ function initEventListeners() {
 const WORKER_URL = 'https://iqtestemails.gorelikgo.workers.dev';
 
 // Обработчик формы (добавляем один раз)
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-    contactForm.addEventListener('submit', handleFormSubmit);
+function initContactForm() {
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', handleFormSubmit);
+    }
 }
 
-// Инициализация кнопок поделиться на стартовой странице
-initStartPageShareButtons();
+// Инициализация всех обработчиков после загрузки DOM
+function initAllHandlers() {
+    initContactForm();
+    initStartPageShareButtons();
+    initStartPageContactForm();
+}
 
-// Инициализация формы на стартовой странице
-initStartPageContactForm();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAllHandlers);
+} else {
+    initAllHandlers();
+}
 
 function startTest() {
     welcomeScreen.style.display = 'none';
