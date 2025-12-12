@@ -255,9 +255,18 @@ function init() {
     }
 }
 
-startBtn.addEventListener('click', startTest);
-nextBtn.addEventListener('click', nextQuestion);
-restartBtn.addEventListener('click', restartTest);
+// Привязываем обработчики событий после загрузки DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEventListeners);
+} else {
+    initEventListeners();
+}
+
+function initEventListeners() {
+    if (startBtn) startBtn.addEventListener('click', startTest);
+    if (nextBtn) nextBtn.addEventListener('click', nextQuestion);
+    if (restartBtn) restartBtn.addEventListener('click', restartTest);
+}
 
 // Worker URL для отправки email
 const WORKER_URL = 'https://iqtestemails.gorelikgo.workers.dev';
