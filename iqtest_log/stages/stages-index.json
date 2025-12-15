@@ -8,6 +8,14 @@
     "screenshots": {
       "ru": ["01-welcome-screen.png", "02-test-question.png", "03-result-screen.png", "04-share-buttons.png", "05-contact-form.png", "06-full-tests-page.png"]
     }
+  },
+  {
+    "id": "02",
+    "file": "02-fix-sharing-buttons.md",
+    "date": "2025-01-27",
+    "title": "Исправление кнопок шаринга и инициализации",
+    "published": false,
+    "screenshots": {}
   }
 ]
 

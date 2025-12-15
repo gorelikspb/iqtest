@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://iqtest-1id.pages.dev/sitemap.xml
+

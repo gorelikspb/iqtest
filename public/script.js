@@ -689,7 +689,18 @@ function getShareText() {
 }
 
 function getShareUrl() {
-    const baseUrl = window.location.origin + window.location.pathname;
+    // Используем продакшн URL вместо локального file://
+    const productionUrl = 'https://iqtest-1id.pages.dev';
+    const isLocal = window.location.protocol === 'file:';
+    
+    let baseUrl;
+    if (isLocal) {
+        // Для локальной разработки используем продакшн URL
+        baseUrl = productionUrl + '/ru/index.html';
+    } else {
+        baseUrl = window.location.origin + window.location.pathname;
+    }
+    
     const params = new URLSearchParams({
         iq: iqResult.estimated,
         min: iqResult.min,
@@ -720,13 +731,13 @@ function shareToWhatsApp() {
 
 function shareToFacebook() {
     const url = getShareUrl();
-    const text = getShareText() + url;
+    const text = getShareText(); // URL не добавляем в quote, Facebook добавит его сам из параметра u
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`, '_blank', 'width=600,height=400');
 }
 
 function shareToTwitter() {
     const url = getShareUrl();
-    const text = getShareText() + url;
+    const text = getShareText(); // URL не добавляем в текст, Twitter добавит его сам из параметра url
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
 }
 
@@ -875,6 +886,17 @@ function getStartPageShareText() {
 }
 
 function getStartPageShareUrl() {
+    // Используем продакшн URL вместо локального file://
+    const productionUrl = 'https://iqtest-1id.pages.dev';
+    const isLocal = window.location.protocol === 'file:';
+    
+    if (isLocal) {
+        // Для локальной разработки определяем язык из пути
+        const path = window.location.pathname;
+        const lang = path.includes('/en/') ? 'en' : 'ru';
+        return `${productionUrl}/${lang}/index.html`;
+    }
+    
     return window.location.href;
 }
 
@@ -898,13 +920,13 @@ function shareToWhatsAppStart() {
 
 function shareToFacebookStart() {
     const url = getStartPageShareUrl();
-    const text = getStartPageShareText() + url;
+    const text = getStartPageShareText(); // URL не добавляем в quote, Facebook добавит его сам из параметра u
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`, '_blank', 'width=600,height=400');
 }
 
 function shareToTwitterStart() {
     const url = getStartPageShareUrl();
-    const text = getStartPageShareText() + url;
+    const text = getStartPageShareText(); // URL не добавляем в текст, Twitter добавит его сам из параметра url
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
 }
 
