@@ -1,85 +1,17 @@
 // Вопросы теста (загружаются из translations.js)
 let questions = [];
-    {
-        type: 'analogy',
-        question: 'Выберите слово, которое логически завершает аналогию:',
-        data: 'Книга : Страница = Дом : ?',
-        options: ['Комната', 'Крыша', 'Дверь', 'Окно'],
-        correct: 0, // Комната
-        explanation: 'Книга состоит из страниц, дом состоит из комнат'
-    },
-    {
-        type: 'logic',
-        question: 'Если все розы - цветы, и некоторые цветы быстро вянут, то:',
-        data: '',
-        options: [
-            'Все розы быстро вянут',
-            'Некоторые розы быстро вянут',
-            'Никакие розы не вянут',
-            'Нельзя определить'
-        ],
-        correct: 1,
-        explanation: 'Если некоторые цветы вянут, и розы - цветы, то некоторые розы могут вянуть'
-    },
-    {
-        type: 'sequence',
-        question: 'Найдите закономерность и выберите следующее число:',
-        data: '1, 4, 9, 16, ?',
-        options: ['20', '25', '24', '23'],
-        correct: 1, // 25
-        explanation: 'Это квадраты чисел: 1², 2², 3², 4², 5²'
-    },
-    {
-        type: 'pattern',
-        question: 'Какая фигура должна быть следующей?',
-        data: '▲ ▼ ▲ ▼ ?',
-        options: ['▲', '▼', '●', '■'],
-        correct: 0, // ▲
-        explanation: 'Чередование треугольников: вверх, вниз, вверх, вниз...'
-    },
-    {
-        type: 'math',
-        question: 'Решите: Если 3x + 5 = 20, то x = ?',
-        data: '',
-        options: ['3', '4', '5', '6'],
-        correct: 2, // 5
-        explanation: '3x = 20 - 5 = 15, значит x = 5'
-    },
-    {
-        type: 'logic',
-        question: 'Все кошки - животные. Некоторые животные спят. Значит:',
-        data: '',
-        options: [
-            'Все кошки спят',
-            'Некоторые кошки могут спать',
-            'Никакие кошки не спят',
-            'Нельзя определить'
-        ],
-        correct: 1,
-        explanation: 'Если некоторые животные спят, и кошки - животные, то некоторые кошки могут спать'
-    }
-];
 
 let currentQuestionIndex = 0;
 let score = 0;
 let selectedAnswer = null;
 let iqResult = null; // Сохраняем результат для поделиться
 
-const welcomeScreen = document.getElementById('welcomeScreen');
-const testScreen = document.getElementById('testScreen');
-const resultScreen = document.getElementById('resultScreen');
-const startBtn = document.getElementById('startBtn');
-const nextBtn = document.getElementById('nextBtn');
-const restartBtn = document.getElementById('restartBtn');
-const questionText = document.getElementById('questionText');
-const optionsContainer = document.getElementById('optionsContainer');
-const progressFill = document.getElementById('progressFill');
-const currentQuestionSpan = document.getElementById('currentQuestion');
-const totalQuestionsSpan = document.getElementById('totalQuestions');
+// Элементы будут получены после загрузки DOM
+let welcomeScreen, testScreen, resultScreen, startBtn, nextBtn, restartBtn;
+let questionText, optionsContainer, progressFill, currentQuestionSpan, totalQuestionsSpan;
 
-// Инициализация языка и переводов
-let currentLang = getCurrentLanguage();
-questions = getQuestions();
+// Инициализация языка и переводов (будет установлена в init())
+let currentLang = 'ru';
 
 // Применяем переводы к интерфейсу
 function applyTranslations() {
@@ -89,15 +21,21 @@ function applyTranslations() {
     // Обновляем lang атрибут HTML
     document.documentElement.lang = currentLang;
     
-    // Обновляем meta теги
+    // Обновляем meta теги (если они есть в HTML)
+    const pageTitle = document.getElementById('pageTitle');
+    const pageDescription = document.querySelector('meta[name="description"]');
+    const pageKeywords = document.querySelector('meta[name="keywords"]');
+    
     if (currentLang === 'en') {
-        document.getElementById('pageTitle').textContent = 'IQ Test Online - Quick IQ Test in 2-3 minutes | Free';
-        document.getElementById('pageDescription').content = 'Take a quick free online IQ test. 7 questions in 2-3 minutes. Find out your approximate IQ level with result and range. Free intelligence test without registration.';
-        document.getElementById('pageKeywords').content = 'iq test, online iq test, quick iq test, intelligence test, free iq test, check iq';
+        if (pageTitle) pageTitle.textContent = 'IQ Test Online - Quick IQ Test in 2-3 minutes | Free';
+        else if (document.title) document.title = 'IQ Test Online - Quick IQ Test in 2-3 minutes | Free';
+        if (pageDescription) pageDescription.setAttribute('content', 'Take a quick free online IQ test. 7 questions in 2-3 minutes. Find out your approximate IQ level with result and range. Free intelligence test without registration.');
+        if (pageKeywords) pageKeywords.setAttribute('content', 'iq test, online iq test, quick iq test, intelligence test, free iq test, check iq');
     } else {
-        document.getElementById('pageTitle').textContent = 'IQ Тест Онлайн - Быстрый тест IQ за 2-3 минуты | Бесплатно';
-        document.getElementById('pageDescription').content = 'Пройдите быстрый IQ тест онлайн бесплатно. 7 вопросов за 2-3 минуты. Узнайте примерный уровень вашего IQ с результатом и диапазоном. Бесплатный тест интеллекта без регистрации.';
-        document.getElementById('pageKeywords').content = 'iq тест, тест iq онлайн, быстрый iq тест, тест интеллекта, бесплатный iq тест, проверить iq';
+        if (pageTitle) pageTitle.textContent = 'IQ Тест Онлайн - Быстрый тест IQ за 2-3 минуты | Бесплатно';
+        else if (document.title) document.title = 'IQ Тест Онлайн - Быстрый тест IQ за 2-3 минуты | Бесплатно';
+        if (pageDescription) pageDescription.setAttribute('content', 'Пройдите быстрый IQ тест онлайн бесплатно. 7 вопросов за 2-3 минуты. Узнайте примерный уровень вашего IQ с результатом и диапазоном. Бесплатный тест интеллекта без регистрации.');
+        if (pageKeywords) pageKeywords.setAttribute('content', 'iq тест, тест iq онлайн, быстрый iq тест, тест интеллекта, бесплатный iq тест, проверить iq');
     }
     
     // Обновляем HTML элементы
@@ -243,56 +181,152 @@ function updateResultScreenTranslations() {
 }
 
 // Инициализация
-function init() {
-    applyTranslations();
-    totalQuestionsSpan.textContent = questions.length;
-    
-    // Обновляем счетчик вопросов
-    const questionCounter = document.querySelector('.question-counter');
-    if (questionCounter) {
-        const parts = questionCounter.textContent.split(' ');
-        questionCounter.innerHTML = `${t('ui.questionCounter')} <span id="currentQuestion">1</span> ${t('ui.questionOf')} <span id="totalQuestions">${questions.length}</span>`;
-    }
-}
-
-// Привязываем обработчики событий после загрузки DOM
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initEventListeners);
-} else {
-    initEventListeners();
-}
-
-function initEventListeners() {
-    if (startBtn) startBtn.addEventListener('click', startTest);
-    if (nextBtn) nextBtn.addEventListener('click', nextQuestion);
-    if (restartBtn) restartBtn.addEventListener('click', restartTest);
-}
-
 // Worker URL для отправки email
 const WORKER_URL = 'https://iqtestemails.gorelikgo.workers.dev';
 
-// Обработчик формы (добавляем один раз)
-function initContactForm() {
+// Главная функция инициализации - вызывается после загрузки DOM
+function init() {
+    console.log('🚀 Начало инициализации...');
+    
+    // Инициализируем язык и вопросы (после загрузки translations.js)
+    try {
+        currentLang = getCurrentLanguage();
+        questions = getQuestions();
+        console.log(`✅ Язык: ${currentLang}, Вопросов: ${questions.length}`);
+    } catch (error) {
+        console.error('❌ Ошибка загрузки переводов:', error);
+        // Fallback на русский
+        currentLang = 'ru';
+        questions = [];
+    }
+    
+    // Сначала получаем все элементы
+    welcomeScreen = document.getElementById('welcomeScreen');
+    testScreen = document.getElementById('testScreen');
+    resultScreen = document.getElementById('resultScreen');
+    startBtn = document.getElementById('startBtn');
+    nextBtn = document.getElementById('nextBtn');
+    restartBtn = document.getElementById('restartBtn');
+    questionText = document.getElementById('questionText');
+    optionsContainer = document.getElementById('optionsContainer');
+    progressFill = document.getElementById('progressFill');
+    currentQuestionSpan = document.getElementById('currentQuestion');
+    totalQuestionsSpan = document.getElementById('totalQuestions');
+    
+    console.log('📋 Элементы найдены:', {
+        welcomeScreen: !!welcomeScreen,
+        testScreen: !!testScreen,
+        resultScreen: !!resultScreen,
+        startBtn: !!startBtn,
+        nextBtn: !!nextBtn,
+        restartBtn: !!restartBtn
+    });
+    
+    // Применяем переводы
+    applyTranslations();
+    
+    // Инициализируем счетчик вопросов
+    if (totalQuestionsSpan) {
+        totalQuestionsSpan.textContent = questions.length;
+    }
+    
+    // Обновляем счетчик вопросов в HTML
+    const questionCounter = document.querySelector('.question-counter');
+    if (questionCounter) {
+        questionCounter.innerHTML = `${t('ui.questionCounter')} <span id="currentQuestion">1</span> ${t('ui.questionOf')} <span id="totalQuestions">${questions.length}</span>`;
+        // Обновляем ссылки после изменения HTML
+        currentQuestionSpan = document.getElementById('currentQuestion');
+        totalQuestionsSpan = document.getElementById('totalQuestions');
+    }
+    
+    // Привязываем обработчики кнопок
+    if (startBtn) {
+        // Удаляем старый обработчик, если есть
+        startBtn.removeEventListener('click', startTest);
+        startBtn.addEventListener('click', function(e) {
+            console.log('🔵 startBtn кликнут!');
+            e.preventDefault();
+            startTest();
+        });
+        console.log('✅ startBtn инициализирован, функция startTest:', typeof startTest);
+    } else {
+        console.error('❌ startBtn не найден!');
+    }
+    if (nextBtn) {
+        nextBtn.removeEventListener('click', nextQuestion);
+        nextBtn.addEventListener('click', function(e) {
+            console.log('🔵 nextBtn кликнут!');
+            e.preventDefault();
+            nextQuestion();
+        });
+        console.log('✅ nextBtn инициализирован');
+    }
+    if (restartBtn) {
+        restartBtn.removeEventListener('click', restartTest);
+        restartBtn.addEventListener('click', function(e) {
+            console.log('🔵 restartBtn кликнут!');
+            e.preventDefault();
+            restartTest();
+        });
+        console.log('✅ restartBtn инициализирован');
+    }
+    
+    // Инициализируем формы
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
-        contactForm.addEventListener('submit', handleFormSubmit);
+        contactForm.addEventListener('submit', function(e) {
+            console.log('🔵 contactForm отправлена!');
+            handleFormSubmit(e);
+        });
+        console.log('✅ contactForm инициализирован');
+    } else {
+        console.warn('⚠️ contactForm не найден (это нормально, если мы на стартовой странице)');
     }
+
+    // Инициализируем кнопки шаринга
+initStartPageShareButtons();
+initStartPageContactForm();
+    
+    // Проверяем URL параметры
+    checkUrlParams();
+    
+    console.log('✅ Инициализация завершена');
 }
 
-// Инициализация всех обработчиков после загрузки DOM
-function initAllHandlers() {
-    initContactForm();
-    initStartPageShareButtons();
-    initStartPageContactForm();
+// Флаг для предотвращения двойной инициализации
+let isInitialized = false;
+
+// Инициализация при загрузке DOM
+function doInit() {
+    if (isInitialized) {
+        console.warn('⚠️ Уже инициализировано, пропускаем');
+        return;
+    }
+    
+    console.log('🚀 Начинаем инициализацию...');
+    
+    // Проверяем, что translations.js загружен
+    if (typeof getCurrentLanguage === 'undefined' || typeof getQuestions === 'undefined') {
+        console.error('❌ translations.js не загружен!');
+        return;
+    }
+    
+    isInitialized = true;
+    init();
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAllHandlers);
+    document.addEventListener('DOMContentLoaded', doInit);
 } else {
-    initAllHandlers();
+    // DOM уже загружен
+    doInit();
 }
 
 function startTest() {
+    if (!welcomeScreen || !testScreen) {
+        console.error('❌ Элементы не инициализированы!');
+        return;
+    }
     welcomeScreen.style.display = 'none';
     testScreen.style.display = 'block';
     currentQuestionIndex = 0;
@@ -304,6 +338,11 @@ function startTest() {
 window.startTest = startTest;
 
 function showQuestion() {
+    if (!questionText || !optionsContainer || !currentQuestionSpan || !progressFill || !nextBtn) {
+        console.error('❌ Элементы не инициализированы в showQuestion!');
+        return;
+    }
+    
     const question = questions[currentQuestionIndex];
     selectedAnswer = null;
     
@@ -402,14 +441,22 @@ function calculateIQ(score, total) {
 // getIQDescription теперь используется из translations.js
 
 function showResult() {
+    if (!testScreen || !resultScreen) {
+        console.error('❌ Элементы не инициализированы в showResult!');
+        return;
+    }
     testScreen.style.display = 'none';
     resultScreen.style.display = 'block';
     
     iqResult = calculateIQ(score, questions.length);
     
-    document.getElementById('iqValue').textContent = `≈ ${iqResult.estimated}`;
-    document.getElementById('iqRange').textContent = `${t('ui.range')} ${iqResult.min} - ${iqResult.max}`;
-    document.getElementById('iqDescription').textContent = getIQDescription(iqResult.estimated);
+    const iqValueEl = document.getElementById('iqValue');
+    const iqRangeEl = document.getElementById('iqRange');
+    const iqDescriptionEl = document.getElementById('iqDescription');
+    
+    if (iqValueEl) iqValueEl.textContent = `≈ ${iqResult.estimated}`;
+    if (iqRangeEl) iqRangeEl.textContent = `${t('ui.range')} ${iqResult.min} - ${iqResult.max}`;
+    if (iqDescriptionEl) iqDescriptionEl.textContent = getIQDescription(iqResult.estimated);
     
     // Инициализируем кнопки поделиться
     initShareButtons();
@@ -592,6 +639,10 @@ async function handleSendResultsSubmit(e) {
 }
 
 function restartTest() {
+    if (!resultScreen || !welcomeScreen) {
+        console.error('❌ Элементы не инициализированы в restartTest!');
+        return;
+    }
     resultScreen.style.display = 'none';
     welcomeScreen.style.display = 'block';
     // Удаляем предупреждение, если оно было добавлено
@@ -607,15 +658,15 @@ function initShareButtons() {
     
     // Для русской версии
     if (currentLang === 'ru') {
-        const shareVK = document.getElementById('shareVK');
-        const shareTelegram = document.getElementById('shareTelegram');
-        const shareWhatsApp = document.getElementById('shareWhatsApp');
-        const shareLink = document.getElementById('shareLink');
-        
-        if (shareVK) shareVK.addEventListener('click', () => shareToVK());
-        if (shareTelegram) shareTelegram.addEventListener('click', () => shareToTelegram());
-        if (shareWhatsApp) shareWhatsApp.addEventListener('click', () => shareToWhatsApp());
-        if (shareLink) shareLink.addEventListener('click', () => copyShareLink());
+    const shareVK = document.getElementById('shareVK');
+    const shareTelegram = document.getElementById('shareTelegram');
+    const shareWhatsApp = document.getElementById('shareWhatsApp');
+    const shareLink = document.getElementById('shareLink');
+    
+    if (shareVK) shareVK.addEventListener('click', () => shareToVK());
+    if (shareTelegram) shareTelegram.addEventListener('click', () => shareToTelegram());
+    if (shareWhatsApp) shareWhatsApp.addEventListener('click', () => shareToWhatsApp());
+    if (shareLink) shareLink.addEventListener('click', () => copyShareLink());
     } else {
         // Для английской версии
         const shareFacebook = document.getElementById('shareFacebook');
@@ -715,22 +766,58 @@ function showShareSuccess() {
 
 // Функции для поделиться на стартовой странице
 function initStartPageShareButtons() {
+    console.log('🔵 Инициализация кнопок шаринга на стартовой странице...');
     const currentLang = getCurrentLanguage();
     const bookmarkBtn = document.getElementById('bookmarkBtn');
     
-    if (bookmarkBtn) bookmarkBtn.addEventListener('click', () => addToBookmarks());
+    if (bookmarkBtn) {
+        bookmarkBtn.addEventListener('click', function(e) {
+            console.log('🔵 bookmarkBtn кликнут!');
+            e.preventDefault();
+            addToBookmarks();
+        });
+        console.log('✅ bookmarkBtn инициализирован');
+    }
     
     // Для русской версии
     if (currentLang === 'ru') {
-        const shareVKStart = document.getElementById('shareVKStart');
-        const shareTelegramStart = document.getElementById('shareTelegramStart');
-        const shareWhatsAppStart = document.getElementById('shareWhatsAppStart');
-        const shareLinkStart = document.getElementById('shareLinkStart');
+    const shareVKStart = document.getElementById('shareVKStart');
+    const shareTelegramStart = document.getElementById('shareTelegramStart');
+    const shareWhatsAppStart = document.getElementById('shareWhatsAppStart');
+    const shareLinkStart = document.getElementById('shareLinkStart');
         
-        if (shareVKStart) shareVKStart.addEventListener('click', () => shareToVKStart());
-        if (shareTelegramStart) shareTelegramStart.addEventListener('click', () => shareToTelegramStart());
-        if (shareWhatsAppStart) shareWhatsAppStart.addEventListener('click', () => shareToWhatsAppStart());
-        if (shareLinkStart) shareLinkStart.addEventListener('click', () => copyShareLinkStart());
+        if (shareVKStart) {
+            shareVKStart.addEventListener('click', function(e) {
+                console.log('🔵 shareVKStart кликнут!');
+                e.preventDefault();
+                shareToVKStart();
+            });
+            console.log('✅ shareVKStart инициализирован');
+        }
+        if (shareTelegramStart) {
+            shareTelegramStart.addEventListener('click', function(e) {
+                console.log('🔵 shareTelegramStart кликнут!');
+                e.preventDefault();
+                shareToTelegramStart();
+            });
+            console.log('✅ shareTelegramStart инициализирован');
+        }
+        if (shareWhatsAppStart) {
+            shareWhatsAppStart.addEventListener('click', function(e) {
+                console.log('🔵 shareWhatsAppStart кликнут!');
+                e.preventDefault();
+                shareToWhatsAppStart();
+            });
+            console.log('✅ shareWhatsAppStart инициализирован');
+        }
+        if (shareLinkStart) {
+            shareLinkStart.addEventListener('click', function(e) {
+                console.log('🔵 shareLinkStart кликнут!');
+                e.preventDefault();
+                copyShareLinkStart();
+            });
+            console.log('✅ shareLinkStart инициализирован');
+        }
     } else {
         // Для английской версии
         const shareFacebookStart = document.getElementById('shareFacebookStart');
@@ -739,12 +826,48 @@ function initStartPageShareButtons() {
         const shareLinkStart = document.getElementById('shareLinkStart');
         const shareTelegramStart = document.getElementById('shareTelegramStart');
         
-        if (shareFacebookStart) shareFacebookStart.addEventListener('click', () => shareToFacebookStart());
-        if (shareTwitterStart) shareTwitterStart.addEventListener('click', () => shareToTwitterStart());
-        if (shareWhatsAppStart) shareWhatsAppStart.addEventListener('click', () => shareToWhatsAppStart());
-        if (shareLinkStart) shareLinkStart.addEventListener('click', () => copyShareLinkStart());
-        if (shareTelegramStart) shareTelegramStart.addEventListener('click', () => shareToTelegramStart());
+        if (shareFacebookStart) {
+            shareFacebookStart.addEventListener('click', function(e) {
+                console.log('🔵 shareFacebookStart кликнут!');
+                e.preventDefault();
+                shareToFacebookStart();
+            });
+            console.log('✅ shareFacebookStart инициализирован');
+        }
+        if (shareTwitterStart) {
+            shareTwitterStart.addEventListener('click', function(e) {
+                console.log('🔵 shareTwitterStart кликнут!');
+                e.preventDefault();
+                shareToTwitterStart();
+            });
+            console.log('✅ shareTwitterStart инициализирован');
+        }
+        if (shareWhatsAppStart) {
+            shareWhatsAppStart.addEventListener('click', function(e) {
+                console.log('🔵 shareWhatsAppStart кликнут!');
+                e.preventDefault();
+                shareToWhatsAppStart();
+            });
+            console.log('✅ shareWhatsAppStart инициализирован');
+        }
+        if (shareLinkStart) {
+            shareLinkStart.addEventListener('click', function(e) {
+                console.log('🔵 shareLinkStart кликнут!');
+                e.preventDefault();
+                copyShareLinkStart();
+            });
+            console.log('✅ shareLinkStart инициализирован');
+        }
+        if (shareTelegramStart) {
+            shareTelegramStart.addEventListener('click', function(e) {
+                console.log('🔵 shareTelegramStart кликнут!');
+                e.preventDefault();
+                shareToTelegramStart();
+            });
+            console.log('✅ shareTelegramStart инициализирован');
+        }
     }
+    console.log('✅ Кнопки шаринга на стартовой странице инициализированы');
 }
 
 function getStartPageShareText() {
@@ -877,9 +1000,16 @@ function checkUrlParams() {
 
 // Инициализация формы на стартовой странице
 function initStartPageContactForm() {
+    console.log('🔵 Инициализация формы на стартовой странице...');
     const contactFormStart = document.getElementById('contactFormStart');
     if (contactFormStart) {
-        contactFormStart.addEventListener('submit', handleStartPageFormSubmit);
+        contactFormStart.addEventListener('submit', function(e) {
+            console.log('🔵 contactFormStart отправлена!');
+            handleStartPageFormSubmit(e);
+        });
+        console.log('✅ contactFormStart инициализирован');
+    } else {
+        console.warn('⚠️ contactFormStart не найден');
     }
 }
 
@@ -982,7 +1112,6 @@ window.toggleWarning = toggleWarning;
     }
 })();
 
-// Вызываем при загрузке
-init();
-checkUrlParams();
+// checkUrlParams вызывается после инициализации через DOMContentLoaded
+// init() теперь вызывается автоматически через DOMContentLoaded
 
