@@ -33,5 +33,54 @@
         <xhtml:link rel="alternate" hreflang="ru" href="https://iqtest-1id.pages.dev/ru/full-tests.html"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://iqtest-1id.pages.dev/en/full-tests.html"/>
     </url>
+    <url>
+        <loc>https://iqtest-1id.pages.dev/ru/about-iq-tests.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtest-1id.pages.dev/ru/about-iq-tests.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtest-1id.pages.dev/en/about-iq-tests.html"/>
+    </url>
+    <url>
+        <loc>https://iqtest-1id.pages.dev/en/about-iq-tests.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtest-1id.pages.dev/ru/about-iq-tests.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtest-1id.pages.dev/en/about-iq-tests.html"/>
+    </url>
+    <url>
+        <loc>https://iqtest-1id.pages.dev/ru/faq.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtest-1id.pages.dev/ru/faq.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtest-1id.pages.dev/en/faq.html"/>
+    </url>
+    <url>
+        <loc>https://iqtest-1id.pages.dev/en/faq.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtest-1id.pages.dev/ru/faq.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtest-1id.pages.dev/en/faq.html"/>
+    </url>
+    <url>
+        <loc>https://iqtest-1id.pages.dev/ru/how-to-improve-iq.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtest-1id.pages.dev/ru/how-to-improve-iq.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtest-1id.pages.dev/en/how-to-improve-iq.html"/>
+    </url>
+    <url>
+        <loc>https://iqtest-1id.pages.dev/en/how-to-improve-iq.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtest-1id.pages.dev/ru/how-to-improve-iq.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtest-1id.pages.dev/en/how-to-improve-iq.html"/>
+    </url>
 </urlset>
+
 
