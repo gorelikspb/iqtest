@@ -594,7 +594,8 @@ async function handleSendResultsSubmit(e) {
             min: iqResult.min,
             max: iqResult.max,
             score: score,
-            total: questions.length
+            total: questions.length,
+            level: getIQDescription(iqResult.estimated) // Добавляем уровень IQ
         },
         shareUrl: getShareUrl(),
         source: 'result-page',
@@ -690,7 +691,7 @@ function getShareText() {
 
 function getShareUrl() {
     // Используем продакшн URL вместо локального file://
-    const productionUrl = 'https://iqtest-1id.pages.dev';
+    const productionUrl = 'https://iqtestnow.org';
     const isLocal = window.location.protocol === 'file:';
     
     let baseUrl;
@@ -887,7 +888,7 @@ function getStartPageShareText() {
 
 function getStartPageShareUrl() {
     // Используем продакшн URL вместо локального file://
-    const productionUrl = 'https://iqtest-1id.pages.dev';
+    const productionUrl = 'https://iqtestnow.org';
     const isLocal = window.location.protocol === 'file:';
     
     if (isLocal) {

@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://iqtest-1id.pages.dev/sitemap.xml
+Sitemap: https://iqtestnow.org/sitemap.xml
+
 
 
