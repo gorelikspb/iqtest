@@ -11,18 +11,9 @@
   - ✅ `robots.txt` - Sitemap URL обновлен
   - ✅ `script.js` - productionUrl обновлен (2 места)
   - ✅ Все HTML файлы - canonical, OG, Twitter, Schema.org обновлены
-
-**Что уже сделано:**
-- ✅ Домен куплен
-- ✅ Все ссылки в коде обновлены на новый домен (`iqtestnow.org`)
-  - ✅ `sitemap.xml` - все URL обновлены
-  - ✅ `robots.txt` - Sitemap URL обновлен
-  - ✅ `script.js` - productionUrl обновлен (2 места)
-  - ✅ Все HTML файлы - canonical, OG, Twitter, Schema.org обновлены
 - ✅ Код закоммичен и запушен
 - ✅ Домен добавлен в Cloudflare Pages и работает
-
-**Что уже сделано:**
+- ✅ Google Search Console настроен (автоматически через Cloudflare)
 - ✅ Домен куплен
 - ✅ Все ссылки в коде обновлены на новый домен (`iqtestnow.org`)
   - ✅ `sitemap.xml` - все URL обновлены
