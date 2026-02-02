@@ -1,10 +1,107 @@
-# 🚀 Пошаговый план настройки домена
+# 🚀 Пошаговый план настройки платного домена
 
-## ✅ Домен куплен! Что дальше?
+## ✅ Статус: Платный домен уже куплен!
+
+**Твой домен:** `iqtestnow.org` (или другой, который ты купил)
+
+**Что уже сделано:**
+- ✅ Домен куплен
+- ✅ Все ссылки в коде обновлены на новый домен (`iqtestnow.org`)
+  - ✅ `sitemap.xml` - все URL обновлены
+  - ✅ `robots.txt` - Sitemap URL обновлен
+  - ✅ `script.js` - productionUrl обновлен (2 места)
+  - ✅ Все HTML файлы - canonical, OG, Twitter, Schema.org обновлены
+
+**Что нужно сделать сейчас:**
+1. Закоммитить и задеплоить изменения (код готов)
+2. Добавить домен в Cloudflare Pages
+3. Обновить Google Search Console
+4. Проверить что всё работает
 
 ---
 
-## 📋 Шаг 1: Настроить домен в Cloudflare Pages
+## 🚀 Что делать СЕЙЧАС (домен уже куплен)
+
+### Шаг 1: Закоммитить и задеплоить изменения (2 минуты)
+
+✅ **Все ссылки уже обновлены в коде!** Теперь нужно задеплоить:
+
+```bash
+git add .
+git commit -m "Update domain to iqtestnow.org - all links updated"
+git push
+```
+
+**Проверка:**
+- Cloudflare Pages автоматически задеплоит изменения (1-2 минуты)
+- Проверь что сайт работает на старом домене (пока новый не добавлен)
+
+### Шаг 2: Добавить домен в Cloudflare Pages (5 минут)
+
+1. Открой Cloudflare Dashboard: https://dash.cloudflare.com/
+2. Выбери проект "IQ Test" (или твой проект)
+3. Перейди в **Pages → [твой проект] → Custom domains**
+4. Нажми **"Add custom domain"**
+5. Введи свой домен: `iqtestnow.org` (или какой купил)
+6. Нажми **"Add domain"**
+7. Подожди 5-15 минут для активации SSL
+
+**Проверка:**
+- Открой `https://iqtestnow.org` в браузере
+- Должен открыться твой сайт
+- Должен быть зеленый замочек (SSL)
+
+### Шаг 3: Обновить Google Search Console (5 минут)
+
+1. Открой Google Search Console: https://search.google.com/search-console
+2. Нажми **"Add property"** → **"URL prefix"**
+3. Введи: `https://iqtestnow.org`
+4. Нажми **"Continue"**
+5. Выбери метод верификации:
+   - **HTML tag** (если уже есть meta tag в коде) - просто нажми "Verify"
+   - **DNS** (если нужно) - добавь TXT запись в Cloudflare DNS
+6. После верификации → **Sitemaps** → **Add sitemap**
+7. Введи: `https://iqtestnow.org/sitemap.xml`
+8. Нажми **"Submit"**
+
+### Шаг 4: Проверить что всё работает (2 минуты)
+
+- [ ] Сайт открывается: `https://iqtestnow.org`
+- [ ] SSL работает (зеленый замочек)
+- [ ] Все страницы открываются (ru/index.html, en/index.html и т.д.)
+- [ ] Кнопки "Поделиться" работают
+- [ ] Формы отправляются корректно
+- [ ] Google Search Console показывает домен как верифицированный
+- [ ] Sitemap отправлен и обработан
+
+**Общее время:** ~15 минут
+
+---
+
+## ⏱️ Временная шкала
+
+**Сегодня (сейчас):**
+- [ ] Закоммитить и задеплоить изменения (код готов)
+- [ ] Добавить домен в Cloudflare Pages
+- [ ] Добавить в Google Search Console
+- [ ] Отправить sitemap
+
+**Через 1-2 недели:**
+- Проверить что страницы индексируются
+- Мониторить трафик в Search Console
+- Проверить что новый домен получает трафик
+
+**Через 2-3 месяца:**
+- Большинство трафика перейдет на новый домен
+- Можно удалить старый домен (опционально)
+
+---
+
+---
+
+## 📋 Детальная инструкция (дополнительная информация)
+
+### Настройка домена в Cloudflare Pages (детали)
 
 ### 1.1 Добавить домен в Cloudflare Pages
 
@@ -34,78 +131,21 @@
 
 ---
 
-## 🔧 Шаг 2: Обновить все ссылки в коде
+## ✅ Шаг 2: Обновление ссылок в коде (УЖЕ СДЕЛАНО)
 
-### 2.1 Обновить sitemap.xml
+**Статус:** ✅ Все ссылки уже обновлены на `iqtestnow.org`
 
-**Файл:** `public/sitemap.xml`
+**Что было обновлено:**
+- ✅ `public/sitemap.xml` - все URL заменены на `iqtestnow.org`
+- ✅ `public/robots.txt` - Sitemap URL обновлен
+- ✅ `public/script.js` - `productionUrl` обновлен в функциях `getShareUrl()` и `getStartPageShareUrl()`
+- ✅ Все HTML файлы (ru/en):
+  - ✅ Canonical URLs
+  - ✅ Open Graph URLs и images
+  - ✅ Twitter Card URLs и images
+  - ✅ Schema.org URLs
 
-Заменить все вхождения:
-- `https://iqtest-1id.pages.dev` → `https://iqtestnow.org`
-
-### 2.2 Обновить robots.txt
-
-**Файл:** `public/robots.txt`
-
-Заменить:
-- `https://iqtest-1id.pages.dev` → `https://iqtestnow.org`
-
-### 2.3 Обновить все HTML файлы
-
-**Файлы для обновления:**
-- `public/index.html`
-- `public/ru/index.html`
-- `public/en/index.html`
-- `public/ru/full-tests.html`
-- `public/en/full-tests.html`
-- `public/ru/about-iq-tests.html`
-- `public/en/about-iq-tests.html`
-- `public/ru/faq.html`
-- `public/en/faq.html`
-- `public/ru/how-to-improve-iq.html`
-- `public/en/how-to-improve-iq.html`
-
-**Что заменить в каждом файле:**
-
-1. **Canonical URL:**
-   ```html
-   <link rel="canonical" href="https://iqtestnow.org/ru/index.html">
-   ```
-
-2. **Open Graph URL:**
-   ```html
-   <meta property="og:url" content="https://iqtestnow.org/ru/index.html">
-   ```
-
-3. **Twitter Card URL:**
-   ```html
-   <meta name="twitter:url" content="https://iqtestnow.org/ru/index.html">
-   ```
-
-4. **Open Graph Image:**
-   ```html
-   <meta property="og:image" content="https://iqtestnow.org/assets/og-image-ru.jpg">
-   ```
-
-5. **Twitter Image:**
-   ```html
-   <meta name="twitter:image" content="https://iqtestnow.org/assets/twitter-image-ru.jpg">
-   ```
-
-6. **Schema.org URL:**
-   ```json
-   "url": "https://iqtestnow.org/ru/index.html"
-   ```
-
-### 2.4 Обновить script.js
-
-**Файл:** `public/script.js`
-
-Найти функцию `getShareUrl()` и обновить:
-```javascript
-// Заменить hardcoded URL если есть
-const PRODUCTION_URL = 'https://iqtestnow.org';
-```
+**Проверка:** Старых ссылок на `iqtest-1id.pages.dev` не найдено в коде.
 
 ---
 
@@ -134,9 +174,31 @@ const PRODUCTION_URL = 'https://iqtestnow.org';
 
 ---
 
-## 🔄 Шаг 4: Настроить редиректы (опционально)
+## 🔄 Шаг 4: Что происходит с трафиком после добавления платного домена
 
-### Если хочешь чтобы старый домен перенаправлял на новый:
+### ⚠️ Важно понимать процесс миграции:
+
+**Неделя 1-2:**
+- Новый домен начинает индексироваться
+- Старый домен может получать больше трафика (из-за "зрелости")
+- Трафик "размазывается" между доменами
+- **Это нормально!**
+
+**Месяц 1-2:**
+- Google постепенно переиндексирует на новый домен
+- Трафик начинает переходить на новый домен (через canonical теги)
+- Старый домен получает меньше трафика
+
+**Месяц 2-3:**
+- Большинство трафика на новом домене
+- Новый домен получает весь SEO вес
+- Можно удалить старый домен (опционально)
+
+**Вывод:** Трафик не теряется, а переходит на новый домен. Это нормальный процесс миграции.
+
+### Настроить редиректы (опционально):
+
+**Если хочешь чтобы старый домен перенаправлял на новый:**
 
 **В Cloudflare Pages:**
 1. Pages → Custom domains
@@ -146,6 +208,8 @@ const PRODUCTION_URL = 'https://iqtestnow.org';
 **Или через Cloudflare Workers:**
 - Создай Worker для редиректов
 - Настрой 301 редирект со старого на новый
+
+**Но:** Canonical теги обычно достаточно - Google сам переиндексирует на новый домен.
 
 ---
 
@@ -203,19 +267,32 @@ const PRODUCTION_URL = 'https://iqtestnow.org';
 
 ## 📝 Чеклист
 
-- [ ] Домен добавлен в Cloudflare Pages
-- [ ] SSL активен
-- [ ] Sitemap.xml обновлен
-- [ ] Robots.txt обновлен
-- [ ] Все HTML файлы обновлены (canonical, OG, Twitter)
-- [ ] Schema.org данные обновлены
-- [ ] script.js обновлен (если нужно)
-- [ ] Код закоммичен и запушен
-- [ ] Деплой прошел успешно
-- [ ] Сайт открывается на новом домене
-- [ ] Google Search Console обновлен
+### Настройка домена:
+- [ ] Домен добавлен в Cloudflare Pages → Custom domains
+- [ ] SSL активен (зеленый замочек)
+- [ ] Домен открывается в браузере
+- [ ] Все страницы работают на новом домене
+
+### Обновление кода:
+- [x] ✅ Sitemap.xml обновлен (все URL на новый домен) - **СДЕЛАНО**
+- [x] ✅ Robots.txt обновлен (Sitemap URL) - **СДЕЛАНО**
+- [x] ✅ Все HTML файлы обновлены (canonical, OG, Twitter) - **СДЕЛАНО**
+- [x] ✅ Schema.org данные обновлены (URL) - **СДЕЛАНО**
+- [x] ✅ script.js обновлен (productionUrl) - **СДЕЛАНО**
+- [ ] Код закоммичен и запушен - **НУЖНО СДЕЛАТЬ**
+- [ ] Деплой прошел успешно - **ПОСЛЕ COMMIT**
+
+### Google Search Console:
+- [ ] Добавлен новый домен в Search Console
+- [ ] Подтверждено владение (HTML meta tag или DNS)
 - [ ] Новый sitemap отправлен
-- [ ] Всё работает корректно
+- [ ] Проверено что страницы индексируются
+
+### Мониторинг (после настройки):
+- [ ] Проверяю трафик раз в неделю
+- [ ] Мониторю миграцию трафика (2-3 месяца)
+- [ ] Проверяю что новый домен получает трафик
+- [ ] (Опционально) Удалю старый домен когда новый получит больше трафика
 
 ---
 
@@ -223,19 +300,35 @@ const PRODUCTION_URL = 'https://iqtestnow.org';
 
 После настройки домена:
 
-1. **Мониторинг:**
-   - Следи за трафиком в Google Search Console
+1. **Мониторинг трафика:**
+   - Следи за трафиком в Google Search Console раз в неделю
    - Проверяй что страницы индексируются
-   - Мониторь ошибки в Cloudflare Analytics
+   - Мониторь миграцию трафика (2-3 месяца)
+   - Ожидай что трафик будет "размазываться" между доменами первые недели
 
 2. **Оптимизация:**
    - Продолжай SEO оптимизацию
    - Добавляй контент
    - Улучшай позиции
+   - Новый домен будет накапливать SEO-авторитет быстрее чем `.pages.dev`
 
 3. **Email:**
    - Когда будет 5+ писем - настроить корпоративный email
    - См. `EMAIL_SETUP_PLAN.md`
+
+4. **Через 2-3 месяца:**
+   - Проверь что новый домен получает больше трафика
+   - (Опционально) Удали старый домен из Cloudflare Pages
+   - Новый домен получит весь SEO вес
+
+---
+
+## 📚 Дополнительная информация
+
+**См. также:**
+- `PAID_DOMAIN_FOR_TRAFFIC.md` (в common/instructions) - подробно о влиянии платного домена на трафик
+- `DOMAIN_SELECTION_STRATEGY.md` (в common/instructions) - стратегия выбора домена
+- `GOOGLE_SEARCH_CONSOLE_SETUP.md` (в common/instructions) - настройка Search Console
 
 ---
 
