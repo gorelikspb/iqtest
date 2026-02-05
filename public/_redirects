@@ -1,0 +1,12 @@
+# Redirects для Cloudflare Pages
+# Редиректы для языковых версий без index.html
+
+# Редирект с /ru/ на /ru/index.html (301 - постоянный редирект)
+/ru/ /ru/index.html 301
+
+# Редирект с /en/ на /en/index.html (301 - постоянный редирект)
+/en/ /en/index.html 301
+
+# Редирект с корня на русскую версию (если нужно)
+# / /ru/index.html 301
+

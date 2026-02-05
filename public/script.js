@@ -655,19 +655,59 @@ function restartTest() {
 
 // Функции для поделиться результатами
 function initShareButtons() {
+    console.log('🔵 Инициализация кнопок поделиться результатами...');
     const currentLang = getCurrentLanguage();
     
     // Для русской версии
     if (currentLang === 'ru') {
-    const shareVK = document.getElementById('shareVK');
-    const shareTelegram = document.getElementById('shareTelegram');
-    const shareWhatsApp = document.getElementById('shareWhatsApp');
-    const shareLink = document.getElementById('shareLink');
-    
-    if (shareVK) shareVK.addEventListener('click', () => shareToVK());
-    if (shareTelegram) shareTelegram.addEventListener('click', () => shareToTelegram());
-    if (shareWhatsApp) shareWhatsApp.addEventListener('click', () => shareToWhatsApp());
-    if (shareLink) shareLink.addEventListener('click', () => copyShareLink());
+        const shareVK = document.getElementById('shareVK');
+        const shareTelegram = document.getElementById('shareTelegram');
+        const shareWhatsApp = document.getElementById('shareWhatsApp');
+        const shareLink = document.getElementById('shareLink');
+        
+        console.log('Кнопки найдены:', {
+            shareVK: !!shareVK,
+            shareTelegram: !!shareTelegram,
+            shareWhatsApp: !!shareWhatsApp,
+            shareLink: !!shareLink
+        });
+        
+        if (shareVK) {
+            shareVK.removeEventListener('click', shareToVK); // Удаляем старый обработчик если есть
+            shareVK.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔵 shareVK кликнут!');
+                shareToVK();
+            });
+        }
+        if (shareTelegram) {
+            shareTelegram.removeEventListener('click', shareToTelegram);
+            shareTelegram.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔵 shareTelegram кликнут!');
+                shareToTelegram();
+            });
+        }
+        if (shareWhatsApp) {
+            shareWhatsApp.removeEventListener('click', shareToWhatsApp);
+            shareWhatsApp.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔵 shareWhatsApp кликнут!');
+                shareToWhatsApp();
+            });
+        }
+        if (shareLink) {
+            shareLink.removeEventListener('click', copyShareLink);
+            shareLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔵 shareLink кликнут!');
+                copyShareLink();
+            });
+        }
     } else {
         // Для английской версии
         const shareFacebook = document.getElementById('shareFacebook');
@@ -676,20 +716,82 @@ function initShareButtons() {
         const shareLink = document.getElementById('shareLink');
         const shareTelegram = document.getElementById('shareTelegram');
         
-        if (shareFacebook) shareFacebook.addEventListener('click', () => shareToFacebook());
-        if (shareTwitter) shareTwitter.addEventListener('click', () => shareToTwitter());
-        if (shareWhatsApp) shareWhatsApp.addEventListener('click', () => shareToWhatsApp());
-        if (shareLink) shareLink.addEventListener('click', () => copyShareLink());
-        if (shareTelegram) shareTelegram.addEventListener('click', () => shareToTelegram());
+        console.log('Кнопки найдены:', {
+            shareFacebook: !!shareFacebook,
+            shareTwitter: !!shareTwitter,
+            shareWhatsApp: !!shareWhatsApp,
+            shareLink: !!shareLink,
+            shareTelegram: !!shareTelegram
+        });
+        
+        if (shareFacebook) {
+            shareFacebook.removeEventListener('click', shareToFacebook);
+            shareFacebook.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔵 shareFacebook кликнут!');
+                shareToFacebook();
+            });
+        }
+        if (shareTwitter) {
+            shareTwitter.removeEventListener('click', shareToTwitter);
+            shareTwitter.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔵 shareTwitter кликнут!');
+                shareToTwitter();
+            });
+        }
+        if (shareWhatsApp) {
+            shareWhatsApp.removeEventListener('click', shareToWhatsApp);
+            shareWhatsApp.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔵 shareWhatsApp кликнут!');
+                shareToWhatsApp();
+            });
+        }
+        if (shareLink) {
+            shareLink.removeEventListener('click', copyShareLink);
+            shareLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔵 shareLink кликнут!');
+                copyShareLink();
+            });
+        }
+        if (shareTelegram) {
+            shareTelegram.removeEventListener('click', shareToTelegram);
+            shareTelegram.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔵 shareTelegram кликнут!');
+                shareToTelegram();
+            });
+        }
     }
+    console.log('✅ Кнопки поделиться результатами инициализированы');
 }
 
 function getShareText() {
-    if (!iqResult) return '';
-    return t('ui.shareResultText', { iq: iqResult.estimated, min: iqResult.min, max: iqResult.max });
+    if (!iqResult) {
+        console.error('❌ iqResult не установлен!');
+        return '';
+    }
+    try {
+        return t('ui.shareResultText', { iq: iqResult.estimated, min: iqResult.min, max: iqResult.max });
+    } catch (error) {
+        console.error('❌ Ошибка получения текста для шаринга:', error);
+        return `Мой IQ результат: примерно ${iqResult.estimated} (диапазон ${iqResult.min}-${iqResult.max})`;
+    }
 }
 
 function getShareUrl() {
+    if (!iqResult) {
+        console.error('❌ iqResult не установлен!');
+        return window.location.href;
+    }
+    
     // Используем продакшн URL вместо локального file://
     const productionUrl = 'https://iqtestnow.org';
     const isLocal = window.location.protocol === 'file:';
@@ -697,68 +799,133 @@ function getShareUrl() {
     let baseUrl;
     if (isLocal) {
         // Для локальной разработки используем продакшн URL
-        baseUrl = productionUrl + '/ru/index.html';
+        const currentLang = getCurrentLanguage();
+        baseUrl = productionUrl + '/' + currentLang + '/index.html';
     } else {
         baseUrl = window.location.origin + window.location.pathname;
     }
     
-    const params = new URLSearchParams({
-        iq: iqResult.estimated,
-        min: iqResult.min,
-        max: iqResult.max,
-        score: score,
-        total: questions.length
-    });
-    return `${baseUrl}?${params.toString()}`;
+    try {
+        const params = new URLSearchParams({
+            iq: iqResult.estimated,
+            min: iqResult.min,
+            max: iqResult.max,
+            score: score,
+            total: questions.length
+        });
+        return `${baseUrl}?${params.toString()}`;
+    } catch (error) {
+        console.error('❌ Ошибка создания URL для шаринга:', error);
+        return baseUrl;
+    }
 }
 
 function shareToVK() {
-    const url = getShareUrl();
-    const text = getShareText();
-    window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank', 'width=600,height=400');
+    try {
+        const url = getShareUrl();
+        const text = getShareText();
+        console.log('🔵 Поделиться в VK:', { url, text });
+        const shareUrl = `https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+    } catch (error) {
+        console.error('❌ Ошибка при шаринге в VK:', error);
+        alert('Ошибка при открытии окна поделиться. Попробуйте скопировать ссылку.');
+    }
 }
 
 function shareToTelegram() {
-    const url = getShareUrl();
-    const text = getShareText() + url;
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank', 'width=600,height=400');
+    try {
+        const url = getShareUrl();
+        const text = getShareText() + ' ' + url;
+        console.log('🔵 Поделиться в Telegram:', { url, text });
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+    } catch (error) {
+        console.error('❌ Ошибка при шаринге в Telegram:', error);
+        alert('Ошибка при открытии окна поделиться. Попробуйте скопировать ссылку.');
+    }
 }
 
 function shareToWhatsApp() {
-    const url = getShareUrl();
-    const text = getShareText() + url;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text + url)}`, '_blank');
+    try {
+        const url = getShareUrl();
+        const text = getShareText() + ' ' + url;
+        console.log('🔵 Поделиться в WhatsApp:', { url, text });
+        const shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+        window.open(shareUrl, '_blank');
+    } catch (error) {
+        console.error('❌ Ошибка при шаринге в WhatsApp:', error);
+        alert('Ошибка при открытии окна поделиться. Попробуйте скопировать ссылку.');
+    }
 }
 
 function shareToFacebook() {
-    const url = getShareUrl();
-    const text = getShareText(); // URL не добавляем в quote, Facebook добавит его сам из параметра u
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`, '_blank', 'width=600,height=400');
+    try {
+        const url = getShareUrl();
+        const text = getShareText(); // URL не добавляем в quote, Facebook добавит его сам из параметра u
+        console.log('🔵 Поделиться в Facebook:', { url, text });
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+    } catch (error) {
+        console.error('❌ Ошибка при шаринге в Facebook:', error);
+        alert('Ошибка при открытии окна поделиться. Попробуйте скопировать ссылку.');
+    }
 }
 
 function shareToTwitter() {
-    const url = getShareUrl();
-    const text = getShareText(); // URL не добавляем в текст, Twitter добавит его сам из параметра url
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
+    try {
+        const url = getShareUrl();
+        const text = getShareText(); // URL не добавляем в текст, Twitter добавит его сам из параметра url
+        console.log('🔵 Поделиться в Twitter:', { url, text });
+        const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+    } catch (error) {
+        console.error('❌ Ошибка при шаринге в Twitter:', error);
+        alert('Ошибка при открытии окна поделиться. Попробуйте скопировать ссылку.');
+    }
 }
 
 function copyShareLink() {
-    const url = getShareUrl();
-    const text = getShareText() + url;
-    
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(() => {
-            showShareSuccess();
-        });
-    } else {
-        // Fallback для старых браузеров
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
+    try {
+        const url = getShareUrl();
+        const text = getShareText() + ' ' + url;
+        console.log('🔵 Копирование ссылки:', { url, text });
+        
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                console.log('✅ Ссылка скопирована в буфер обмена');
+                showShareSuccess();
+            }).catch((error) => {
+                console.error('❌ Ошибка копирования в буфер обмена:', error);
+                // Fallback для старых браузеров
+                fallbackCopyText(text);
+            });
+        } else {
+            // Fallback для старых браузеров
+            fallbackCopyText(text);
+        }
+    } catch (error) {
+        console.error('❌ Ошибка при копировании ссылки:', error);
+        alert('Ошибка при копировании ссылки. Попробуйте еще раз.');
+    }
+}
+
+function fallbackCopyText(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
         document.execCommand('copy');
-        document.body.removeChild(textarea);
+        console.log('✅ Ссылка скопирована (fallback метод)');
         showShareSuccess();
+    } catch (error) {
+        console.error('❌ Ошибка копирования (fallback метод):', error);
+        alert('Не удалось скопировать ссылку. Попробуйте выделить текст вручную.');
+    } finally {
+        document.body.removeChild(textarea);
     }
 }
 

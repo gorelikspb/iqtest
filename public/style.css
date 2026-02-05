@@ -821,6 +821,82 @@ h1 {
     font-size: 0.95em;
 }
 
+/* SEO секции */
+.seo-content,
+.faq-section {
+    margin-top: 40px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.seo-content h2,
+.faq-section h2 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.seo-content p,
+.faq-section p {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.seo-content a,
+.faq-section a {
+    color: #667eea;
+    text-decoration: underline;
+}
+
+.seo-content a:hover,
+.faq-section a:hover {
+    color: #764ba2;
+}
+
+.faq-item {
+    margin-bottom: 20px;
+}
+
+.faq-item h3 {
+    color: #667eea;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.faq-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Дополнительные секции */
+section[style*="background: rgba(255,255,255,0.1)"] {
+    background: #f8f9fa !important;
+    margin-top: 40px;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+}
+
+section[style*="background: rgba(255,255,255,0.1)"] h2 {
+    color: #333 !important;
+    margin-bottom: 20px;
+}
+
+section[style*="background: rgba(255,255,255,0.1)"] p,
+section[style*="background: rgba(255,255,255,0.1)"] li {
+    color: #555 !important;
+}
+
+section[style*="background: rgba(255,255,255,0.1)"] a {
+    color: #667eea !important;
+    text-decoration: underline;
+}
+
+section[style*="background: rgba(255,255,255,0.1)"] a:hover {
+    color: #764ba2 !important;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     .container {
