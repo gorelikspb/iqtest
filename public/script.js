@@ -1674,19 +1674,17 @@ function handleCardClick(e) {
     if (value === expectedValue) {
         card.classList.add('correct');
         memoryGameState.score++;
-        
-        // Если все правильно, показываем результат
-        if (memoryGameState.userSequence.length === memoryGameState.sequence.length) {
-            setTimeout(() => {
-                showMemoryGameResult();
-            }, 500);
-        }
     } else {
         // Неправильный ответ
         card.classList.add('wrong');
+    }
+    
+    // Проверяем, закончилась ли последовательность (все 8 карточек кликнуты)
+    if (memoryGameState.userSequence.length === memoryGameState.sequence.length) {
+        // Даем небольшую задержку, чтобы пользователь увидел последний ответ
         setTimeout(() => {
             showMemoryGameResult();
-        }, 1000);
+        }, 500);
     }
 }
 
