@@ -656,17 +656,41 @@ async function handleSendResultsSubmit(e) {
 }
 
 function restartTest() {
-    if (!resultScreen || !welcomeScreen) {
-        console.error('❌ Элементы не инициализированы в restartTest!');
+    console.log('🔄 restartTest() called');
+    
+    // Получаем элементы заново на случай, если они не были инициализированы
+    const resultScreenEl = document.getElementById('resultScreen');
+    const welcomeScreenEl = document.getElementById('welcomeScreen');
+    
+    if (!resultScreenEl || !welcomeScreenEl) {
+        console.error('❌ Элементы не найдены в restartTest!', {
+            resultScreen: !!resultScreenEl,
+            welcomeScreen: !!welcomeScreenEl
+        });
         return;
     }
-    resultScreen.style.display = 'none';
-    welcomeScreen.style.display = 'block';
+    
+    console.log('✅ Элементы найдены, перезапускаем тест...');
+    
+    // Скрываем экран результатов
+    resultScreenEl.style.display = 'none';
+    
+    // Показываем стартовый экран
+    welcomeScreenEl.style.display = 'block';
+    
     // Удаляем предупреждение, если оно было добавлено
-    const warning = resultScreen.querySelector('.result-warning');
+    const warning = resultScreenEl.querySelector('.result-warning');
     if (warning) {
         warning.remove();
     }
+    
+    // Сбрасываем состояние теста
+    currentQuestion = 0;
+    score = 0;
+    userAnswers = [];
+    iqResult = null;
+    
+    console.log('✅ Тест перезапущен');
 }
 
 // Функции для поделиться результатами
