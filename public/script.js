@@ -825,6 +825,12 @@ function shareToVK() {
         const url = getShareUrl();
         const text = getShareText();
         console.log('🔵 Поделиться в VK:', { url, text });
+        
+        // Отслеживание в Clarity
+        if (typeof clarity !== 'undefined') {
+            clarity('event', 'share_vk');
+        }
+        
         const shareUrl = `https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
         window.open(shareUrl, '_blank', 'width=600,height=400');
     } catch (error) {
@@ -838,6 +844,12 @@ function shareToTelegram() {
         const url = getShareUrl();
         const text = getShareText() + ' ' + url;
         console.log('🔵 Поделиться в Telegram:', { url, text });
+        
+        // Отслеживание в Clarity
+        if (typeof clarity !== 'undefined') {
+            clarity('event', 'share_telegram');
+        }
+        
         const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
         window.open(shareUrl, '_blank', 'width=600,height=400');
     } catch (error) {
@@ -851,6 +863,12 @@ function shareToWhatsApp() {
         const url = getShareUrl();
         const text = getShareText() + ' ' + url;
         console.log('🔵 Поделиться в WhatsApp:', { url, text });
+        
+        // Отслеживание в Clarity
+        if (typeof clarity !== 'undefined') {
+            clarity('event', 'share_whatsapp');
+        }
+        
         const shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
         window.open(shareUrl, '_blank');
     } catch (error) {
@@ -864,6 +882,12 @@ function shareToFacebook() {
         const url = getShareUrl();
         const text = getShareText(); // URL не добавляем в quote, Facebook добавит его сам из параметра u
         console.log('🔵 Поделиться в Facebook:', { url, text });
+        
+        // Отслеживание в Clarity
+        if (typeof clarity !== 'undefined') {
+            clarity('event', 'share_facebook');
+        }
+        
         const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
         window.open(shareUrl, '_blank', 'width=600,height=400');
     } catch (error) {
@@ -877,6 +901,12 @@ function shareToTwitter() {
         const url = getShareUrl();
         const text = getShareText(); // URL не добавляем в текст, Twitter добавит его сам из параметра url
         console.log('🔵 Поделиться в Twitter:', { url, text });
+        
+        // Отслеживание в Clarity
+        if (typeof clarity !== 'undefined') {
+            clarity('event', 'share_twitter');
+        }
+        
         const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
         window.open(shareUrl, '_blank', 'width=600,height=400');
     } catch (error) {
@@ -890,6 +920,11 @@ function copyShareLink() {
         const url = getShareUrl();
         const text = getShareText() + ' ' + url;
         console.log('🔵 Копирование ссылки:', { url, text });
+        
+        // Отслеживание в Clarity
+        if (typeof clarity !== 'undefined') {
+            clarity('event', 'share_link_copy');
+        }
         
         if (navigator.clipboard) {
             navigator.clipboard.writeText(text).then(() => {
@@ -1071,36 +1106,71 @@ function getStartPageShareUrl() {
 function shareToVKStart() {
     const url = getStartPageShareUrl();
     const text = getStartPageShareText();
+    
+    // Отслеживание в Clarity
+    if (typeof clarity !== 'undefined') {
+        clarity('event', 'share_vk_start');
+    }
+    
     window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank', 'width=600,height=400');
 }
 
 function shareToTelegramStart() {
     const url = getStartPageShareUrl();
     const text = getStartPageShareText() + url;
+    
+    // Отслеживание в Clarity
+    if (typeof clarity !== 'undefined') {
+        clarity('event', 'share_telegram_start');
+    }
+    
     window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank', 'width=600,height=400');
 }
 
 function shareToWhatsAppStart() {
     const url = getStartPageShareUrl();
     const text = getStartPageShareText() + url;
+    
+    // Отслеживание в Clarity
+    if (typeof clarity !== 'undefined') {
+        clarity('event', 'share_whatsapp_start');
+    }
+    
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 }
 
 function shareToFacebookStart() {
     const url = getStartPageShareUrl();
     const text = getStartPageShareText(); // URL не добавляем в quote, Facebook добавит его сам из параметра u
+    
+    // Отслеживание в Clarity
+    if (typeof clarity !== 'undefined') {
+        clarity('event', 'share_facebook_start');
+    }
+    
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`, '_blank', 'width=600,height=400');
 }
 
 function shareToTwitterStart() {
     const url = getStartPageShareUrl();
     const text = getStartPageShareText(); // URL не добавляем в текст, Twitter добавит его сам из параметра url
+    
+    // Отслеживание в Clarity
+    if (typeof clarity !== 'undefined') {
+        clarity('event', 'share_twitter_start');
+    }
+    
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
 }
 
 function copyShareLinkStart() {
     const url = getStartPageShareUrl();
     const text = getStartPageShareText() + url;
+    
+    // Отслеживание в Clarity
+    if (typeof clarity !== 'undefined') {
+        clarity('event', 'share_link_copy_start');
+    }
     
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
@@ -1179,7 +1249,11 @@ function showBookmarkSuccess() {
 function checkUrlParams() {
     const params = new URLSearchParams(window.location.search);
     if (params.has('iq')) {
-        // Можно показать специальное сообщение или редирект
+        // Отслеживание переходов по ссылкам с результатами в Clarity
+        if (typeof clarity !== 'undefined') {
+            clarity('event', 'share_referral');
+        }
+        
         console.log('Shared result:', {
             iq: params.get('iq'),
             min: params.get('min'),
