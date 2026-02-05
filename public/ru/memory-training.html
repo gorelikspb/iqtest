@@ -142,7 +142,7 @@
                 <div class="memory-game-email-content">
                     <h3>Сохранить результат игры?</h3>
                     <p>Оставьте email, чтобы сохранить результат тренировки памяти</p>
-                    <form id="memoryGameEmailForm" class="memory-game-email-form">
+                    <form id="memoryGameEmailForm" class="memory-game-email-form" onsubmit="return false;">
                         <input type="email" id="memoryGameEmail" placeholder="Ваш email" class="form-input" required>
                         <div class="memory-game-email-buttons">
                             <button type="submit" class="btn-primary btn-small">Сохранить</button>
@@ -189,6 +189,7 @@
     <script src="../script.js"></script>
     <script>
         // Автоматически показываем всплывашку при загрузке страницы (только один раз)
+        // И убеждаемся, что initMemoryGame вызывается
         document.addEventListener('DOMContentLoaded', function() {
             // Проверяем, не показывали ли уже модалку в этой сессии
             if (!sessionStorage.getItem('memoryGameEmailShown')) {
@@ -198,7 +199,21 @@
                     sessionStorage.setItem('memoryGameEmailShown', 'true');
                 }
             }
+            
+            // Убеждаемся, что initMemoryGame вызывается
+            if (typeof initMemoryGame === 'function') {
+                console.log('🔄 Calling initMemoryGame from DOMContentLoaded...');
+                initMemoryGame();
+            }
         });
+        
+        // Также вызываем, если DOM уже загружен
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            if (typeof initMemoryGame === 'function') {
+                console.log('🔄 Calling initMemoryGame immediately...');
+                setTimeout(initMemoryGame, 100);
+            }
+        }
     </script>
 </body>
 </html>

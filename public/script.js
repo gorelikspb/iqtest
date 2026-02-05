@@ -302,7 +302,8 @@ initStartPageContactForm();
     
     // Инициализируем мини-игру "Тренировка памяти" только на странице игры
     // На странице результатов теперь только ссылка на отдельную страницу
-    if (window.location.pathname.includes('memory-training.html')) {
+    if (window.location.pathname.includes('memory-training.html') || 
+        window.location.href.includes('memory-training.html')) {
         initMemoryGame();
     }
     
@@ -1410,10 +1411,14 @@ let memoryGameState = {
 
 function initMemoryGame() {
     // Проверяем, что мы на странице игры памяти
-    const isMemoryTrainingPage = window.location.pathname.includes('memory-training.html');
+    const isMemoryTrainingPage = window.location.pathname.includes('memory-training.html') || 
+                                  window.location.href.includes('memory-training.html');
     if (!isMemoryTrainingPage) {
+        console.log('⚠️ Not on memory-training page, skipping initMemoryGame');
         return; // Не инициализируем игру на других страницах
     }
+    
+    console.log('✅ Initializing memory game...');
     
     const startBtn = document.getElementById('startMemoryGameBtn');
     const emailModal = document.getElementById('memoryGameEmailModal');
@@ -1477,15 +1482,25 @@ function initMemoryGame() {
     
     // Кнопка "Позже"
     if (emailLaterBtn) {
-        emailLaterBtn.addEventListener('click', function() {
+        console.log('✅ emailLaterBtn found, attaching handler...');
+        emailLaterBtn.addEventListener('click', function(e) {
+            console.log('🔵 Later button clicked!');
+            e.preventDefault();
+            e.stopPropagation();
+            
             if (emailModal) {
+                console.log('🔵 Closing modal...');
                 emailModal.style.display = 'none';
             }
             // Отмечаем, что модалка была показана
             sessionStorage.setItem('memoryGameEmailShown', 'true');
             // Начинаем игру
+            console.log('🔵 Starting game...');
             startMemoryGame();
         });
+        console.log('✅ Handler attached to emailLaterBtn');
+    } else {
+        console.error('❌ emailLaterBtn not found!');
     }
     
     // Закрытие игры
@@ -1506,6 +1521,7 @@ function initMemoryGame() {
 }
 
 function startMemoryGame() {
+    console.log('🎮 startMemoryGame() called');
     const gameContainer = document.getElementById('memoryGameContainer');
     const gameBoard = document.getElementById('memoryGameBoard');
     const gameInstructions = document.getElementById('memoryGameInstructions');
@@ -1514,9 +1530,11 @@ function startMemoryGame() {
     const emailModal = document.getElementById('memoryGameEmailModal');
     
     if (!gameContainer || !gameBoard) {
-        console.error('❌ Элементы игры не найдены!');
+        console.error('❌ Элементы игры не найдены!', { gameContainer: !!gameContainer, gameBoard: !!gameBoard });
         return;
     }
+    
+    console.log('🎮 Game elements found, starting game...');
     
     // Скрываем модалку если она видна
     if (emailModal) {
