@@ -195,11 +195,11 @@
             const emailLaterBtn = document.getElementById('memoryGameEmailLater');
             const startBtn = document.getElementById('startMemoryGameBtn');
             
-            // Показываем модалку при загрузке (только один раз)
-            if (!sessionStorage.getItem('memoryGameEmailShown')) {
+            // Показываем модалку при загрузке, если email еще не был сохранен
+            // Проверяем localStorage, а не sessionStorage - чтобы показывать при каждом новом заходе
+            if (!localStorage.getItem('memoryGameEmail')) {
                 if (emailModal) {
                     emailModal.style.display = 'flex';
-                    sessionStorage.setItem('memoryGameEmailShown', 'true');
                 }
             }
             
@@ -211,6 +211,7 @@
                     
                     const email = document.getElementById('memoryGameEmail').value;
                     if (email) {
+                        // Сохраняем email в localStorage - после этого модалка больше не будет показываться
                         localStorage.setItem('memoryGameEmail', email);
                         
                         if (typeof clarity !== 'undefined') {
@@ -234,7 +235,7 @@
                     if (emailModal) {
                         emailModal.style.display = 'none';
                     }
-                    sessionStorage.setItem('memoryGameEmailShown', 'true');
+                    // НЕ сохраняем флаг - модалка будет показываться при следующем заходе
                     
                     if (typeof startMemoryGame === 'function') {
                         startMemoryGame();
@@ -257,16 +258,15 @@
                         return;
                     }
                     
-                    // Если модалка была показана ранее, начинаем игру напрямую
-                    if (sessionStorage.getItem('memoryGameEmailShown')) {
+                    // Если email уже сохранен, начинаем игру напрямую
+                    if (localStorage.getItem('memoryGameEmail')) {
                         if (typeof startMemoryGame === 'function') {
                             startMemoryGame();
                         }
                     } else {
-                        // Показываем модалку
+                        // Показываем модалку, если email не сохранен
                         if (emailModal) {
                             emailModal.style.display = 'flex';
-                            sessionStorage.setItem('memoryGameEmailShown', 'true');
                         }
                     }
                 });
