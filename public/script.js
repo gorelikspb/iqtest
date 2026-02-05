@@ -1426,9 +1426,30 @@ function initMemoryGame() {
     
     if (startBtn) {
         startBtn.addEventListener('click', function() {
-            // Показываем всплывашку с email
+            // Проверяем, видна ли модалка сейчас (через computed style)
+            let isModalVisible = false;
             if (emailModal) {
-                emailModal.style.display = 'flex';
+                const computedStyle = window.getComputedStyle(emailModal);
+                isModalVisible = computedStyle.display !== 'none';
+            }
+            
+            if (isModalVisible) {
+                // Модалка уже видна, ничего не делаем (пользователь может кликнуть "Later" или "Save")
+                return;
+            }
+            
+            // Если модалка была показана ранее (в sessionStorage), начинаем игру напрямую
+            if (sessionStorage.getItem('memoryGameEmailShown')) {
+                startMemoryGame();
+            } else {
+                // Показываем модалку впервые
+                if (emailModal) {
+                    emailModal.style.display = 'flex';
+                    sessionStorage.setItem('memoryGameEmailShown', 'true');
+                } else {
+                    // Если модалки нет, начинаем игру
+                    startMemoryGame();
+                }
             }
         });
     }
@@ -1457,7 +1478,12 @@ function initMemoryGame() {
     // Кнопка "Позже"
     if (emailLaterBtn) {
         emailLaterBtn.addEventListener('click', function() {
-            if (emailModal) emailModal.style.display = 'none';
+            if (emailModal) {
+                emailModal.style.display = 'none';
+            }
+            // Отмечаем, что модалка была показана
+            sessionStorage.setItem('memoryGameEmailShown', 'true');
+            // Начинаем игру
             startMemoryGame();
         });
     }
@@ -1484,8 +1510,23 @@ function startMemoryGame() {
     const gameBoard = document.getElementById('memoryGameBoard');
     const gameInstructions = document.getElementById('memoryGameInstructions');
     const gameResult = document.getElementById('memoryGameResult');
+    const startBtn = document.getElementById('startMemoryGameBtn');
+    const emailModal = document.getElementById('memoryGameEmailModal');
     
-    if (!gameContainer || !gameBoard) return;
+    if (!gameContainer || !gameBoard) {
+        console.error('❌ Элементы игры не найдены!');
+        return;
+    }
+    
+    // Скрываем модалку если она видна
+    if (emailModal) {
+        emailModal.style.display = 'none';
+    }
+    
+    // Скрываем кнопку "Начать игру"
+    if (startBtn) {
+        startBtn.style.display = 'none';
+    }
     
     // Показываем контейнер игры
     gameContainer.style.display = 'block';
@@ -1712,9 +1753,17 @@ function resetMemoryGame() {
 
 function closeMemoryGame() {
     const gameContainer = document.getElementById('memoryGameContainer');
+    const startBtn = document.getElementById('startMemoryGameBtn');
+    
     if (gameContainer) {
         gameContainer.style.display = 'none';
     }
+    
+    // Показываем кнопку "Начать игру" обратно
+    if (startBtn) {
+        startBtn.style.display = 'inline-block';
+    }
+    
     resetMemoryGame();
 }
 
