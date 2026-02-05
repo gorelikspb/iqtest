@@ -1706,7 +1706,10 @@ function showMemoryGameResult() {
     const total = memoryGameState.sequence.length;
     
     if (gameResultText) {
-        gameResultText.textContent = t('ui.memoryGameResult', { score, total });
+        // Убеждаемся, что значения передаются как числа
+        const resultText = t('ui.memoryGameResult', { score: score, total: total });
+        console.log('Memory game result:', { score, total, resultText });
+        gameResultText.textContent = resultText;
     }
     
     // Отслеживание в Clarity
