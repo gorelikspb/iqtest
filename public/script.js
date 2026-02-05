@@ -1705,24 +1705,33 @@ function handleCardClick(e) {
     
     // Проверяем, закончилась ли последовательность (все 8 карточек кликнуты)
     if (memoryGameState.userSequence.length === memoryGameState.sequence.length) {
-        // Даем небольшую задержку, чтобы пользователь увидел последний ответ
+        // Даем задержку, чтобы пользователь увидел последний ответ и не кликнул случайно на кнопки
         setTimeout(() => {
             showMemoryGameResult();
-        }, 500);
+        }, 800);
     }
 }
 
 function showMemoryGameResult() {
     const gameResult = document.getElementById('memoryGameResult');
     const gameResultText = document.getElementById('memoryGameResultText');
+    const gameResultButtons = document.querySelector('.memory-game-result-buttons');
     const gameBoard = document.getElementById('memoryGameBoard');
     const gameInstructions = document.getElementById('memoryGameInstructions');
     
     memoryGameState.isPlaying = false;
     
-    if (gameResult) gameResult.style.display = 'block';
+    // Скрываем игровое поле
     if (gameBoard) gameBoard.style.display = 'none';
     if (gameInstructions) gameInstructions.style.display = 'none';
+    
+    // Показываем блок результата
+    if (gameResult) gameResult.style.display = 'block';
+    
+    // Скрываем кнопки сразу, чтобы избежать случайного клика
+    if (gameResultButtons) {
+        gameResultButtons.style.display = 'none';
+    }
     
     const score = memoryGameState.score;
     const total = memoryGameState.sequence.length;
@@ -1732,6 +1741,13 @@ function showMemoryGameResult() {
         const resultText = t('ui.memoryGameResult', { score: score, total: total });
         console.log('Memory game result:', { score, total, resultText });
         gameResultText.textContent = resultText;
+    }
+    
+    // Показываем кнопки с задержкой 1 секунда, чтобы избежать случайного клика
+    if (gameResultButtons) {
+        setTimeout(() => {
+            gameResultButtons.style.display = 'flex';
+        }, 1000);
     }
     
     // Отслеживание в Clarity
