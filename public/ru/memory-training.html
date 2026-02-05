@@ -271,6 +271,20 @@
                     }
                 });
             }
+            
+            // Обработчик кнопки Try Again
+            const tryAgainBtn = document.getElementById('memoryGameTryAgain');
+            if (tryAgainBtn) {
+                tryAgainBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (typeof resetMemoryGame === 'function' && typeof startMemoryGame === 'function') {
+                        resetMemoryGame();
+                        startMemoryGame();
+                    }
+                });
+            }
         }
         
         // Инициализируем при загрузке
