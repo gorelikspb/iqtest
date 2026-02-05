@@ -345,8 +345,11 @@ function t(key, params = {}) {
         value = value?.[k];
     }
     
-    if (typeof value === 'string' && params) {
-        return value.replace(/\{(\w+)\}/g, (match, param) => params[param] || match);
+    if (typeof value === 'string' && params && Object.keys(params).length > 0) {
+        return value.replace(/\{(\w+)\}/g, (match, param) => {
+            const paramValue = params[param];
+            return paramValue != null ? String(paramValue) : match;
+        });
     }
     
     return value || key;
