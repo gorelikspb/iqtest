@@ -188,31 +188,96 @@
     </script>
     <script src="../script.js"></script>
     <script>
-        // Автоматически показываем всплывашку при загрузке страницы (только один раз)
-        // И убеждаемся, что initMemoryGame вызывается
-        document.addEventListener('DOMContentLoaded', function() {
-            // Проверяем, не показывали ли уже модалку в этой сессии
+        // Инициализация игры памяти - используем тот же подход, что и для других форм
+        function initMemoryGamePage() {
+            const emailModal = document.getElementById('memoryGameEmailModal');
+            const emailForm = document.getElementById('memoryGameEmailForm');
+            const emailLaterBtn = document.getElementById('memoryGameEmailLater');
+            const startBtn = document.getElementById('startMemoryGameBtn');
+            
+            // Показываем модалку при загрузке (только один раз)
             if (!sessionStorage.getItem('memoryGameEmailShown')) {
-                const emailModal = document.getElementById('memoryGameEmailModal');
                 if (emailModal) {
                     emailModal.style.display = 'flex';
                     sessionStorage.setItem('memoryGameEmailShown', 'true');
                 }
             }
             
-            // Убеждаемся, что initMemoryGame вызывается
-            if (typeof initMemoryGame === 'function') {
-                console.log('🔄 Calling initMemoryGame from DOMContentLoaded...');
-                initMemoryGame();
+            // Обработчик формы (Save)
+            if (emailForm) {
+                emailForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const email = document.getElementById('memoryGameEmail').value;
+                    if (email) {
+                        localStorage.setItem('memoryGameEmail', email);
+                        
+                        if (typeof clarity !== 'undefined') {
+                            clarity('event', 'memory_game_email_saved');
+                        }
+                        
+                        if (emailModal) emailModal.style.display = 'none';
+                        if (typeof startMemoryGame === 'function') {
+                            startMemoryGame();
+                        }
+                    }
+                });
             }
-        });
+            
+            // Обработчик кнопки Later
+            if (emailLaterBtn) {
+                emailLaterBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (emailModal) {
+                        emailModal.style.display = 'none';
+                    }
+                    sessionStorage.setItem('memoryGameEmailShown', 'true');
+                    
+                    if (typeof startMemoryGame === 'function') {
+                        startMemoryGame();
+                    }
+                });
+            }
+            
+            // Обработчик кнопки Start Game
+            if (startBtn) {
+                startBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Проверяем, видна ли модалка
+                    const isModalVisible = emailModal && 
+                        window.getComputedStyle(emailModal).display !== 'none';
+                    
+                    if (isModalVisible) {
+                        // Модалка видна, ничего не делаем
+                        return;
+                    }
+                    
+                    // Если модалка была показана ранее, начинаем игру напрямую
+                    if (sessionStorage.getItem('memoryGameEmailShown')) {
+                        if (typeof startMemoryGame === 'function') {
+                            startMemoryGame();
+                        }
+                    } else {
+                        // Показываем модалку
+                        if (emailModal) {
+                            emailModal.style.display = 'flex';
+                            sessionStorage.setItem('memoryGameEmailShown', 'true');
+                        }
+                    }
+                });
+            }
+        }
         
-        // Также вызываем, если DOM уже загружен
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            if (typeof initMemoryGame === 'function') {
-                console.log('🔄 Calling initMemoryGame immediately...');
-                setTimeout(initMemoryGame, 100);
-            }
+        // Инициализируем при загрузке
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMemoryGamePage);
+        } else {
+            initMemoryGamePage();
         }
     </script>
 </body>

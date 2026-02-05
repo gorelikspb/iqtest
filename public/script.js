@@ -300,12 +300,8 @@ initStartPageContactForm();
         console.log('✅ Ссылка на статью "Как повысить IQ" инициализирована');
     }
     
-    // Инициализируем мини-игру "Тренировка памяти" только на странице игры
-    // На странице результатов теперь только ссылка на отдельную страницу
-    if (window.location.pathname.includes('memory-training.html') || 
-        window.location.href.includes('memory-training.html')) {
-        initMemoryGame();
-    }
+    // Инициализация игры памяти теперь происходит напрямую на странице memory-training.html
+    // Здесь только инициализируем обработчики для страницы результатов (если нужно)
     
     // Проверяем URL параметры
     checkUrlParams();
