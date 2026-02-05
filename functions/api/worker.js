@@ -58,7 +58,7 @@ export default {
 
         // 1. Email пользователю с результатами (если type = 'send-results-only' и есть iqResult)
         if (data.type === 'send-results-only' && data.iqResult) {
-          const shareUrl = data.shareUrl || `https://iqtestemails.gorelikgo.workers.dev/?iq=${data.iqResult.estimated}&min=${data.iqResult.min}&max=${data.iqResult.max}`;
+          const shareUrl = data.shareUrl || `https://iqtestnow.org/ru/index.html?iq=${data.iqResult.estimated}&min=${data.iqResult.min}&max=${data.iqResult.max}`;
           
           // Определяем уровень IQ для описания
           let iqLevel = '';
@@ -125,8 +125,6 @@ export default {
                     ${data.kidsTest ? '<li>Тесты для детей</li>' : ''}
                   </ul>
                 ` : ''}
-                
-                <p>Также можешь посмотреть расширенные тесты: <a href="https://iqtestemails.gorelikgo.workers.dev/full-tests.html">Расширенные IQ тесты</a></p>
                 
                 <p>Удачи в развитии интеллекта! 🧠</p>
                 

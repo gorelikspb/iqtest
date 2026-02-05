@@ -127,7 +127,22 @@ const translations = {
             thanksResults: 'Спасибо, {name}! Результаты вашего теста (IQ ≈ {iq}) будут скоро отправлены на email.',
             errorResults: 'Ошибка: результаты теста не найдены',
             shareResultText: 'Я прошел IQ тест и получил результат ≈ {iq} (диапазон: {min}-{max})! Пройди и сравни свой результат: ',
-            shareStartText: 'Пройди быстрый IQ тест онлайн бесплатно! Узнай свой примерный уровень интеллекта за 2-3 минуты: '
+            shareStartText: 'Пройди быстрый IQ тест онлайн бесплатно! Узнай свой примерный уровень интеллекта за 2-3 минуты: ',
+            // Игра на память
+            memoryGameTitle: '🧠 Тренировка памяти',
+            memoryGameDescription: 'Быстрая игра для развития мозга',
+            memoryGameButton: 'Играть →',
+            memoryGameEmailTitle: 'Сохранить результат игры?',
+            memoryGameEmailText: 'Оставьте email, чтобы сохранить результат тренировки памяти',
+            memoryGameEmailPlaceholder: 'Ваш email',
+            memoryGameEmailSubmit: 'Сохранить',
+            memoryGameEmailLater: 'Позже',
+            memoryGameInstructions: 'Запомните последовательность чисел, которые появятся на 3 секунды',
+            memoryGameRemembering: 'Запоминайте...',
+            memoryGameYourTurn: 'Ваша очередь! Кликните числа в правильном порядке',
+            memoryGameResult: 'Ты запомнил {score} из {total}!',
+            memoryGameTryAgain: 'Попробовать еще раз',
+            memoryGameClose: 'Закрыть'
         },
         // Описания IQ
         iqDescriptions: {
@@ -265,7 +280,22 @@ const translations = {
             thanksResults: 'Thank you, {name}! Your test results (IQ ≈ {iq}) will be sent to your email soon.',
             errorResults: 'Error: test results not found',
             shareResultText: 'I took an IQ test and got ≈ {iq} (range: {min}-{max})! Take it and compare your result: ',
-            shareStartText: 'Take a quick free online IQ test! Find out your approximate intelligence level in 2-3 minutes: '
+            shareStartText: 'Take a quick free online IQ test! Find out your approximate intelligence level in 2-3 minutes: ',
+            // Memory game
+            memoryGameTitle: '🧠 Memory Training',
+            memoryGameDescription: 'Quick game for brain development',
+            memoryGameButton: 'Play →',
+            memoryGameEmailTitle: 'Save game result?',
+            memoryGameEmailText: 'Leave your email to save your memory training result',
+            memoryGameEmailPlaceholder: 'Your email',
+            memoryGameEmailSubmit: 'Save',
+            memoryGameEmailLater: 'Later',
+            memoryGameInstructions: 'Remember the sequence of numbers that will appear for 3 seconds',
+            memoryGameRemembering: 'Remembering...',
+            memoryGameYourTurn: 'Your turn! Click the numbers in the correct order',
+            memoryGameResult: 'You remembered {score} out of {total}!',
+            memoryGameTryAgain: 'Try Again',
+            memoryGameClose: 'Close'
         },
         iqDescriptions: {
             low: 'Below Average',

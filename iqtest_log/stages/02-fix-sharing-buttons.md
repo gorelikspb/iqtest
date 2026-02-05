@@ -61,12 +61,12 @@ else if (document.title) document.title = '...';
 
 **Решение**:
 - Функции `getShareUrl()` и `getStartPageShareUrl()` теперь проверяют, является ли текущий URL локальным файлом
-- Если да, используется продакшн URL (`https://iqtest-1id.pages.dev`)
+- Если да, используется продакшн URL (`https://iqtestnow.org`)
 - Язык определяется из пути файла
 
 ```javascript
 function getShareUrl() {
-    const productionUrl = 'https://iqtest-1id.pages.dev';
+    const productionUrl = 'https://iqtestnow.org';
     const isLocal = window.location.protocol === 'file:';
     
     let baseUrl;

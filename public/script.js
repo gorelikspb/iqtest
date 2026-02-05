@@ -287,6 +287,25 @@ function init() {
 initStartPageShareButtons();
 initStartPageContactForm();
     
+    // Инициализируем ссылку на статью "Как повысить IQ"
+    const improveIqLink = document.querySelector('.btn-improve-iq');
+    if (improveIqLink) {
+        improveIqLink.addEventListener('click', function(e) {
+            console.log('🔵 Клик по ссылке "Как повысить IQ"');
+            if (typeof clarity !== 'undefined') {
+                clarity('event', 'article_improve_iq_click');
+            }
+            // Разрешаем стандартное поведение ссылки (переход на страницу)
+        });
+        console.log('✅ Ссылка на статью "Как повысить IQ" инициализирована');
+    }
+    
+    // Инициализируем мини-игру "Тренировка памяти" только на странице игры
+    // На странице результатов теперь только ссылка на отдельную страницу
+    if (window.location.pathname.includes('memory-training.html')) {
+        initMemoryGame();
+    }
+    
     // Проверяем URL параметры
     checkUrlParams();
     
@@ -1378,4 +1397,373 @@ window.toggleWarning = toggleWarning;
 
 // checkUrlParams вызывается после инициализации через DOMContentLoaded
 // init() теперь вызывается автоматически через DOMContentLoaded
+
+// ==================== МИНИ-ИГРА "ТРЕНИРОВКА ПАМЯТИ" ====================
+
+let memoryGameState = {
+    sequence: [],
+    userSequence: [],
+    isShowing: false,
+    isPlaying: false,
+    score: 0
+};
+
+function initMemoryGame() {
+    // Проверяем, что мы на странице игры памяти
+    const isMemoryTrainingPage = window.location.pathname.includes('memory-training.html');
+    if (!isMemoryTrainingPage) {
+        return; // Не инициализируем игру на других страницах
+    }
+    
+    const startBtn = document.getElementById('startMemoryGameBtn');
+    const emailModal = document.getElementById('memoryGameEmailModal');
+    const emailForm = document.getElementById('memoryGameEmailForm');
+    const emailLaterBtn = document.getElementById('memoryGameEmailLater');
+    const gameContainer = document.getElementById('memoryGameContainer');
+    const gameCloseBtn = document.getElementById('memoryGameClose');
+    const gameCloseBtn2 = document.getElementById('memoryGameCloseBtn');
+    const tryAgainBtn = document.getElementById('memoryGameTryAgain');
+    
+    if (startBtn) {
+        startBtn.addEventListener('click', function() {
+            // Показываем всплывашку с email
+            if (emailModal) {
+                emailModal.style.display = 'flex';
+            }
+        });
+    }
+    
+    // Обработка формы email
+    if (emailForm) {
+        emailForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('memoryGameEmail').value;
+            if (email) {
+                // Сохраняем email (можно отправить на сервер позже)
+                localStorage.setItem('memoryGameEmail', email);
+                
+                // Отслеживание в Clarity
+                if (typeof clarity !== 'undefined') {
+                    clarity('event', 'memory_game_email_saved');
+                }
+                
+                // Закрываем модалку и начинаем игру
+                if (emailModal) emailModal.style.display = 'none';
+                startMemoryGame();
+            }
+        });
+    }
+    
+    // Кнопка "Позже"
+    if (emailLaterBtn) {
+        emailLaterBtn.addEventListener('click', function() {
+            if (emailModal) emailModal.style.display = 'none';
+            startMemoryGame();
+        });
+    }
+    
+    // Закрытие игры
+    if (gameCloseBtn) {
+        gameCloseBtn.addEventListener('click', closeMemoryGame);
+    }
+    if (gameCloseBtn2) {
+        gameCloseBtn2.addEventListener('click', closeMemoryGame);
+    }
+    
+    // Попробовать еще раз
+    if (tryAgainBtn) {
+        tryAgainBtn.addEventListener('click', function() {
+            resetMemoryGame();
+            startMemoryGame();
+        });
+    }
+}
+
+function startMemoryGame() {
+    const gameContainer = document.getElementById('memoryGameContainer');
+    const gameBoard = document.getElementById('memoryGameBoard');
+    const gameInstructions = document.getElementById('memoryGameInstructions');
+    const gameResult = document.getElementById('memoryGameResult');
+    
+    if (!gameContainer || !gameBoard) return;
+    
+    // Показываем контейнер игры
+    gameContainer.style.display = 'block';
+    
+    // Скрываем результат
+    if (gameResult) gameResult.style.display = 'none';
+    
+    // Генерируем последовательность из 8 чисел (1-9)
+    memoryGameState.sequence = [];
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    for (let i = 0; i < 8; i++) {
+        const randomIndex = Math.floor(Math.random() * numbers.length);
+        memoryGameState.sequence.push(numbers[randomIndex]);
+        numbers.splice(randomIndex, 1); // Убираем использованное число
+    }
+    
+    memoryGameState.userSequence = [];
+    memoryGameState.isShowing = true;
+    memoryGameState.isPlaying = false;
+    memoryGameState.score = 0;
+    
+    // Отслеживание в Clarity
+    if (typeof clarity !== 'undefined') {
+        clarity('event', 'memory_game_start');
+    }
+    
+    // Создаем игровое поле
+    createMemoryGameBoard();
+    
+    // Показываем последовательность
+    if (gameInstructions) {
+        gameInstructions.textContent = t('ui.memoryGameRemembering');
+    }
+    
+    showMemorySequence();
+}
+
+function createMemoryGameBoard() {
+    const gameBoard = document.getElementById('memoryGameBoard');
+    if (!gameBoard) return;
+    
+    gameBoard.innerHTML = '';
+    
+    // Создаем 9 карточек (числа от 1 до 9)
+    for (let i = 1; i <= 9; i++) {
+        const card = document.createElement('div');
+        card.className = 'memory-game-card-item hidden';
+        card.dataset.value = i;
+        card.textContent = i;
+        gameBoard.appendChild(card);
+    }
+}
+
+function showMemorySequence() {
+    const cards = document.querySelectorAll('.memory-game-card-item');
+    let index = 0;
+    
+    // Показываем каждую карточку из последовательности по очереди
+    function showNextCard() {
+        if (index >= memoryGameState.sequence.length) {
+            // Все карточки показаны, скрываем их
+            setTimeout(() => {
+                cards.forEach(card => {
+                    card.classList.add('hidden');
+                    card.classList.remove('showing');
+                });
+                
+                // Переходим к игре
+                setTimeout(() => {
+                    memoryGameState.isShowing = false;
+                    memoryGameState.isPlaying = true;
+                    startUserTurn();
+                }, 500);
+            }, 500);
+            return;
+        }
+        
+        // Находим карточку с нужным числом
+        const numberToShow = memoryGameState.sequence[index];
+        cards.forEach(card => {
+            if (parseInt(card.dataset.value) === numberToShow) {
+                card.classList.remove('hidden');
+                card.classList.add('showing');
+            }
+        });
+        
+        index++;
+        
+        // Показываем следующую карточку через 600мс
+        setTimeout(showNextCard, 600);
+    }
+    
+    showNextCard();
+}
+
+function startUserTurn() {
+    const gameInstructions = document.getElementById('memoryGameInstructions');
+    const cards = document.querySelectorAll('.memory-game-card-item');
+    
+    if (gameInstructions) {
+        gameInstructions.textContent = t('ui.memoryGameYourTurn');
+    }
+    
+    // Показываем все карточки с числами (в случайном порядке на доске)
+    const allNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const shuffledNumbers = [...allNumbers].sort(() => Math.random() - 0.5);
+    
+    cards.forEach((card, i) => {
+        card.classList.remove('hidden', 'showing', 'correct', 'wrong');
+        card.textContent = shuffledNumbers[i];
+        card.dataset.value = shuffledNumbers[i];
+        card.style.pointerEvents = 'auto';
+        card.addEventListener('click', handleCardClick);
+    });
+}
+
+function handleCardClick(e) {
+    if (!memoryGameState.isPlaying) return;
+    
+    const card = e.target;
+    if (card.classList.contains('correct') || card.classList.contains('wrong')) {
+        return; // Уже кликнута
+    }
+    
+    const value = parseInt(card.dataset.value);
+    const expectedValue = memoryGameState.sequence[memoryGameState.userSequence.length];
+    
+    memoryGameState.userSequence.push(value);
+    
+    // Проверяем правильность
+    if (value === expectedValue) {
+        card.classList.add('correct');
+        memoryGameState.score++;
+        
+        // Если все правильно, показываем результат
+        if (memoryGameState.userSequence.length === memoryGameState.sequence.length) {
+            setTimeout(() => {
+                showMemoryGameResult();
+            }, 500);
+        }
+    } else {
+        // Неправильный ответ
+        card.classList.add('wrong');
+        setTimeout(() => {
+            showMemoryGameResult();
+        }, 1000);
+    }
+}
+
+function showMemoryGameResult() {
+    const gameResult = document.getElementById('memoryGameResult');
+    const gameResultText = document.getElementById('memoryGameResultText');
+    const gameBoard = document.getElementById('memoryGameBoard');
+    const gameInstructions = document.getElementById('memoryGameInstructions');
+    
+    memoryGameState.isPlaying = false;
+    
+    if (gameResult) gameResult.style.display = 'block';
+    if (gameBoard) gameBoard.style.display = 'none';
+    if (gameInstructions) gameInstructions.style.display = 'none';
+    
+    const score = memoryGameState.score;
+    const total = memoryGameState.sequence.length;
+    
+    if (gameResultText) {
+        gameResultText.textContent = t('ui.memoryGameResult', { score, total });
+    }
+    
+    // Отслеживание в Clarity
+    if (typeof clarity !== 'undefined') {
+        clarity('event', 'memory_game_complete');
+        clarity('event', `memory_game_score_${score}`);
+    }
+    
+    // Сохраняем результат, если есть email
+    const email = localStorage.getItem('memoryGameEmail');
+    if (email) {
+        saveMemoryGameResult(email, score, total);
+    }
+}
+
+function saveMemoryGameResult(email, score, total) {
+    // Можно отправить на сервер позже
+    const result = {
+        email: email,
+        score: score,
+        total: total,
+        timestamp: new Date().toISOString()
+    };
+    
+    // Сохраняем локально
+    let results = JSON.parse(localStorage.getItem('memoryGameResults') || '[]');
+    results.push(result);
+    localStorage.setItem('memoryGameResults', JSON.stringify(results));
+}
+
+function resetMemoryGame() {
+    memoryGameState.sequence = [];
+    memoryGameState.userSequence = [];
+    memoryGameState.isShowing = false;
+    memoryGameState.isPlaying = false;
+    memoryGameState.score = 0;
+    
+    const gameBoard = document.getElementById('memoryGameBoard');
+    const gameResult = document.getElementById('memoryGameResult');
+    const gameInstructions = document.getElementById('memoryGameInstructions');
+    
+    // Удаляем все обработчики событий с карточек
+    const cards = document.querySelectorAll('.memory-game-card-item');
+    cards.forEach(card => {
+        const newCard = card.cloneNode(true);
+        card.parentNode.replaceChild(newCard, card);
+    });
+    
+    if (gameBoard) {
+        gameBoard.style.display = 'grid';
+    }
+    if (gameResult) gameResult.style.display = 'none';
+    if (gameInstructions) {
+        gameInstructions.style.display = 'block';
+        gameInstructions.textContent = t('ui.memoryGameInstructions');
+    }
+}
+
+function closeMemoryGame() {
+    const gameContainer = document.getElementById('memoryGameContainer');
+    if (gameContainer) {
+        gameContainer.style.display = 'none';
+    }
+    resetMemoryGame();
+}
+
+// Обновляем переводы для игры при изменении языка
+function updateMemoryGameTranslations() {
+    const memoryGameCard = document.querySelector('.memory-game-card');
+    if (memoryGameCard) {
+        const title = memoryGameCard.querySelector('h3');
+        const text = memoryGameCard.querySelector('.memory-game-text');
+        const button = memoryGameCard.querySelector('.btn-memory-game');
+        
+        if (title) title.textContent = t('ui.memoryGameTitle');
+        if (text) text.textContent = t('ui.memoryGameDescription');
+        if (button) button.textContent = t('ui.memoryGameButton');
+    }
+    
+    const emailModal = document.getElementById('memoryGameEmailModal');
+    if (emailModal) {
+        const title = emailModal.querySelector('h3');
+        const text = emailModal.querySelector('p');
+        const emailInput = document.getElementById('memoryGameEmail');
+        const submitBtn = emailModal.querySelector('button[type="submit"]');
+        const laterBtn = document.getElementById('memoryGameEmailLater');
+        
+        if (title) title.textContent = t('ui.memoryGameEmailTitle');
+        if (text) text.textContent = t('ui.memoryGameEmailText');
+        if (emailInput) emailInput.placeholder = t('ui.memoryGameEmailPlaceholder');
+        if (submitBtn) submitBtn.textContent = t('ui.memoryGameEmailSubmit');
+        if (laterBtn) laterBtn.textContent = t('ui.memoryGameEmailLater');
+    }
+    
+    const gameContainer = document.getElementById('memoryGameContainer');
+    if (gameContainer) {
+        const title = gameContainer.querySelector('.memory-game-header h3');
+        const instructions = document.getElementById('memoryGameInstructions');
+        const tryAgainBtn = document.getElementById('memoryGameTryAgain');
+        const closeBtn = document.getElementById('memoryGameCloseBtn');
+        
+        if (title) title.textContent = t('ui.memoryGameTitle');
+        if (instructions) instructions.textContent = t('ui.memoryGameInstructions');
+        if (tryAgainBtn) tryAgainBtn.textContent = t('ui.memoryGameTryAgain');
+        if (closeBtn) closeBtn.textContent = t('ui.memoryGameClose');
+    }
+}
+
+// Добавляем вызов обновления переводов в applyTranslations
+const originalApplyTranslations = applyTranslations;
+applyTranslations = function() {
+    originalApplyTranslations();
+    updateMemoryGameTranslations();
+};
 

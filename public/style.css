@@ -821,82 +821,6 @@ h1 {
     font-size: 0.95em;
 }
 
-/* SEO секции */
-.seo-content,
-.faq-section {
-    margin-top: 40px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 10px;
-    text-align: left;
-}
-
-.seo-content h2,
-.faq-section h2 {
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.seo-content p,
-.faq-section p {
-    color: #555;
-    line-height: 1.6;
-    margin-bottom: 15px;
-}
-
-.seo-content a,
-.faq-section a {
-    color: #667eea;
-    text-decoration: underline;
-}
-
-.seo-content a:hover,
-.faq-section a:hover {
-    color: #764ba2;
-}
-
-.faq-item {
-    margin-bottom: 20px;
-}
-
-.faq-item h3 {
-    color: #667eea;
-    margin-bottom: 10px;
-    font-size: 1.1em;
-}
-
-.faq-item:last-child {
-    margin-bottom: 0;
-}
-
-/* Дополнительные секции */
-section[style*="background: rgba(255,255,255,0.1)"] {
-    background: #f8f9fa !important;
-    margin-top: 40px;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: left;
-}
-
-section[style*="background: rgba(255,255,255,0.1)"] h2 {
-    color: #333 !important;
-    margin-bottom: 20px;
-}
-
-section[style*="background: rgba(255,255,255,0.1)"] p,
-section[style*="background: rgba(255,255,255,0.1)"] li {
-    color: #555 !important;
-}
-
-section[style*="background: rgba(255,255,255,0.1)"] a {
-    color: #667eea !important;
-    text-decoration: underline;
-}
-
-section[style*="background: rgba(255,255,255,0.1)"] a:hover {
-    color: #764ba2 !important;
-}
-
 /* Responsive */
 @media (max-width: 600px) {
     .container {
@@ -928,6 +852,320 @@ section[style*="background: rgba(255,255,255,0.1)"] a:hover {
     }
     
     .btn-share-start {
+        width: 100%;
+    }
+}
+
+/* Карточка мини-игры "Тренировка памяти" */
+.memory-game-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px 0;
+    text-align: center;
+    color: white;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.memory-game-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.memory-game-icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+.memory-game-card h3 {
+    color: white;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+}
+
+.memory-game-text {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 20px;
+    font-size: 1em;
+}
+
+.btn-memory-game {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-memory-game:hover {
+    background: #f0f4ff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Всплывашка для email перед игрой */
+.memory-game-email-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.memory-game-email-content {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.memory-game-email-content h3 {
+    color: #667eea;
+    margin-bottom: 10px;
+    font-size: 1.3em;
+}
+
+.memory-game-email-content p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+}
+
+.memory-game-email-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.memory-game-email-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-small {
+    padding: 8px 20px;
+    font-size: 0.9em;
+}
+
+/* Игровой блок */
+.memory-game-container {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease-in;
+}
+
+.memory-game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.memory-game-header h3 {
+    color: #667eea;
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.memory-game-close {
+    background: #f0f0f0;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.memory-game-close:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.memory-game-instructions {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 1em;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.memory-game-board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.memory-game-card-item {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    user-select: none;
+}
+
+.memory-game-card-item.hidden {
+    background: #e0e0e0;
+    color: transparent;
+    cursor: default;
+}
+
+.memory-game-card-item.hidden:hover {
+    background: #e0e0e0;
+    transform: none;
+}
+
+.memory-game-card-item:not(.hidden):hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.memory-game-card-item.showing {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    animation: pulse 0.5s;
+}
+
+.memory-game-card-item.correct {
+    background: #28a745;
+    animation: correctPulse 0.3s;
+}
+
+.memory-game-card-item.wrong {
+    background: #dc3545;
+    animation: shake 0.3s;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes correctPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+.memory-game-result {
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.memory-game-result-text {
+    font-size: 1.3em;
+    color: #667eea;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.memory-game-result-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Адаптивность для игры */
+@media (max-width: 600px) {
+    .memory-game-board {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+    
+    .memory-game-card-item {
+        font-size: 1.2em;
+    }
+    
+    .memory-game-email-content {
+        padding: 20px;
+    }
+    
+    .memory-game-email-buttons {
+        flex-direction: column;
+    }
+    
+    .memory-game-email-buttons button {
+        width: 100%;
+    }
+    
+    .memory-game-result-buttons {
+        flex-direction: column;
+    }
+    
+    .memory-game-result-buttons button {
         width: 100%;
     }
 }

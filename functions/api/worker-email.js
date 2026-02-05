@@ -60,7 +60,7 @@ export default {
 
         // Email пользователю (если type = 'send-results-only' или sendResults = true и есть iqResult)
         if ((data.type === 'send-results-only' || data.sendResults) && data.iqResult) {
-          const shareUrl = data.shareUrl || `${request.url.split('/').slice(0, 3).join('/')}?iq=${data.iqResult.estimated}&min=${data.iqResult.min}&max=${data.iqResult.max}`;
+          const shareUrl = data.shareUrl || `https://iqtestnow.org/ru/index.html?iq=${data.iqResult.estimated}&min=${data.iqResult.min}&max=${data.iqResult.max}`;
           
           // Определяем уровень IQ, если не передан
           let iqLevel = data.iqResult.level;
@@ -97,9 +97,6 @@ export default {
               <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;">
               
               <p style="font-size: 15px; line-height: 1.6;">Хочешь узнать свой IQ точнее? Мы готовим расширенные тесты интеллекта (15-60 минут) и специальные тесты для детей. Когда они будут готовы, мы отправим тебе все варианты бесплатно!</p>
-              <p style="font-size: 15px; margin: 20px 0;">
-                Также можешь посмотреть <a href="${request.url.split('/').slice(0, 3).join('/')}/ru/full-tests.html" style="color: #667eea; text-decoration: underline;">расширенные IQ тесты</a>
-              </p>
               <p style="font-size: 15px; margin-top: 20px;">Удачи в развитии интеллекта! 🧠</p>
               
               <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;">
