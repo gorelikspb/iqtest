@@ -184,6 +184,15 @@ function updateResultScreenTranslations() {
 // Worker URL для отправки email
 const WORKER_URL = 'https://iqtestemails.gorelikgo.workers.dev';
 
+function getEmailLang() {
+    try {
+        const lang = (typeof getCurrentLanguage === 'function' ? getCurrentLanguage() : currentLang) || 'ru';
+        return lang === 'en' ? 'en' : 'ru';
+    } catch (e) {
+        return 'ru';
+    }
+}
+
 // Главная функция инициализации - вызывается после загрузки DOM
 function init() {
     console.log('🚀 Начало инициализации...');
@@ -535,6 +544,7 @@ async function handleFormSubmit(e) {
         type: 'iq-test',
         name: userName,
         email: userEmail,
+        lang: getEmailLang(),
         extendedTest: extendedTest,
         kidsTest: kidsTest,
         sendResults: false,
@@ -605,6 +615,7 @@ async function handleSendResultsSubmit(e) {
         type: 'send-results-only',
         name: userName,
         email: userEmail,
+        lang: getEmailLang(),
         iqResult: {
             estimated: iqResult.estimated,
             min: iqResult.min,
@@ -1336,6 +1347,7 @@ async function handleStartPageFormSubmit(e) {
         type: 'full-tests',
         name: userName,
         email: userEmail,
+        lang: getEmailLang(),
         extendedTest: extendedTest,
         kidsTest: kidsTest,
         sendResults: false,

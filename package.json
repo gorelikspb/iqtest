@@ -4,7 +4,8 @@
   "description": "Быстрый IQ тест онлайн",
   "scripts": {
     "screenshots": "node scripts/capture-screenshots.js",
-    "capture:screens": "node scripts/capture-screenshots.js"
+    "capture:screens": "node scripts/capture-screenshots.js",
+    "test:email": "node scripts/test-email-worker.mjs"
   },
   "keywords": ["iq", "test", "intelligence"],
   "author": "",

@@ -1,0 +1,11 @@
+name = "iqtestemails"
+main = "functions/api/worker.js"
+compatibility_date = "2025-08-01"
+
+# Secrets (set with `npx wrangler secret put NAME`, never commit values):
+#   RESEND_API_KEY
+#   ADMIN_EMAIL
+#   FROM_EMAIL          # after verifying iqtestnow.org: 'IQ Test <noreply@iqtestnow.org>'
+#   CORPORATE_EMAIL     # optional alias for FROM_EMAIL
+#   CORPORATE_NAME      # optional sender display name
+#   REPLY_TO            # optional
