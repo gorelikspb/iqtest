@@ -1,6 +1,13 @@
 // Worker URL для отправки email
 const WORKER_URL = 'https://iqtestemails.gorelikgo.workers.dev';
 
+function getEmailLang() {
+    const path = window.location.pathname || '';
+    if (path.includes('/en/')) return 'en';
+    const htmlLang = document.documentElement && document.documentElement.lang;
+    return htmlLang === 'en' ? 'en' : 'ru';
+}
+
 // Обработчик формы
 const contactForm = document.getElementById('contactForm');
 const ctaSuccess = document.getElementById('ctaSuccess');
@@ -28,6 +35,7 @@ async function handleFormSubmit(e) {
         type: 'full-tests',
         name: userName,
         email: userEmail,
+        lang: getEmailLang(),
         extendedTest: extendedTest,
         kidsTest: kidsTest,
         sendResults: false,

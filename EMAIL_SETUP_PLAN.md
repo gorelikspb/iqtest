@@ -1,50 +1,43 @@
-# План настройки корпоративного email
+# Email setup: direct results to the user
 
-## Текущая ситуация
-- **Режим:** Тестовый (Resend отправляет все письма на админ email)
-- **Действие:** Пересылка писем вручную с другого Gmail ящика
-- **Проблема:** Пользователи не получают письма автоматически
+## Current code behavior
 
-## Когда будет 5+ писем
+The site posts to `https://iqtestemails.gorelikgo.workers.dev`. Every payload now includes `lang` (`en` or `ru` from the URL). Results emails (`type: send-results-only`) are rendered in that language and sent **to the address the user typed**. Admin gets BCC plus a separate notification. There is no `[TEST for …]` subject and no “forward this by hand” copy.
 
-### Шаг 1: Настроить корпоративный email домен
-- Выбрать провайдера (Google Workspace, Microsoft 365, или другой)
-- Настроить домен (например, `iqtest-online.com`)
-- Создать email: `noreply@iqtest-online.com` или `info@iqtest-online.com`
+The frontend (Pages) and the Worker (workers.dev) deploy separately. Merging this PR updates the site; the Worker must be redeployed from `functions/api/worker.js` (`npx wrangler deploy` or paste/upload in the Cloudflare Worker editor).
 
-### Шаг 2: Добавить Secrets в Cloudflare Worker
-В Cloudflare Dashboard → Workers → Ваш Worker → Settings → Secrets:
+## Remaining dashboard step (required for live delivery)
+
+Resend’s `onboarding@resend.dev` sender can only deliver to the Resend account owner’s mailbox. Until a real sending domain is verified, a results email to a stranger’s inbox will 403 and the form will show an error.
+
+Do this once in the Resend dashboard (no code change after secrets are set):
+
+1. Open [https://resend.com/domains](https://resend.com/domains) → **Add Domain** → `iqtestnow.org` (or a subdomain such as `mail.iqtestnow.org`).
+2. Add the DNS records Resend shows (typically DKIM `TXT`, SPF `TXT`, and MX / return-path). In Cloudflare DNS, use the exact names and values from Resend; proxy status should be **DNS only** for those records.
+3. Wait until the domain status is **Verified** (often minutes, sometimes longer).
+4. Set the Cloudflare Worker secret (Workers → `iqtestemails` → Settings → Variables / Secrets), or `npx wrangler secret put FROM_EMAIL`:
+
+   `FROM_EMAIL` = `IQ Test <noreply@iqtestnow.org>`
+
+   Use an address on the **same** domain you verified (if you verified `mail.iqtestnow.org`, the From address must use that host). Do not leave From as `onboarding@resend.dev`.
+5. Redeploy the Worker if you have not already (`npx wrangler deploy`). Existing secrets `RESEND_API_KEY` and `ADMIN_EMAIL` stay as they are. Do not put API keys in git.
+
+Optional: `REPLY_TO` if replies should go somewhere other than `ADMIN_EMAIL`.
+
+## Test plan
+
+Offline (this PR):
+
+```bash
+npm run test:email
 ```
-CORPORATE_EMAIL = noreply@iqtest-online.com
-CORPORATE_NAME = IQ Test Online
-```
 
-### Шаг 3: Изменить код для реальной отправки
-В файле `functions/api/worker-email.js`:
-- Строка ~101: Заменить `env.ADMIN_EMAIL` на `data.email` (для отправки пользователю)
-- Убрать префикс `[TEST for ${data.email}]` из темы письма
+Live, after Worker deploy + domain verification:
 
-### Шаг 4: Проверить отправку
-- Протестировать отправку на реальный email
-- Проверить, что письма приходят от корпоративного адреса
-- Убедиться, что письма не попадают в спам
+1. **English:** open `https://iqtestnow.org/en/`, finish the test, send results to a real inbox you control that is **not** the Resend account owner. The message must be English (`Your IQ test results`, “Range”, not «Результаты» / «Диапазон»). From should be the verified domain, To should be that inbox. Nobody forwards anything.
+2. **Russian:** same flow on `https://iqtestnow.org/ru/` to the same or another real inbox. Message must be Russian (`Результаты IQ теста`, «Диапазон»).
+3. Confirm the operator mailbox gets BCC/copy only — not as the sole recipient, and not a `[TEST for user@…]` wrapper.
+4. In the browser Network tab, the POST body to the Worker must include `"lang":"en"` or `"lang":"ru"`.
+5. Negative check (optional, before domain verify): sending to a non-owner inbox should fail with a 502 and a `hint` about `resend.com/domains` instead of a fake success.
 
-### Шаг 5: Убрать тестовый режим (если нужно)
-- Если Resend все еще в тестовом режиме, переключить на продакшн
-- Или использовать другой email сервис (SendGrid, Mailgun, и т.д.)
-
-## Текущий процесс (до настройки)
-1. Пользователь заполняет форму "Отправить результаты на email"
-2. Админ получает письмо с результатами
-3. Админ пересылает письмо пользователю с другого Gmail ящика
-4. В админском письме есть готовый текст для копирования
-
-## Файлы для изменения
-- `functions/api/worker-email.js` - основной код Worker
-- Cloudflare Dashboard - настройка Secrets
-
-## Дата начала настройки
-**Триггер:** Когда будет 5+ писем от пользователей
-
-
-
+If step 1 still 403s after DNS looks correct: the `from` domain must match the verified domain exactly ([Resend: 403 on resend.dev](https://resend.com/docs/knowledge-base/403-error-resend-dev-domain), [add a domain](https://resend.com/docs/dashboard/domains/introduction)).

@@ -16,6 +16,14 @@
     "title": "Исправление кнопок шаринга и инициализации",
     "published": false,
     "screenshots": {}
+  },
+  {
+    "id": "03",
+    "file": "03-direct-localized-results-email.md",
+    "date": "2026-08-27",
+    "title": "Прямая отправка результатов на email пользователя (EN/RU)",
+    "published": false,
+    "screenshots": {}
   }
 ]
 

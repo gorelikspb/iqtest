@@ -16,6 +16,8 @@ npm-debug.log*
 # Environment
 .env
 .env.local
+.dev.vars
+.wrangler/
 
 # Build
 dist/
