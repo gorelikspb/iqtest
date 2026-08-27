@@ -13,12 +13,15 @@ import {
   buildShareUrl,
   buildFromAddress,
   buildResultsEmail,
+  buildResultsEmailText,
   buildUserResultsResendBody,
   buildAdminResendBody,
   shouldSendResultsEmail,
   isValidEmail,
   resendDomainHint,
-  DEFAULT_FROM
+  sitePages,
+  DEFAULT_FROM,
+  OPERATOR_FROM
 } from '../functions/_lib/email.js';
 
 import worker from '../functions/api/worker.js';
@@ -101,13 +104,78 @@ test('HTML in the name is escaped', () => {
   assert.match(email.html, /Ann &lt;script&gt;/);
   assert.doesNotMatch(email.html, /Ann <script>/);
 });
-test('share URL falls back to locale path and rejects off-site hosts', () => {
+function hrefs(html) {
+  return [...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
+}
+
+test('share URL is forced onto the locale path even if the payload had /ru/', () => {
+  const fromRu = buildShareUrl({
+    ...sample,
+    shareUrl: 'https://iqtestnow.org/ru/index.html?iq=120&min=100&max=140'
+  }, 'en');
+  assert.equal(fromRu, 'https://iqtestnow.org/en/index.html?iq=120&min=100&max=140&score=5&total=7');
   const ok = buildShareUrl(sample, 'en');
-  assert.equal(ok, sample.shareUrl);
+  assert.match(ok, /^https:\/\/iqtestnow\.org\/en\/index\.html\?/);
+  assert.match(ok, /iq=120/);
+  assert.match(ok, /min=100/);
+  assert.match(ok, /max=140/);
   const evil = buildShareUrl({ ...sample, shareUrl: 'https://evil.example/phish' }, 'en');
   assert.match(evil, /^https:\/\/iqtestnow\.org\/en\/index\.html/);
   const js = buildShareUrl({ ...sample, shareUrl: 'javascript:alert(1)' }, 'ru');
   assert.match(js, /^https:\/\/iqtestnow\.org\/ru\/index\.html/);
+});
+test('EN mail links are only iqtestnow.org/en and include IQ numbers', () => {
+  const email = buildResultsEmail(sample, 'en');
+  const links = hrefs(email.html);
+  assert.ok(links.length >= 4);
+  for (const href of links) {
+    assert.match(href, /^https:\/\/iqtestnow\.org\/en\//);
+    assert.doesNotMatch(href, /\/ru\//);
+    assert.doesNotMatch(href, /full-tests/);
+    assert.doesNotMatch(href, /workers\.dev/);
+  }
+  assert.ok(links.some((href) => href.includes('/en/index.html?iq=120')));
+  assert.ok(links.includes(sitePages('en').home));
+  assert.ok(links.includes(sitePages('en').howToImprove));
+  assert.ok(links.includes(sitePages('en').memory));
+  assert.match(email.html, /≈ 120/);
+  assert.match(email.html, /100 - 140/);
+  assert.match(email.html, /5 of 7/);
+  assert.doesNotMatch(email.html, /preparing extended/);
+  assert.doesNotMatch(email.html, /full-tests/);
+  assert.doesNotMatch(email.text, /\/ru\//);
+});
+test('RU mail links are only iqtestnow.org/ru', () => {
+  const email = buildResultsEmail({ ...sample, lang: 'ru', name: 'Анна' }, 'ru');
+  const links = hrefs(email.html);
+  for (const href of links) {
+    assert.match(href, /^https:\/\/iqtestnow\.org\/ru\//);
+    assert.doesNotMatch(href, /\/en\//);
+    assert.doesNotMatch(href, /full-tests/);
+  }
+  assert.ok(links.includes(sitePages('ru').howToImprove));
+  assert.doesNotMatch(email.html, /You completed the quick IQ test/);
+});
+test('plain-text template has the operator fields', () => {
+  const { text, subject } = buildResultsEmailText(sample, 'en');
+  assert.match(subject, /IQ ≈ 120/);
+  assert.match(text, /Hi, Ann <script>!/);
+  assert.match(text, /IQ ≈ 120/);
+  assert.match(text, /Range: 100 - 140/);
+  assert.match(text, /https:\/\/iqtestnow\.org\/en\/index\.html\?iq=120/);
+  assert.match(text, /https:\/\/iqtestnow\.org\/en\/how-to-improve-iq\.html/);
+});
+test('operator how-to exists and uses direct compose, not a forward chain', () => {
+  const doc = fs.readFileSync(path.join(root, 'docs/SEND_RESULTS.md'), 'utf8');
+  assert.match(doc, /iqtestnoworg@gmail\.com/);
+  assert.match(doc, /Your IQ test results — IQ ≈ \{iq\}/);
+  assert.match(doc, /Результаты IQ теста — IQ ≈ \{iq\}/);
+  assert.match(doc, /\{shareUrl\}/);
+  assert.match(doc, /https:\/\/iqtestnow\.org\/en\/how-to-improve-iq\.html/);
+  assert.match(doc, /https:\/\/iqtestnow\.org\/ru\/how-to-improve-iq\.html/);
+  assert.match(doc, /New message/);
+  assert.doesNotMatch(doc, /triple-forward/i);
+  assert.doesNotMatch(doc, /full-tests\.html/);
 });
 
 console.log('\nRecipients (direct-to-user, no forward chain)');
@@ -132,12 +200,18 @@ test('shouldSendResultsEmail only for results requests', () => {
   assert.equal(shouldSendResultsEmail(sample), true);
   assert.equal(shouldSendResultsEmail({ type: 'iq-test', email: 'a@b.co' }), false);
 });
-test('admin copy no longer asks to forward by hand when delivery succeeded', () => {
-  const admin = buildAdminResendBody(sample, { ADMIN_EMAIL: 'admin@example.com' }, { userEmailSent: true });
+test('admin copy tells the operator to compose from Gmail, not forward', () => {
+  const admin = buildAdminResendBody(sample, { ADMIN_EMAIL: 'admin@example.com' }, {
+    userEmailSent: false,
+    userEmailError: 'sandbox'
+  });
   assert.doesNotMatch(admin.html, /НУЖНО ОТПРАВИТЬ ВРУЧНУЮ/);
   assert.doesNotMatch(admin.subject, /ВРУЧНУЮ/);
-  assert.match(admin.html, /напрямую/);
-  assert.match(admin.html, /язык: en/);
+  assert.match(admin.html, /Язык письма:/);
+  assert.ok(admin.html.includes(OPERATOR_FROM));
+  assert.match(admin.html, /не Forward/);
+  assert.match(admin.html, /docs\/SEND_RESULTS.md/);
+  assert.match(admin.html, /Your IQ test results/);
 });
 test('sandbox hint points at Resend domains dashboard', () => {
   const hint = resendDomainHint(

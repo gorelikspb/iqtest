@@ -6,6 +6,8 @@
 
 export const DEFAULT_FROM = 'IQ Test <onboarding@resend.dev>';
 export const SITE_ORIGIN = 'https://iqtestnow.org';
+/** Gmail the operator uses TODAY to compose results until Resend domain is verified. */
+export const OPERATOR_FROM = 'iqtestnoworg@gmail.com';
 export const ALLOWED_SHARE_HOSTS = new Set([
   'iqtestnow.org',
   'www.iqtestnow.org',
@@ -44,13 +46,11 @@ const COPY = {
     correct: 'Правильных ответов',
     of: 'из',
     shareCta: 'Поделись результатом с друзьями и сравните результаты!',
-    shareButton: 'Поделиться результатом',
-    moreHeading: 'Хочешь узнать свой IQ точнее?',
-    moreBody:
-      'Мы готовим расширенные тесты интеллекта (15–60 минут) и специальные тесты для детей. Когда они будут готовы, мы отправим тебе все варианты бесплатно!',
-    subscribed: 'Ты подписался на:',
-    extended: 'Расширенные тесты (15–60 минут)',
-    kids: 'Тесты для детей',
+    shareButton: 'Открыть результат на сайте',
+    moreHeading: 'Хочешь потренировать мозг?',
+    improveButton: 'Как улучшить IQ',
+    memoryButton: 'Тренировка памяти',
+    homeButton: 'IQ Test Online',
     luck: 'Удачи в развитии интеллекта! 🧠',
     importantTitle: 'Важно:',
     important:
@@ -70,13 +70,11 @@ const COPY = {
     correct: 'Correct answers',
     of: 'of',
     shareCta: 'Share your result with friends and compare scores!',
-    shareButton: 'Share your result',
-    moreHeading: 'Want a more precise IQ score?',
-    moreBody:
-      'We are preparing extended intelligence tests (15–60 minutes) and special tests for children. When they are ready, we will send you every option for free!',
-    subscribed: 'You signed up for:',
-    extended: 'Extended tests (15–60 minutes)',
-    kids: 'Tests for children',
+    shareButton: 'Open your result on the site',
+    moreHeading: 'Want to train your mind?',
+    improveButton: 'How to improve IQ',
+    memoryButton: 'Memory training',
+    homeButton: 'IQ Test Online',
     luck: 'Good luck training your mind! 🧠',
     importantTitle: 'Important:',
     important:
@@ -128,19 +126,52 @@ export function iqLevelLabel(estimated, lang) {
   return labels.exceptional;
 }
 
+export function sitePages(lang) {
+  const locale = lang === 'en' ? 'en' : 'ru';
+  const base = `${SITE_ORIGIN}/${locale}`;
+  return {
+    home: `${base}/`,
+    test: `${base}/index.html`,
+    howToImprove: `${base}/how-to-improve-iq.html`,
+    memory: `${base}/memory-training.html`,
+    about: `${base}/about-iq-tests.html`,
+    faq: `${base}/faq.html`
+  };
+}
+
 export function buildShareUrl(data, lang) {
+  const locale = lang === 'en' ? 'en' : 'ru';
   const iq = data?.iqResult || {};
-  const fallback = `${SITE_ORIGIN}/${lang}/index.html?iq=${encodeURIComponent(iq.estimated ?? '')}&min=${encodeURIComponent(iq.min ?? '')}&max=${encodeURIComponent(iq.max ?? '')}`;
+  const params = new URLSearchParams();
+
+  const fromShare = {};
   const candidate = data?.shareUrl;
-  if (!candidate || typeof candidate !== 'string') return fallback;
-  try {
-    const url = new URL(candidate);
-    if (url.protocol !== 'https:' && url.protocol !== 'http:') return fallback;
-    if (!ALLOWED_SHARE_HOSTS.has(url.hostname)) return fallback;
-    return url.toString();
-  } catch {
-    return fallback;
+  if (candidate && typeof candidate === 'string') {
+    try {
+      const url = new URL(candidate);
+      if ((url.protocol === 'https:' || url.protocol === 'http:') && ALLOWED_SHARE_HOSTS.has(url.hostname)) {
+        url.searchParams.forEach((value, key) => {
+          fromShare[key] = value;
+        });
+      }
+    } catch {
+      // ignore invalid share URLs
+    }
   }
+
+  const iqVal = iq.estimated ?? fromShare.iq;
+  const minVal = iq.min ?? fromShare.min;
+  const maxVal = iq.max ?? fromShare.max;
+  const scoreVal = iq.score ?? fromShare.score;
+  const totalVal = iq.total ?? fromShare.total;
+  if (iqVal != null && iqVal !== '') params.set('iq', String(iqVal));
+  if (minVal != null && minVal !== '') params.set('min', String(minVal));
+  if (maxVal != null && maxVal !== '') params.set('max', String(maxVal));
+  if (scoreVal != null && scoreVal !== '') params.set('score', String(scoreVal));
+  if (totalVal != null && totalVal !== '') params.set('total', String(totalVal));
+
+  const query = params.toString();
+  return `${SITE_ORIGIN}/${locale}/index.html${query ? `?${query}` : ''}`;
 }
 
 export function buildFromAddress(env = {}) {
@@ -166,23 +197,66 @@ function emailStyles() {
   `;
 }
 
-export function buildResultsEmail(data, lang = 'ru') {
+export function displayName(data, lang) {
+  const t = COPY[lang] || COPY.ru;
+  return (data?.name && String(data.name).trim()) || t.fallbackName;
+}
+
+function resultFields(data, lang) {
   const t = COPY[lang] || COPY.ru;
   const iq = data?.iqResult || {};
-  const name = (data?.name && String(data.name).trim()) || t.fallbackName;
-  const level = iqLevelLabel(iq.estimated, lang);
+  const pages = sitePages(lang);
   const shareUrl = buildShareUrl(data, lang);
+  const name = displayName(data, lang);
+  return {
+    t,
+    iq,
+    pages,
+    shareUrl,
+    name,
+    level: iqLevelLabel(iq.estimated, lang),
+    score: iq.score ?? 'N/A',
+    total: iq.total ?? 'N/A',
+    subject: t.subject(iq.estimated)
+  };
+}
+
+export function buildResultsEmailText(data, lang = 'ru') {
+  const { t, iq, pages, shareUrl, name, level, score, total, subject } = resultFields(data, lang);
+  const lines = [
+    t.hello(name),
+    '',
+    t.intro,
+    '',
+    `IQ ≈ ${iq.estimated}`,
+    `${t.range}: ${iq.min} - ${iq.max}`,
+    level,
+    `${t.correct}: ${score} ${t.of} ${total}`,
+    '',
+    t.shareCta,
+    shareUrl,
+    '',
+    t.moreHeading,
+    `${t.homeButton}: ${pages.home}`,
+    `${t.improveButton}: ${pages.howToImprove}`,
+    `${t.memoryButton}: ${pages.memory}`,
+    '',
+    t.luck,
+    '',
+    `${t.importantTitle} ${t.important}`,
+    t.disclaimer,
+    t.ignore
+  ];
+  return { subject, text: lines.join('\n'), shareUrl, pages, name, level };
+}
+
+export function buildResultsEmail(data, lang = 'ru') {
+  const { t, iq, pages, shareUrl, name, level, score, total, subject } = resultFields(data, lang);
   const safeName = escapeHtml(name);
   const safeShareUrl = escapeHtml(shareUrl);
-  const score = iq.score ?? 'N/A';
-  const total = iq.total ?? 'N/A';
-
-  const subscribedItems = [];
-  if (data.extendedTest) subscribedItems.push(`<li>${escapeHtml(t.extended)}</li>`);
-  if (data.kidsTest) subscribedItems.push(`<li>${escapeHtml(t.kids)}</li>`);
-  const subscribedHtml = subscribedItems.length
-    ? `<p>✅ ${escapeHtml(t.subscribed)}</p><ul>${subscribedItems.join('')}</ul>`
-    : '';
+  const safeHome = escapeHtml(pages.home);
+  const safeImprove = escapeHtml(pages.howToImprove);
+  const safeMemory = escapeHtml(pages.memory);
 
   const html = `<!DOCTYPE html>
 <html lang="${t.htmlLang}">
@@ -212,8 +286,11 @@ export function buildResultsEmail(data, lang = 'ru') {
     </div>
     <hr style="margin: 30px 0;">
     <h2>${escapeHtml(t.moreHeading)}</h2>
-    <p>${escapeHtml(t.moreBody)}</p>
-    ${subscribedHtml}
+    <p style="text-align: center;">
+      <a href="${safeHome}" class="share-button">${escapeHtml(t.homeButton)}</a>
+      <a href="${safeImprove}" class="share-button">${escapeHtml(t.improveButton)}</a>
+      <a href="${safeMemory}" class="share-button">${escapeHtml(t.memoryButton)}</a>
+    </p>
     <p>${escapeHtml(t.luck)}</p>
     <div class="footer">
       <p><strong>${lang === 'en' ? 'Disclaimer:' : 'Дисклеймер:'}</strong> ${escapeHtml(t.disclaimer)}</p>
@@ -225,9 +302,11 @@ export function buildResultsEmail(data, lang = 'ru') {
 
   return {
     lang,
-    subject: t.subject(iq.estimated),
+    subject,
     html,
+    text: buildResultsEmailText(data, lang).text,
     shareUrl,
+    pages,
     level
   };
 }
@@ -253,7 +332,8 @@ export function buildUserResultsResendBody(data, env = {}) {
     to: [to],
     reply_to: env.REPLY_TO || admin || to,
     subject: email.subject,
-    html: email.html
+    html: email.html,
+    text: email.text
   };
   if (admin && admin.toLowerCase() !== to.toLowerCase()) {
     body.bcc = [admin];
@@ -264,6 +344,7 @@ export function buildUserResultsResendBody(data, env = {}) {
 export function buildAdminEmail(data, { userEmailSent, userEmailError } = {}) {
   const lang = resolveLang(data);
   const iq = data?.iqResult;
+  const results = iq ? buildResultsEmail(data, lang) : null;
   const typeLabel =
     data?.type === 'send-results-only'
       ? 'Отправка результатов на email'
@@ -273,8 +354,21 @@ export function buildAdminEmail(data, { userEmailSent, userEmailError } = {}) {
 
   const deliveryNote = data?.type === 'send-results-only'
     ? (userEmailSent
-      ? `<p style="color:#0c5460;"><strong>Доставка:</strong> письмо с результатами отправлено напрямую на ${escapeHtml(data.email)} (язык: ${escapeHtml(lang)}). Пересылать вручную не нужно.</p>`
-      : `<p style="color:#856404;"><strong>Доставка не удалась:</strong> ${escapeHtml(userEmailError || 'неизвестная ошибка')}. Пользователь письмо не получил. Если Resend ещё на onboarding@resend.dev — сначала подтвердите домен iqtestnow.org на resend.com/domains и задайте секрет FROM_EMAIL.</p>`)
+      ? `<p style="color:#0c5460;"><strong>Доставка:</strong> письмо с результатами отправлено напрямую на ${escapeHtml(data.email)} (язык: ${escapeHtml(lang)}). Пользователю ничего пересылать не нужно.</p>`
+      : `<p style="color:#856404;"><strong>Доставка Resend не удалась:</strong> ${escapeHtml(userEmailError || 'неизвестная ошибка')}.</p>
+         <p><strong>Сегодня:</strong> открой новое письмо (не Forward) FROM <code>${OPERATOR_FROM}</code> TO <code>${escapeHtml(data.email)}</code>. Тема и текст ниже уже заполнены. Инструкция: docs/SEND_RESULTS.md</p>`)
+    : '';
+
+  const composeBlock = results
+    ? `<h3>Черновик для ${OPERATOR_FROM}</h3>
+      <div class="data-box">
+        <div class="data-row"><span class="data-label">From:</span> ${OPERATOR_FROM}</div>
+        <div class="data-row"><span class="data-label">To:</span> ${escapeHtml(data.email)}</div>
+        <div class="data-row"><span class="data-label">Lang:</span> ${escapeHtml(lang)}</div>
+        <div class="data-row"><span class="data-label">Subject:</span> ${escapeHtml(results.subject)}</div>
+        <div class="data-row"><span class="data-label">Share URL:</span> ${escapeHtml(results.shareUrl)}</div>
+      </div>
+      <pre style="white-space:pre-wrap;background:#fff;border:1px solid #ddd;padding:12px;border-radius:8px;">${escapeHtml(results.text)}</pre>`
     : '';
 
   const html = `<!DOCTYPE html>
@@ -301,13 +395,6 @@ export function buildAdminEmail(data, { userEmailSent, userEmailError } = {}) {
       <div class="data-row"><span class="data-label">Источник:</span> ${escapeHtml(data?.source || '')}</div>
       <div class="data-row"><span class="data-label">Тип:</span> ${escapeHtml(data?.type || '')}</div>
     </div>
-    <h3>Интересуется:</h3>
-    <div class="data-box">
-      <ul>
-        <li>Расширенные тесты (15-60 минут): ${data?.extendedTest ? '✅ Да' : '❌ Нет'}</li>
-        <li>Тесты для детей: ${data?.kidsTest ? '✅ Да' : '❌ Нет'}</li>
-      </ul>
-    </div>
     ${iq ? `
       <h3>Результат теста:</h3>
       <div class="iq-result">
@@ -316,6 +403,7 @@ export function buildAdminEmail(data, { userEmailSent, userEmailError } = {}) {
         <div class="data-row"><span class="data-label">Правильных ответов:</span> ${escapeHtml(iq.score ?? 'N/A')} из ${escapeHtml(iq.total ?? 'N/A')}</div>
       </div>
     ` : ''}
+    ${composeBlock}
     <div class="data-box">
       <div class="data-row"><span class="data-label">Время:</span> ${escapeHtml(new Date(data?.timestamp || Date.now()).toISOString())}</div>
     </div>
@@ -324,7 +412,7 @@ export function buildAdminEmail(data, { userEmailSent, userEmailError } = {}) {
 </html>`;
 
   return {
-    subject: `${typeLabel}: ${data?.name || 'Без имени'} (${data?.email})${iq ? ` — IQ ≈ ${iq.estimated}` : ''}`,
+    subject: `${typeLabel}: ${data?.name || 'Без имени'} (${data?.email})${iq ? ` — IQ ≈ ${iq.estimated}` : ''} [${lang}]`,
     html
   };
 }

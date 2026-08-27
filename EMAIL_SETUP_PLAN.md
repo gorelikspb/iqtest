@@ -40,4 +40,4 @@ Live, after Worker deploy + domain verification:
 4. In the browser Network tab, the POST body to the Worker must include `"lang":"en"` or `"lang":"ru"`.
 5. Negative check (optional, before domain verify): sending to a non-owner inbox should fail with a 502 and a `hint` about `resend.com/domains` instead of a fake success.
 
-If step 1 still 403s after DNS looks correct: the `from` domain must match the verified domain exactly ([Resend: 403 on resend.dev](https://resend.com/docs/knowledge-base/403-error-resend-dev-domain), [add a domain](https://resend.com/docs/dashboard/domains/introduction)).
+Until that is done, send results **today** with a new Gmail compose from `iqtestnoworg@gmail.com` (not a forward chain). How-to and paste-ready EN/RU bodies: [`docs/SEND_RESULTS.md`](docs/SEND_RESULTS.md).

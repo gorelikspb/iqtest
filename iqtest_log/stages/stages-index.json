@@ -24,6 +24,14 @@
     "title": "Прямая отправка результатов на email пользователя (EN/RU)",
     "published": false,
     "screenshots": {}
+  },
+  {
+    "id": "04",
+    "file": "04-results-email-copy-and-operator-howto.md",
+    "date": "2026-08-27",
+    "title": "Аудит письма с результатами и инструкция оператору",
+    "published": false,
+    "screenshots": {}
   }
 ]
 

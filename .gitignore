@@ -32,8 +32,9 @@ package-lock.json
 # Instructions (private)
 instructions/
 
-# Documentation (private)
-docs/
+# Documentation (private), except the operator send-results how-to
+docs/*
+!docs/SEND_RESULTS.md
 
 # Screenshots (if private)
 # screenshots/  # Раскомментируйте если не хотите коммитить скриншоты
