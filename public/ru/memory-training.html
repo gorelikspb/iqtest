@@ -175,6 +175,9 @@
                     Запомните последовательность чисел, которые появятся на 3 секунды
                 </div>
                 <div class="memory-game-board" id="memoryGameBoard"></div>
+                <div class="memory-game-inline-controls" style="text-align: center; margin-top: 16px;">
+                    <button type="button" class="btn-secondary" id="memoryGameRestartBtn" style="padding: 10px 24px; border-radius: 8px; cursor: pointer;">🔄 Начать заново</button>
+                </div>
                 <div class="memory-game-result" id="memoryGameResult" style="display: none;">
                     <div class="memory-game-result-text" id="memoryGameResultText"></div>
                     <div class="memory-game-result-buttons">
@@ -285,7 +288,7 @@
                 });
             }
             
-            // Обработчик кнопки Try Again
+            // Обработчик кнопки Try Again и Начать заново + ползунка сложности
             const tryAgainBtn = document.getElementById('memoryGameTryAgain');
             if (tryAgainBtn) {
                 tryAgainBtn.addEventListener('click', function(e) {
@@ -295,6 +298,32 @@
                     if (typeof resetMemoryGame === 'function' && typeof startMemoryGame === 'function') {
                         resetMemoryGame();
                         startMemoryGame();
+                    }
+                });
+            }
+
+            const restartBtn = document.getElementById('memoryGameRestartBtn');
+            if (restartBtn) {
+                restartBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (typeof resetMemoryGame === 'function' && typeof startMemoryGame === 'function') {
+                        resetMemoryGame();
+                        startMemoryGame();
+                    }
+                });
+            }
+
+            const sliderEl = document.getElementById('memoryLengthSlider');
+            if (sliderEl) {
+                sliderEl.addEventListener('change', function() {
+                    const gameContainer = document.getElementById('memoryGameContainer');
+                    if (gameContainer && window.getComputedStyle(gameContainer).display !== 'none') {
+                        if (typeof resetMemoryGame === 'function' && typeof startMemoryGame === 'function') {
+                            resetMemoryGame();
+                            startMemoryGame();
+                        }
                     }
                 });
             }

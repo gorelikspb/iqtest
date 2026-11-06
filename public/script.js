@@ -1615,8 +1615,11 @@ function startMemoryGame() {
     
     // Скрываем результат
     if (gameResult) gameResult.style.display = 'none';
+    if (gameBoard) gameBoard.style.display = 'grid';
+    if (gameInstructions) gameInstructions.style.display = 'block';
+    clearMemoryGameTimers();
     
-    // Генерируем последовательность из 8 чисел (1-9)
+    // Генерируем последовательность из выбранного числа цифр (от 3 до 9)
     memoryGameState.sequence = [];
     const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     const sliderEl = document.getElementById('memoryLengthSlider');
@@ -1637,7 +1640,7 @@ function startMemoryGame() {
         clarity('event', 'memory_game_start');
     }
     
-    // Создаем игровое поле
+    // Создаем игровое поле ровно из seqLen карточек
     createMemoryGameBoard();
     
     // Показываем последовательность
@@ -1648,18 +1651,35 @@ function startMemoryGame() {
     showMemorySequence();
 }
 
+function addMemoryGameTimer(fn, delay) {
+    if (!memoryGameState.timers) memoryGameState.timers = [];
+    const id = setTimeout(fn, delay);
+    memoryGameState.timers.push(id);
+    return id;
+}
+
+function clearMemoryGameTimers() {
+    if (memoryGameState.timers && memoryGameState.timers.length) {
+        memoryGameState.timers.forEach(id => clearTimeout(id));
+    }
+    memoryGameState.timers = [];
+}
+
 function createMemoryGameBoard() {
     const gameBoard = document.getElementById('memoryGameBoard');
     if (!gameBoard) return;
     
     gameBoard.innerHTML = '';
     
-    // Создаем 9 карточек (числа от 1 до 9)
-    for (let i = 1; i <= 9; i++) {
+    // Создаем ровно столько карточек, сколько выбрано цифр (от 3 до 9)
+    const seq = memoryGameState.sequence && memoryGameState.sequence.length
+        ? memoryGameState.sequence
+        : [1, 2, 3, 4, 5];
+    for (let i = 0; i < seq.length; i++) {
         const card = document.createElement('div');
         card.className = 'memory-game-card-item hidden';
-        card.dataset.value = i;
-        card.textContent = i;
+        card.dataset.value = seq[i];
+        card.textContent = seq[i];
         gameBoard.appendChild(card);
     }
 }
@@ -1671,36 +1691,33 @@ function showMemorySequence() {
     // Показываем каждую карточку из последовательности по очереди
     function showNextCard() {
         if (index >= memoryGameState.sequence.length) {
-            // Все карточки показаны, скрываем их
-            setTimeout(() => {
+            // Все карточки показаны, даем время запомнить и скрываем их
+            addMemoryGameTimer(() => {
                 cards.forEach(card => {
                     card.classList.add('hidden');
                     card.classList.remove('showing');
                 });
                 
                 // Переходим к игре
-                setTimeout(() => {
+                addMemoryGameTimer(() => {
                     memoryGameState.isShowing = false;
                     memoryGameState.isPlaying = true;
                     startUserTurn();
-                }, 500);
-            }, 500);
+                }, 400);
+            }, 900);
             return;
         }
         
-        // Находим карточку с нужным числом
-        const numberToShow = memoryGameState.sequence[index];
-        cards.forEach(card => {
-            if (parseInt(card.dataset.value) === numberToShow) {
-                card.classList.remove('hidden');
-                card.classList.add('showing');
-            }
-        });
+        const card = cards[index];
+        if (card) {
+            card.classList.remove('hidden');
+            card.classList.add('showing');
+        }
         
         index++;
         
         // Показываем следующую карточку через 600мс
-        setTimeout(showNextCard, 600);
+        addMemoryGameTimer(showNextCard, 600);
     }
     
     showNextCard();
@@ -1714,9 +1731,14 @@ function startUserTurn() {
         gameInstructions.textContent = t('ui.memoryGameYourTurn');
     }
     
-    // Показываем все карточки с числами (в случайном порядке на доске)
-    const allNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    // Показываем именно выбранное количество карточек (в случайном порядке на доске)
+    const allNumbers = [...memoryGameState.sequence];
     const shuffledNumbers = [...allNumbers].sort(() => Math.random() - 0.5);
+    if (shuffledNumbers.length >= 2 && shuffledNumbers.every((val, idx) => val === allNumbers[idx])) {
+        const tmp = shuffledNumbers[0];
+        shuffledNumbers[0] = shuffledNumbers[1];
+        shuffledNumbers[1] = tmp;
+    }
     
     cards.forEach((card, i) => {
         card.classList.remove('hidden', 'showing', 'correct', 'wrong');
@@ -1825,6 +1847,7 @@ function saveMemoryGameResult(email, score, total) {
 }
 
 function resetMemoryGame() {
+    clearMemoryGameTimers();
     memoryGameState.sequence = [];
     memoryGameState.userSequence = [];
     memoryGameState.isShowing = false;
