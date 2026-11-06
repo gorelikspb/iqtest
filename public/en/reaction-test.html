@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="FjUZ6hoHjNAZ783fB-eBOua9Up64i7T4vHaloHMWYVY" />
+    <title>Reaction Time Test Online (ms) — Human Reflex & Brain Speed Benchmark</title>
+    <meta name="description" content="Test your visual reaction time in milliseconds (ms) online for free! 5 rounds inspired by Human Benchmark. Measure your neural processing speed and reflexes.">
+    <meta name="keywords" content="reaction time test, reflex test online, human benchmark reaction, test reaction in ms, brain speed test">
+    <meta name="author" content="IQ Test Online">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://iqtestnow.org/en/reaction-test.html">
+    <meta property="og:title" content="Reaction Time Test Online — Are You Faster Than 230 ms?">
+    <meta property="og:description" content="Click as soon as the box turns green! Measure your neural reflex speed in milliseconds.">
+    <meta property="og:image" content="https://iqtestnow.org/assets/og-image-en.svg">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Reaction Time Test Online (ms)">
+    <meta name="twitter:description" content="Benchmark your visual reflexes across 5 rounds and compare with pro gamers!">
+    <meta name="twitter:image" content="https://iqtestnow.org/assets/og-image-en.svg">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Reaction Time Test Online",
+        "description": "Interactive 5-round visual reaction time benchmark in milliseconds.",
+        "url": "https://iqtestnow.org/en/reaction-test.html",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "inLanguage": "en"
+    }
+    </script>
+
+    <link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/reaction-test.html">
+    <link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/reaction-test.html">
+    <link rel="alternate" hreflang="x-default" href="https://iqtestnow.org/ru/reaction-test.html">
+    <link rel="canonical" href="https://iqtestnow.org/en/reaction-test.html">
+    <link rel="stylesheet" href="../style.css">
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "u96eyi524z");
+    </script>
+</head>
+<body>
+    <nav class="lang-switcher">
+        <a href="../ru/reaction-test.html">RU</a>
+        <a href="../en/reaction-test.html" class="active">EN</a>
+    </nav>
+
+    <nav class="main-nav" style="position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="index.html" class="top-nav-pill">🏠 Home</a>
+        <a href="full-tests.html" class="top-nav-pill">🎓 15-Min IQ Test</a>
+        <a href="schulte-table.html" class="top-nav-pill">🎯 Schulte Grid</a>
+        <a href="memory-training.html" class="top-nav-pill">🧠 Memory</a>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-screen">
+            <h1>⚡ Reaction Time Benchmark</h1>
+            <p class="subtitle">Measure your brain’s visual-motor processing speed in milliseconds</p>
+
+            <div class="info-box">
+                <ul>
+                    <li>🔴 Wait until the red box turns <strong>GREEN</strong></li>
+                    <li>⚡ Click or tap <strong>immediately</strong> when the color changes</li>
+                    <li>📊 Your benchmark is averaged across <strong>5 rounds</strong></li>
+                </ul>
+            </div>
+
+            <!-- History Pills -->
+            <div class="reaction-history" id="reactionHistory"></div>
+
+            <!-- Interactive Pad -->
+            <div class="reaction-pad state-idle" id="reactionPad">
+                <div class="reaction-pad-icon">⚡</div>
+                <div class="reaction-pad-text" id="reactionPadText">Click here to start Round 1 of 5</div>
+            </div>
+
+            <!-- Result Box -->
+            <div class="game-result-panel" id="reactionResult" style="display: none;">
+                <h2>⚡ Your Reaction Speed Benchmark</h2>
+                <div class="iq-value" id="reactionFinalMs" style="font-size: 3em;">0 ms</div>
+                <p class="iq-description" id="reactionNormText"></p>
+
+                <!-- Lead Capture -->
+                <div class="send-results-box" style="margin-top: 20px;">
+                    <h3>📧 Save Your Benchmark & Get Cognitive Speed Drills</h3>
+                    <p class="send-results-text">We will send your reflex percentile and brain speed training tips to your inbox:</p>
+                    <form id="reactionLeadForm" class="send-results-form" onsubmit="return false;">
+                        <input type="text" id="reactionCompany" name="company" style="display:none" tabindex="-1" autocomplete="off">
+                        <div class="form-group">
+                            <input type="text" id="reactionLeadName" placeholder="Your name" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="reactionLeadEmail" placeholder="Your email" class="form-input" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Send My Score to Email</button>
+                    </form>
+                    <p id="reactionLeadStatus" style="display:none; color:#28a745; font-weight:600; margin-top:10px;"></p>
+                </div>
+
+                <!-- Share -->
+                <div class="share-box" style="margin-top: 20px;">
+                    <h3>Compare Reflexes With Friends!</h3>
+                    <div class="share-buttons">
+                        <button type="button" class="btn-share btn-share-telegram" id="reactionShareTelegram">Telegram</button>
+                        <button type="button" class="btn-share btn-share-whatsapp" id="reactionShareWhatsApp">WhatsApp</button>
+                        <button type="button" class="btn-share btn-share-link" id="reactionShareCopy">📋 Copy My Score</button>
+                    </div>
+                    <div id="reactionShareMsg" class="share-success" style="display:none;"></div>
+                </div>
+
+                <button class="btn-secondary" id="reactionRestartBtn">Test Again</button>
+            </div>
+
+            <!-- SEO Content -->
+            <section class="seo-content">
+                <h2>How does Reaction Time relate to General Intelligence (IQ)?</h2>
+                <p>
+                    Psychometric research (including work by Arthur Jensen and Ian Deary) demonstrates a consistent link between simple visual-motor reaction time and general cognitive ability (the <em>g</em> factor). Faster neural transmission correlates with higher mental processing efficiency and working memory capacity.
+                </p>
+                <h2>Human Reaction Time Benchmarks</h2>
+                <p>
+                    • <strong>150–215 ms:</strong> Esports pro and fighter-pilot tier.<br>
+                    • <strong>215–260 ms:</strong> Sharp, well-rested adult performance.<br>
+                    • <strong>260–310 ms:</strong> Global median (accounting for 15–30 ms display and mouse latency).<br>
+                    • <strong>310+ ms:</strong> Indicates fatigue, distraction, or high device input lag.
+                </p>
+                <p>
+                    Also train your peripheral attention with the <a href="schulte-table.html">5×5 Schulte Table</a> or take our <a href="full-tests.html">15-Minute Extended IQ Assessment</a>.
+                </p>
+            </section>
+        </div>
+    </div>
+
+    <script src="../brain-games.js"></script>
+</body>
+</html>

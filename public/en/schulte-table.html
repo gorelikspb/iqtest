@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="FjUZ6hoHjNAZ783fB-eBOua9Up64i7T4vHaloHMWYVY" />
+    <title>Schulte Table 5×5 Online — Focus & Speed Reading Brain Game | Free</title>
+    <meta name="description" content="Play the classic 5×5 Schulte Table online for free with timer and cognitive benchmarks. Train peripheral vision, attention span, and speed reading.">
+    <meta name="keywords" content="schulte table online, 5x5 schulte grid, peripheral vision trainer, speed reading exercise, focus brain game">
+    <meta name="author" content="IQ Test Online">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://iqtestnow.org/en/schulte-table.html">
+    <meta property="og:title" content="Schulte Table 5×5 Online — Test Your Focus in 30 Seconds">
+    <meta property="og:description" content="Find numbers 1 to 25 as fast as you can! Train peripheral vision and mental speed.">
+    <meta property="og:image" content="https://iqtestnow.org/assets/og-image-en.svg">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Schulte Table 5×5 Online — Brain Focus Benchmark">
+    <meta name="twitter:description" content="Find numbers 1 to 25 and compare your attention speed against adult benchmarks.">
+    <meta name="twitter:image" content="https://iqtestnow.org/assets/og-image-en.svg">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Schulte Table 5×5 Online",
+        "description": "Interactive 5×5 Schulte Grid for peripheral vision, focus, and speed-reading training.",
+        "url": "https://iqtestnow.org/en/schulte-table.html",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "inLanguage": "en"
+    }
+    </script>
+
+    <link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/schulte-table.html">
+    <link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/schulte-table.html">
+    <link rel="alternate" hreflang="x-default" href="https://iqtestnow.org/ru/schulte-table.html">
+    <link rel="canonical" href="https://iqtestnow.org/en/schulte-table.html">
+    <link rel="stylesheet" href="../style.css">
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "u96eyi524z");
+    </script>
+</head>
+<body>
+    <nav class="lang-switcher">
+        <a href="../ru/schulte-table.html">RU</a>
+        <a href="../en/schulte-table.html" class="active">EN</a>
+    </nav>
+
+    <nav class="main-nav" style="position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="index.html" class="top-nav-pill">🏠 Home</a>
+        <a href="full-tests.html" class="top-nav-pill">🎓 15-Min IQ Test</a>
+        <a href="reaction-test.html" class="top-nav-pill">⚡ Reaction Test</a>
+        <a href="memory-training.html" class="top-nav-pill">🧠 Memory</a>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-screen">
+            <h1>🎯 Schulte Table 5×5</h1>
+            <p class="subtitle">Peripheral vision, speed reading & cognitive focus benchmark</p>
+
+            <div class="info-box">
+                <ul>
+                    <li>👁️ <strong>Rule:</strong> keep your eyes fixed on the center cell</li>
+                    <li>🔢 Click numbers in ascending order from <strong>1 to 25</strong> using peripheral vision</li>
+                    <li>⏱️ Pro focus benchmark: <strong>under 30 seconds</strong></li>
+                </ul>
+            </div>
+
+            <!-- HUD -->
+            <div class="schulte-hud" id="schulteHud" style="display: none;">
+                <div class="hud-stat">Find Number: <strong id="schulteNextNum">1</strong></div>
+                <div class="hud-stat">Time: <strong id="schulteTimer">0.0</strong>s</div>
+                <div class="hud-stat">Errors: <strong id="schulteErrors">0</strong></div>
+            </div>
+
+            <!-- 5x5 Grid -->
+            <div class="schulte-grid" id="schulteGrid"></div>
+
+            <button class="btn-primary" id="schulteStartBtn" style="margin-top: 15px;">Start 5×5 Grid</button>
+
+            <!-- Result Box -->
+            <div class="game-result-panel" id="schulteResult" style="display: none;">
+                <h2>🎉 Grid Completed!</h2>
+                <div class="iq-value" id="schulteFinalTime" style="font-size: 3em;">0.0 sec</div>
+                <p class="iq-description" id="schulteNormText"></p>
+
+                <!-- Lead Capture -->
+                <div class="send-results-box" style="margin-top: 20px;">
+                    <h3>📧 Save Your Record & Get the 7-Day Brain Focus Guide</h3>
+                    <p class="send-results-text">We will send your focus percentile and peripheral vision training protocol to your inbox:</p>
+                    <form id="schulteLeadForm" class="send-results-form" onsubmit="return false;">
+                        <input type="text" id="schulteCompany" name="company" style="display:none" tabindex="-1" autocomplete="off">
+                        <div class="form-group">
+                            <input type="text" id="schulteLeadName" placeholder="Your name" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="schulteLeadEmail" placeholder="Your email" class="form-input" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Send My Score & Guide</button>
+                    </form>
+                    <p id="schulteLeadStatus" style="display:none; color:#28a745; font-weight:600; margin-top:10px;"></p>
+                </div>
+
+                <!-- Share -->
+                <div class="share-box" style="margin-top: 20px;">
+                    <h3>Challenge Your Friends!</h3>
+                    <div class="share-buttons">
+                        <button type="button" class="btn-share btn-share-telegram" id="schulteShareTelegram">Telegram</button>
+                        <button type="button" class="btn-share btn-share-whatsapp" id="schulteShareWhatsApp">WhatsApp</button>
+                        <button type="button" class="btn-share btn-share-link" id="schulteShareCopy">📋 Copy My Record</button>
+                    </div>
+                    <div id="schulteShareMsg" class="share-success" style="display:none;"></div>
+                </div>
+
+                <button class="btn-secondary" id="schulteRestartBtn">Play Again</button>
+            </div>
+
+            <!-- SEO Section -->
+            <section class="seo-content">
+                <h2>What is a Schulte Table and how does it boost focus?</h2>
+                <p>
+                    A <strong>Schulte Table</strong> is a 5×5 grid of randomly arranged numbers from 1 to 25 developed by German psychiatrist Walter Schulte to evaluate and train visual search speed, working attention, and peripheral vision. It is widely used in speed-reading courses and cognitive agility training.
+                </p>
+                <h2>5×5 Schulte Table Time Benchmarks</h2>
+                <p>
+                    • <strong>Under 30 seconds:</strong> Exceptional peripheral vision and top 5% mental focus.<br>
+                    • <strong>30–45 seconds:</strong> Above-average visual processing speed.<br>
+                    • <strong>45–60 seconds:</strong> Typical adult baseline.<br>
+                    • <strong>Over 60 seconds:</strong> Great candidate for daily 3-minute training sessions.
+                </p>
+                <p>
+                    Want a comprehensive cognitive profile? Take our <a href="full-tests.html">15-Minute Extended IQ Test (25 questions)</a> or benchmark your neural reflexes in the <a href="reaction-test.html">Reaction Time Test</a>.
+                </p>
+            </section>
+        </div>
+    </div>
+
+    <script src="../brain-games.js"></script>
+</body>
+</html>

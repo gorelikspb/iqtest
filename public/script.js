@@ -88,10 +88,10 @@ function updateFormTranslations() {
     const userEmailStart = document.getElementById('userEmailStart');
     if (userEmailStart) userEmailStart.placeholder = t('ui.yourEmail');
     
-    const extendedTestStartLabel = document.querySelector('#extendedTestStart').nextElementSibling;
+    const extendedTestStartLabel = document.querySelector('#extendedTestStart')?.nextElementSibling;
     if (extendedTestStartLabel) extendedTestStartLabel.textContent = t('ui.extendedTests');
     
-    const kidsTestStartLabel = document.querySelector('#kidsTestStart').nextElementSibling;
+    const kidsTestStartLabel = document.querySelector('#kidsTestStart')?.nextElementSibling;
     if (kidsTestStartLabel) kidsTestStartLabel.textContent = t('ui.kidsTests');
     
     const getFreeTestsStart = document.querySelector('#contactFormStart button');
@@ -119,10 +119,10 @@ function updateFormTranslations() {
     const userEmail = document.getElementById('userEmail');
     if (userEmail) userEmail.placeholder = t('ui.yourEmail');
     
-    const extendedTestLabel = document.querySelector('#extendedTest').nextElementSibling;
+    const extendedTestLabel = document.querySelector('#extendedTest')?.nextElementSibling;
     if (extendedTestLabel) extendedTestLabel.textContent = t('ui.extendedTests');
     
-    const kidsTestLabel = document.querySelector('#kidsTest').nextElementSibling;
+    const kidsTestLabel = document.querySelector('#kidsTest')?.nextElementSibling;
     if (kidsTestLabel) kidsTestLabel.textContent = t('ui.kidsTests');
     
     const getFreeTests = document.querySelector('#contactForm button');
@@ -479,7 +479,19 @@ function showResult() {
     const iqRangeEl = document.getElementById('iqRange');
     const iqDescriptionEl = document.getElementById('iqDescription');
     
-    if (iqValueEl) iqValueEl.textContent = `≈ ${iqResult.estimated}`;
+    if (iqValueEl) {
+        iqValueEl.textContent = `≈ ${iqResult.estimated}`;
+        if (!localStorage.getItem('quickIqEmailUnlocked')) {
+            iqValueEl.classList.add('locked-blur');
+        } else {
+            iqValueEl.classList.remove('locked-blur');
+        }
+    }
+    const resultBoxEl = resultScreen.querySelector('.result-box');
+    const sendResultsBoxEl = document.getElementById('sendResultsBox');
+    if (sendResultsBoxEl && resultBoxEl && resultBoxEl.nextElementSibling !== sendResultsBoxEl) {
+        resultBoxEl.parentNode.insertBefore(sendResultsBoxEl, resultBoxEl.nextElementSibling);
+    }
     if (iqRangeEl) iqRangeEl.textContent = `${t('ui.range')} ${iqResult.min} - ${iqResult.max}`;
     if (iqDescriptionEl) iqDescriptionEl.textContent = getIQDescription(iqResult.estimated);
     
@@ -530,6 +542,9 @@ async function handleFormSubmit(e) {
     
     const userName = document.getElementById('userName').value;
     const userEmail = document.getElementById('userEmail').value;
+    localStorage.setItem('quickIqEmailUnlocked', userEmail);
+    const iqValLocked = document.getElementById('iqValue');
+    if (iqValLocked) iqValLocked.classList.remove('locked-blur');
     const extendedTest = document.getElementById('extendedTest').checked;
     const kidsTest = document.getElementById('kidsTest').checked;
     
@@ -604,6 +619,9 @@ async function handleSendResultsSubmit(e) {
     
     const userName = document.getElementById('sendResultsName').value;
     const userEmail = document.getElementById('sendResultsEmail').value;
+    localStorage.setItem('quickIqEmailUnlocked', userEmail);
+    const iqValLocked = document.getElementById('iqValue');
+    if (iqValLocked) iqValLocked.classList.remove('locked-blur');
     
     if (!iqResult) {
         alert(t('ui.errorResults'));
@@ -1300,6 +1318,20 @@ function showBookmarkSuccess() {
 function checkUrlParams() {
     const params = new URLSearchParams(window.location.search);
     if (params.has('iq')) {
+        if (typeof clarity !== 'undefined') { clarity('event', 'share_referral'); }
+        const friendIq = parseInt(params.get('iq'), 10);
+        const friendMin = params.get('min') || '';
+        const friendMax = params.get('max') || '';
+        if (Number.isFinite(friendIq) && welcomeScreen && !document.getElementById('friendChallengeBanner')) {
+            const banner = document.createElement('div');
+            banner.id = 'friendChallengeBanner';
+            banner.className = 'friend-challenge-banner';
+            const lang = getCurrentLanguage();
+            banner.innerHTML = lang === 'en'
+                ? `🔥 <strong>Friend's Challenge:</strong> Someone scored <strong>IQ ≈ ${friendIq}</strong> (${friendMin}–${friendMax})! Take the 2-minute test to see if you can beat their score.`
+                : `🔥 <strong>Вызов от друга:</strong> Ваш друг набрал <strong>IQ ≈ ${friendIq}</strong> (диапазон ${friendMin}–${friendMax})! Пройдите тест за 2 минуты и проверьте, сможете ли вы обойти этот рекорд.`;
+            welcomeScreen.insertBefore(banner, welcomeScreen.firstChild);
+        }
         // Отслеживание переходов по ссылкам с результатами в Clarity
         if (typeof clarity !== 'undefined') {
             clarity('event', 'share_referral');
@@ -1587,7 +1619,9 @@ function startMemoryGame() {
     // Генерируем последовательность из 8 чисел (1-9)
     memoryGameState.sequence = [];
     const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    for (let i = 0; i < 8; i++) {
+    const sliderEl = document.getElementById('memoryLengthSlider');
+    const seqLen = Math.max(3, Math.min(9, parseInt(sliderEl ? sliderEl.value : '5', 10) || 5));
+    for (let i = 0; i < seqLen; i++) {
         const randomIndex = Math.floor(Math.random() * numbers.length);
         memoryGameState.sequence.push(numbers[randomIndex]);
         numbers.splice(randomIndex, 1); // Убираем использованное число

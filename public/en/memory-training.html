@@ -130,13 +130,26 @@
             
             <div class="info-box">
                 <ul>
-                    <li>✅ Remember a sequence of 8 numbers</li>
+                    <li>✅ Remember a sequence of 3 to 9 numbers</li>
                     <li>⏱️ Game takes 1-2 minutes</li>
                     <li>🧠 Develops memory and attention</li>
                     <li>🎯 Free, no registration</li>
                 </ul>
             </div>
             
+            <!-- Difficulty Slider -->
+            <div class="memory-difficulty-box" id="memoryDifficultyBox">
+                <label for="memoryLengthSlider" class="memory-difficulty-label">
+                    🎚️ Difficulty (digits to remember): <strong id="memoryLengthValue">5</strong>
+                </label>
+                <input type="range" id="memoryLengthSlider" class="memory-difficulty-slider" min="3" max="9" step="1" value="5" oninput="document.getElementById('memoryLengthValue').textContent = this.value">
+                <div class="memory-difficulty-ticks">
+                    <span>3 (Easy)</span>
+                    <span>5 (Medium)</span>
+                    <span>7 (Hard)</span>
+                    <span>9 (Pro)</span>
+                </div>
+            </div>
             <!-- Всплывашка для email перед игрой -->
             <div class="memory-game-email-modal" id="memoryGameEmailModal" style="display: none;">
                 <div class="memory-game-email-content">

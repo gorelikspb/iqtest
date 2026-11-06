@@ -134,6 +134,8 @@ export function sitePages(lang) {
     test: `${base}/index.html`,
     howToImprove: `${base}/how-to-improve-iq.html`,
     memory: `${base}/memory-training.html`,
+    schulte: `${base}/schulte-table.html`,
+    reaction: `${base}/reaction-test.html`,
     about: `${base}/about-iq-tests.html`,
     faq: `${base}/faq.html`
   };

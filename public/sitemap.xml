@@ -3,7 +3,7 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
         <loc>https://iqtestnow.org/ru/index.html</loc>
-        <lastmod>2026-02-03</lastmod>
+        <lastmod>2026-11-06</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
         <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/index.html"/>
@@ -11,7 +11,7 @@
     </url>
     <url>
         <loc>https://iqtestnow.org/en/index.html</loc>
-        <lastmod>2026-02-03</lastmod>
+        <lastmod>2026-11-06</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
         <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/index.html"/>
@@ -19,19 +19,67 @@
     </url>
     <url>
         <loc>https://iqtestnow.org/ru/full-tests.html</loc>
-        <lastmod>2026-02-03</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <lastmod>2026-11-06</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
         <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/full-tests.html"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/full-tests.html"/>
     </url>
     <url>
         <loc>https://iqtestnow.org/en/full-tests.html</loc>
-        <lastmod>2026-02-03</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <lastmod>2026-11-06</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
         <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/full-tests.html"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/full-tests.html"/>
+    </url>
+    <url>
+        <loc>https://iqtestnow.org/ru/schulte-table.html</loc>
+        <lastmod>2026-11-06</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/schulte-table.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/schulte-table.html"/>
+    </url>
+    <url>
+        <loc>https://iqtestnow.org/en/schulte-table.html</loc>
+        <lastmod>2026-11-06</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/schulte-table.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/schulte-table.html"/>
+    </url>
+    <url>
+        <loc>https://iqtestnow.org/ru/reaction-test.html</loc>
+        <lastmod>2026-11-06</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/reaction-test.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/reaction-test.html"/>
+    </url>
+    <url>
+        <loc>https://iqtestnow.org/en/reaction-test.html</loc>
+        <lastmod>2026-11-06</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/reaction-test.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/reaction-test.html"/>
+    </url>
+    <url>
+        <loc>https://iqtestnow.org/ru/memory-training.html</loc>
+        <lastmod>2026-11-06</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/memory-training.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/memory-training.html"/>
+    </url>
+    <url>
+        <loc>https://iqtestnow.org/en/memory-training.html</loc>
+        <lastmod>2026-11-06</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/memory-training.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/memory-training.html"/>
     </url>
     <url>
         <loc>https://iqtestnow.org/ru/about-iq-tests.html</loc>
@@ -113,22 +161,4 @@
         <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/how-to-improve-iq-part2.html"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/how-to-improve-iq-part2.html"/>
     </url>
-    <url>
-        <loc>https://iqtestnow.org/ru/memory-training.html</loc>
-        <lastmod>2026-02-03</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/memory-training.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/memory-training.html"/>
-    </url>
-    <url>
-        <loc>https://iqtestnow.org/en/memory-training.html</loc>
-        <lastmod>2026-02-03</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-        <xhtml:link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/memory-training.html"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/memory-training.html"/>
-    </url>
 </urlset>
-
-

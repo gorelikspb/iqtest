@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="FjUZ6hoHjNAZ783fB-eBOua9Up64i7T4vHaloHMWYVY" />
+    <title>Таблица Шульте 5×5 Онлайн — Тренажер Внимания и Скорочтения | Бесплатно</title>
+    <meta name="description" content="Пройдите классическую таблицу Шульте 5×5 онлайн бесплатно с секундомером и оценкой норм. Тренировка периферического зрения, концентрации внимания и скорочтения.">
+    <meta name="keywords" content="таблица шульте онлайн, таблица шульте 5х5, тест шульте, тренажер внимания, периферическое зрение, скорочтение">
+    <meta name="author" content="IQ Test Online">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://iqtestnow.org/ru/schulte-table.html">
+    <meta property="og:title" content="Таблица Шульте 5×5 Онлайн — Проверь Концентрацию за 30 Секунд">
+    <meta property="og:description" content="Найди числа от 1 до 25 как можно быстрее! Тренажер периферического зрения и внимания.">
+    <meta property="og:image" content="https://iqtestnow.org/assets/og-image-ru.svg">
+    <meta property="og:locale" content="ru_RU">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Таблица Шульте 5×5 Онлайн — Тренажер Внимания">
+    <meta name="twitter:description" content="Найди все числа от 1 до 25 на скорость и узнай свой норматив концентрации.">
+    <meta name="twitter:image" content="https://iqtestnow.org/assets/og-image-ru.svg">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Таблица Шульте 5×5 Онлайн",
+        "description": "Интерактивный тренажер таблицы Шульте 5×5 для проверки концентрации внимания, периферического зрения и скорочтения.",
+        "url": "https://iqtestnow.org/ru/schulte-table.html",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
+        "inLanguage": "ru"
+    }
+    </script>
+
+    <link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/schulte-table.html">
+    <link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/schulte-table.html">
+    <link rel="alternate" hreflang="x-default" href="https://iqtestnow.org/ru/schulte-table.html">
+    <link rel="canonical" href="https://iqtestnow.org/ru/schulte-table.html">
+    <link rel="stylesheet" href="../style.css">
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "u96eyi524z");
+    </script>
+</head>
+<body>
+    <nav class="lang-switcher">
+        <a href="../ru/schulte-table.html" class="active">RU</a>
+        <a href="../en/schulte-table.html">EN</a>
+    </nav>
+
+    <nav class="main-nav" style="position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="index.html" class="top-nav-pill">🏠 Главная</a>
+        <a href="full-tests.html" class="top-nav-pill">🎓 Тест IQ 15 мин</a>
+        <a href="reaction-test.html" class="top-nav-pill">⚡ Тест Реакции</a>
+        <a href="memory-training.html" class="top-nav-pill">🧠 Память</a>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-screen">
+            <h1>🎯 Таблица Шульте 5×5</h1>
+            <p class="subtitle">Тренажер концентрации внимания, скорочтения и периферического зрения</p>
+
+            <div class="info-box">
+                <ul>
+                    <li>👁️ <strong>Правило:</strong> удерживайте взгляд на центральной клетке с точкой</li>
+                    <li>🔢 Нажимайте числа по порядку от <strong>1 до 25</strong> боковым зрением</li>
+                    <li>⏱️ Рекордный норматив взрослого: <strong>менее 30 секунд</strong></li>
+                </ul>
+            </div>
+
+            <!-- HUD -->
+            <div class="schulte-hud" id="schulteHud" style="display: none;">
+                <div class="hud-stat">Ищем число: <strong id="schulteNextNum">1</strong></div>
+                <div class="hud-stat">Время: <strong id="schulteTimer">0.0</strong> с</div>
+                <div class="hud-stat">Ошибки: <strong id="schulteErrors">0</strong></div>
+            </div>
+
+            <!-- 5x5 Grid -->
+            <div class="schulte-grid" id="schulteGrid"></div>
+
+            <button class="btn-primary" id="schulteStartBtn" style="margin-top: 15px;">Начать таблицу 5×5</button>
+
+            <!-- Result Box -->
+            <div class="game-result-panel" id="schulteResult" style="display: none;">
+                <h2>🎉 Таблица пройдена!</h2>
+                <div class="iq-value" id="schulteFinalTime" style="font-size: 3em;">0.0 сек</div>
+                <p class="iq-description" id="schulteNormText"></p>
+
+                <!-- Lead Capture -->
+                <div class="send-results-box" style="margin-top: 20px;">
+                    <h3>📧 Сохранить рекорд и получить 7-дневный план тренировки мозга</h3>
+                    <p class="send-results-text">Отправим ваш норматив внимания и PDF-шпаргалку по таблицам Шульте на почту:</p>
+                    <form id="schulteLeadForm" class="send-results-form" onsubmit="return false;">
+                        <input type="text" id="schulteCompany" name="company" style="display:none" tabindex="-1" autocomplete="off">
+                        <div class="form-group">
+                            <input type="text" id="schulteLeadName" placeholder="Ваше имя" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="schulteLeadEmail" placeholder="Ваш email" class="form-input" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Отправить результат на Email</button>
+                    </form>
+                    <p id="schulteLeadStatus" style="display:none; color:#28a745; font-weight:600; margin-top:10px;"></p>
+                </div>
+
+                <!-- Share -->
+                <div class="share-box" style="margin-top: 20px;">
+                    <h3>Брось вызов друзьям!</h3>
+                    <div class="share-buttons">
+                        <button type="button" class="btn-share btn-share-telegram" id="schulteShareTelegram">Telegram</button>
+                        <button type="button" class="btn-share btn-share-whatsapp" id="schulteShareWhatsApp">WhatsApp</button>
+                        <button type="button" class="btn-share btn-share-link" id="schulteShareCopy">📋 Скопировать рекорд</button>
+                    </div>
+                    <div id="schulteShareMsg" class="share-success" style="display:none;"></div>
+                </div>
+
+                <button class="btn-secondary" id="schulteRestartBtn">Сыграть ещё раз</button>
+            </div>
+
+            <!-- SEO Section -->
+            <section class="seo-content">
+                <h2>Что такое таблица Шульте и как она развивает мозг?</h2>
+                <p>
+                    <strong>Таблица Шульте (Schulte Table)</strong> — это научно проверенная психофизиологическая методика, разработанная немецким психиатром Вальтером Шульте для исследования скорости ориентировочно-поисковых движений взгляда и объема внимания. Сегодня таблицы 5×5 активно применяются в курсах скорочтения, подготовке пилотов и киберспортсменов.
+                </p>
+                <h2>Нормативы прохождения таблицы Шульте 5×5</h2>
+                <p>
+                    • <strong>Менее 25–30 секунд:</strong> Высочайший уровень концентрации и развитое периферическое зрение.<br>
+                    • <strong>30–45 секунд:</strong> Результат выше среднего, хорошая переключаемость внимания.<br>
+                    • <strong>45–60 секунд:</strong> Средняя норма взрослого человека.<br>
+                    • <strong>Свыше 60 секунд:</strong> Рекомендуется регулярная тренировка по 3–4 таблицы в день.
+                </p>
+                <p>
+                    Хотите проверить не только внимание, но и общий коэффициент интеллекта? Пройдите наш <a href="full-tests.html">расширенный 15-минутный IQ тест (25 вопросов)</a> или проверьте скорость нервной системы в <a href="reaction-test.html">тесте скорости реакции</a>.
+                </p>
+            </section>
+        </div>
+    </div>
+
+    <script src="../brain-games.js"></script>
+</body>
+</html>

@@ -130,13 +130,26 @@
             
             <div class="info-box">
                 <ul>
-                    <li>✅ Запомните последовательность из 8 чисел</li>
+                    <li>✅ Запомните последовательность от 3 до 9 чисел</li>
                     <li>⏱️ Игра занимает 1-2 минуты</li>
                     <li>🧠 Развивает память и внимание</li>
                     <li>🎯 Бесплатно, без регистрации</li>
                 </ul>
             </div>
             
+            <!-- Ползунок сложности -->
+            <div class="memory-difficulty-box" id="memoryDifficultyBox">
+                <label for="memoryLengthSlider" class="memory-difficulty-label">
+                    🎚️ Сложность (сколько цифр запоминать): <strong id="memoryLengthValue">5</strong>
+                </label>
+                <input type="range" id="memoryLengthSlider" class="memory-difficulty-slider" min="3" max="9" step="1" value="5" oninput="document.getElementById('memoryLengthValue').textContent = this.value">
+                <div class="memory-difficulty-ticks">
+                    <span>3 (Легко)</span>
+                    <span>5 (Средне)</span>
+                    <span>7 (Сложно)</span>
+                    <span>9 (Профи)</span>
+                </div>
+            </div>
             <!-- Всплывашка для email перед игрой -->
             <div class="memory-game-email-modal" id="memoryGameEmailModal" style="display: none;">
                 <div class="memory-game-email-content">

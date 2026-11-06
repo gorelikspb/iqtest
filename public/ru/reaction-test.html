@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="FjUZ6hoHjNAZ783fB-eBOua9Up64i7T4vHaloHMWYVY" />
+    <title>Тест на Скорость Реакции Онлайн (мс) — Проверь Рефлексы и Мозг | Бесплатно</title>
+    <meta name="description" content="Проверьте скорость своей реакции в миллисекундах (мс) онлайн бесплатно! 5 раундов по аналогии с Human Benchmark. Узнайте, насколько быстры ваши нейронные связи.">
+    <meta name="keywords" content="тест на реакцию, скорость реакции онлайн, проверка реакции в мс, human benchmark на русском, тест рефлексов">
+    <meta name="author" content="IQ Test Online">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://iqtestnow.org/ru/reaction-test.html">
+    <meta property="og:title" content="Тест на Скорость Реакции Онлайн — Быстрее ли ты 230 мс?">
+    <meta property="og:description" content="Нажми при появлении зеленого экрана! Измерь скорость своей нервной системы в миллисекундах.">
+    <meta property="og:image" content="https://iqtestnow.org/assets/og-image-ru.svg">
+    <meta property="og:locale" content="ru_RU">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Тест на Скорость Реакции Онлайн (мс)">
+    <meta name="twitter:description" content="Проверь свои рефлексы за 30 секунд! Сравни результат с киберспортсменами.">
+    <meta name="twitter:image" content="https://iqtestnow.org/assets/og-image-ru.svg">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Тест на скорость реакции онлайн",
+        "description": "Интерактивный тест измерения времени зрительно-моторной реакции в миллисекундах (5 раундов).",
+        "url": "https://iqtestnow.org/ru/reaction-test.html",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
+        "inLanguage": "ru"
+    }
+    </script>
+
+    <link rel="alternate" hreflang="ru" href="https://iqtestnow.org/ru/reaction-test.html">
+    <link rel="alternate" hreflang="en" href="https://iqtestnow.org/en/reaction-test.html">
+    <link rel="alternate" hreflang="x-default" href="https://iqtestnow.org/ru/reaction-test.html">
+    <link rel="canonical" href="https://iqtestnow.org/ru/reaction-test.html">
+    <link rel="stylesheet" href="../style.css">
+
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "u96eyi524z");
+    </script>
+</head>
+<body>
+    <nav class="lang-switcher">
+        <a href="../ru/reaction-test.html" class="active">RU</a>
+        <a href="../en/reaction-test.html">EN</a>
+    </nav>
+
+    <nav class="main-nav" style="position: fixed; top: 20px; left: 20px; z-index: 1000; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="index.html" class="top-nav-pill">🏠 Главная</a>
+        <a href="full-tests.html" class="top-nav-pill">🎓 Тест IQ 15 мин</a>
+        <a href="schulte-table.html" class="top-nav-pill">🎯 Таблица Шульте</a>
+        <a href="memory-training.html" class="top-nav-pill">🧠 Память</a>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-screen">
+            <h1>⚡ Тест Скорости Реакции</h1>
+            <p class="subtitle">Измерьте скорость обработки зрительного сигнала мозгом в миллисекундах</p>
+
+            <div class="info-box">
+                <ul>
+                    <li>🔴 Ждите, пока красный блок станет <strong>ЗЕЛЕНЫМ</strong></li>
+                    <li>⚡ Кликните или коснитесь экрана <strong>мгновенно</strong> после смены цвета</li>
+                    <li>📊 Средний результат рассчитывается по <strong>5 попыткам</strong></li>
+                </ul>
+            </div>
+
+            <!-- History Pills -->
+            <div class="reaction-history" id="reactionHistory"></div>
+
+            <!-- Interactive Pad -->
+            <div class="reaction-pad state-idle" id="reactionPad">
+                <div class="reaction-pad-icon">⚡</div>
+                <div class="reaction-pad-text" id="reactionPadText">Нажмите здесь, чтобы начать раунд 1 из 5</div>
+            </div>
+
+            <!-- Result Box -->
+            <div class="game-result-panel" id="reactionResult" style="display: none;">
+                <h2>⚡ Ваш результат скорости реакции</h2>
+                <div class="iq-value" id="reactionFinalMs" style="font-size: 3em;">0 мс</div>
+                <p class="iq-description" id="reactionNormText"></p>
+
+                <!-- Lead Capture -->
+                <div class="send-results-box" style="margin-top: 20px;">
+                    <h3>📧 Сохранить норматив и получить упражнения для скорости мышления</h3>
+                    <p class="send-results-text">Пришлем ваш когнитивный профиль и методики ускорения реакции на почту:</p>
+                    <form id="reactionLeadForm" class="send-results-form" onsubmit="return false;">
+                        <input type="text" id="reactionCompany" name="company" style="display:none" tabindex="-1" autocomplete="off">
+                        <div class="form-group">
+                            <input type="text" id="reactionLeadName" placeholder="Ваше имя" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="reactionLeadEmail" placeholder="Ваш email" class="form-input" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Отправить результат на Email</button>
+                    </form>
+                    <p id="reactionLeadStatus" style="display:none; color:#28a745; font-weight:600; margin-top:10px;"></p>
+                </div>
+
+                <!-- Share -->
+                <div class="share-box" style="margin-top: 20px;">
+                    <h3>Кто из друзей быстрее?</h3>
+                    <div class="share-buttons">
+                        <button type="button" class="btn-share btn-share-telegram" id="reactionShareTelegram">Telegram</button>
+                        <button type="button" class="btn-share btn-share-whatsapp" id="reactionShareWhatsApp">WhatsApp</button>
+                        <button type="button" class="btn-share btn-share-link" id="reactionShareCopy">📋 Скопировать результат</button>
+                    </div>
+                    <div id="reactionShareMsg" class="share-success" style="display:none;"></div>
+                </div>
+
+                <button class="btn-secondary" id="reactionRestartBtn">Пройти ещё раз</button>
+            </div>
+
+            <!-- SEO Content -->
+            <section class="seo-content">
+                <h2>Как скорость реакции связана с интеллектом (IQ)?</h2>
+                <p>
+                    Исследования в области дифференциальной психологии (в частности работы Артура Дженсена и Иэна Диary) показывают устойчивую корреляцию между временем простой зрительно-моторной реакции (Reaction Time) и общим фактором интеллекта <em>g</em>. Чем выше скорость проведения нервных импульсов и чище концентрация внимания, тем быстрее мозг решает и сложные аналитические задачи.
+                </p>
+                <h2>Шкала норм скорости реакции человека</h2>
+                <p>
+                    • <strong>150–215 мс:</strong> Уровень профессиональных киберспортсменов и пилотов.<br>
+                    • <strong>215–260 мс:</strong> Отличная реакция бодрого взрослого человека.<br>
+                    • <strong>260–310 мс:</strong> Среднестатистический показатель (учитывая задержку экрана и мыши 15–30 мс).<br>
+                    • <strong>310+ мс:</strong> Признак усталости, недосыпа или рассеянного внимания.
+                </p>
+                <p>
+                    Проверьте также свою периферическую концентрацию в <a href="schulte-table.html">таблице Шульте 5×5</a> и пройдите наш <a href="full-tests.html">15-минутный расширенный тест IQ</a>.
+                </p>
+            </section>
+        </div>
+    </div>
+
+    <script src="../brain-games.js"></script>
+</body>
+</html>

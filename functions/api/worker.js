@@ -55,6 +55,24 @@ async function sendResend(env, payload) {
   return { ok: response.ok, status: response.status, result };
 }
 
+async function sendTelegramLeadAlert(env, data) {
+  const token = env?.TELEGRAM_BOT_TOKEN;
+  const chatId = env?.TELEGRAM_CHAT_ID || '127226331';
+  if (!token) return;
+  try {
+    const iq = data?.iqResult;
+    const iqLine = iq ? `\n🧠 *IQ / Score:* ≈ ${iq.estimated} (${iq.score ?? ''}/${iq.total ?? ''})` : '';
+    const text = `🔔 *IQTestNow Lead*\n👤 *Имя:* ${data?.name || '—'}\n📧 *Email:* ${data?.email || '—'}\n🌐 *Lang:* ${data?.lang || 'ru'}\n📍 *Source:* ${data?.source || data?.type || '—'}${iqLine}`;
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' })
+    });
+  } catch (err) {
+    console.error('Telegram alert error:', err);
+  }
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
@@ -85,6 +103,14 @@ export default {
       }
       data.email = email;
       data.lang = resolveLang(data);
+
+      // Optional Honeypot check (from c:/dev/common pattern)
+      if (data?.company) {
+        return jsonResponse({ success: true, spam: true });
+      }
+
+      // Optional Telegram Lead Alert (@altergorbot) if TELEGRAM_BOT_TOKEN is configured
+      await sendTelegramLeadAlert(env, data);
 
       if (!env?.RESEND_API_KEY) {
         return jsonResponse({ success: false, error: 'Email service is not configured' }, 500);
