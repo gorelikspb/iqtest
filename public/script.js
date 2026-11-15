@@ -399,6 +399,7 @@ function showQuestion() {
 }
 
 function selectAnswer(index) {
+    if (selectedAnswer !== null) return;
     selectedAnswer = index;
     
     // Убираем предыдущий выбор
