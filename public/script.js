@@ -356,6 +356,7 @@ function startTest() {
     testScreen.style.display = 'block';
     currentQuestionIndex = 0;
     score = 0;
+    if (typeof clarity === "function") clarity("event", "quick_test_start");
     showQuestion();
 }
 
@@ -475,6 +476,10 @@ function showResult() {
     resultScreen.style.display = 'block';
     
     iqResult = calculateIQ(score, questions.length);
+    if (typeof clarity === "function") {
+        clarity("set", "quick_test_score", String(score) + "/" + String(questions.length));
+        clarity("event", "quick_test_complete");
+    }
     
     const iqValueEl = document.getElementById('iqValue');
     const iqRangeEl = document.getElementById('iqRange');
