@@ -112,6 +112,39 @@ export default {
       // Optional Telegram Lead Alert (@altergorbot) if TELEGRAM_BOT_TOKEN is configured
       await sendTelegramLeadAlert(env, data);
 
+      // Persist lead to Cloudflare D1 if bound
+      if (env?.DB) {
+        try {
+          const iq = data?.iqResult || {};
+          await env.DB.prepare(
+            `INSERT INTO leads (
+              email, name, lang, type, source,
+              iq_estimated, iq_min, iq_max, score, total,
+              extended_test, kids_test, newsletter,
+              traffic_source, ai_referrer
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          ).bind(
+            email,
+            data?.name ? String(data.name).slice(0, 120) : null,
+            data.lang,
+            data?.type ? String(data.type).slice(0, 64) : null,
+            data?.source ? String(data.source).slice(0, 64) : null,
+            Number.isFinite(Number(iq.estimated)) ? Number(iq.estimated) : null,
+            Number.isFinite(Number(iq.min)) ? Number(iq.min) : null,
+            Number.isFinite(Number(iq.max)) ? Number(iq.max) : null,
+            Number.isFinite(Number(iq.score)) ? Number(iq.score) : null,
+            Number.isFinite(Number(iq.total)) ? Number(iq.total) : null,
+            data?.extendedTest ? 1 : 0,
+            data?.kidsTest ? 1 : 0,
+            data?.newsletter ? 1 : 0,
+            data?.traffic_source ? String(data.traffic_source).slice(0, 32) : null,
+            data?.ai_referrer ? String(data.ai_referrer).slice(0, 32) : null
+          ).run();
+        } catch (dbErr) {
+          console.error('D1 insert error:', dbErr);
+        }
+      }
+
       if (!env?.RESEND_API_KEY) {
         return jsonResponse({ success: false, error: 'Email service is not configured' }, 500);
       }

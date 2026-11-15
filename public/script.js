@@ -182,6 +182,17 @@ function updateResultScreenTranslations() {
 
 // Инициализация
 // Worker URL для отправки email
+function getAttributionFields() {
+    try {
+        return {
+            traffic_source: sessionStorage.getItem('iq_traffic_source') || 'direct',
+            ai_referrer: sessionStorage.getItem('iq_ai_referrer') || ''
+        };
+    } catch (e) {
+        return { traffic_source: 'direct', ai_referrer: '' };
+    }
+}
+
 const WORKER_URL = 'https://iqtestemails.gorelikgo.workers.dev';
 
 function getEmailLang() {
@@ -571,6 +582,7 @@ async function handleFormSubmit(e) {
         sendResults: false,
         iqResult: null,
         source: 'result-page',
+        ...getAttributionFields(),
         timestamp: new Date().toISOString()
     };
     
@@ -649,6 +661,8 @@ async function handleSendResultsSubmit(e) {
             level: getIQDescription(iqResult.estimated) // Добавляем уровень IQ
         },
         shareUrl: getShareUrl(),
+        newsletter: Boolean(document.getElementById('sendResultsNewsletter')?.checked),
+        ...getAttributionFields(),
         source: 'result-page',
         timestamp: new Date().toISOString()
     };
@@ -1390,6 +1404,7 @@ async function handleStartPageFormSubmit(e) {
         kidsTest: kidsTest,
         sendResults: false,
         source: 'start-page',
+        ...getAttributionFields(),
         timestamp: new Date().toISOString()
     };
     

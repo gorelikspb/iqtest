@@ -9,3 +9,8 @@ compatibility_date = "2025-08-01"
 #   CORPORATE_EMAIL     # optional alias for FROM_EMAIL
 #   CORPORATE_NAME      # optional sender display name
 #   REPLY_TO            # optional
+
+[[d1_databases]]
+binding = "DB"
+database_name = "iqtest-db"
+database_id = "ca37bb49-946d-4c61-b0d8-50960e17f82c"
