@@ -249,3 +249,23 @@
 4. **Сбор контактов**: Два места сбора увеличивают конверсию
 5. **Поделиться**: Вирусный потенциал важен для роста
 
+
+
+---
+
+## Next steps (2026-11-15)
+
+- [x] **Cloudflare Dashboard (`iqtestnow.org`)** — настроено через браузер:
+  - **Bot Fight Mode** — включён (Security → Settings → Bot traffic).
+  - **AI Crawl Control** — активен (отслеживание AI-краулеров включено, политики в режиме Allow без блокировки).
+  - **Web Analytics (RUM)** — включён в режиме полной автоматической инъекции JS-сниппета.
+- [ ] **Microsoft Clarity (`u96eyi524z`, аккаунт `gorelikspb@gmail.com`)** — через несколько дней проверить отфильтрованную статистику по новым тегам из `public/clarity-tags.js` (`traffic_source = ai_chatbot`, `ai_referrer`, `feature`, события `quick_test_start` / `quick_test_complete`).
+- [ ] **Донаты на сервер / Монетизация (Stripe + Apple Pay):**
+  - **Концепция:** «Keep this test free & support our servers ☕» (позиционирование как поддержка бесплатного сервиса без рекламы, а не личный «кофе» незнакомцу — даёт максимальную конверсию и доверие).
+  - **Суммы:** микро-донат **$1** (минимальный порог по Face ID), **$3** и **$5** (+ своя сумма). 50 центов исключили из-за фикс-комиссии банков ($0.30+2.9%).
+  - **Почему Stripe, а не PayPal:** нативная поддержка Apple Pay / Google Pay в 1 тап + приватность (в чеке и выписке будет Statement Descriptor `IQTestNow`, а не личные ФИО).
+  - **Что нужно для запуска:**
+    1. Зарегистрировать аккаунт на [stripe.com](https://stripe.com) (~10–15 мин, Individual, европейский IBAN, фото ID, сайт `https://iqtestnow.org`, Statement Descriptor: `IQTestNow`).
+    2. Создать Stripe Payment Link (или взять API-ключ).
+    3. Добавить брендовый блок с кнопками на экраны результатов (`en/index.html` и `ru/index.html`).
+
