@@ -180,6 +180,8 @@ function initExtendedIqTest() {
             downloadResultCardPng();
         });
     }
+
+    bindExtendedShareButtons();
 }
 
 function startExtendedQuiz() {
@@ -470,6 +472,22 @@ async function handleExtendedUnlockSubmit(e) {
         body: JSON.stringify(payload)
     }).catch(() => {});
 
+    if (name) window.__extUserName = name;
+    fetch(EXTENDED_WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            type: 'create-challenge',
+            creator_name: name,
+            creator_email: email,
+            creator_iq: res.estimated,
+            creator_test_type: 'extended',
+            lang: extState.lang
+        })
+    }).then(r => r.json()).then(c => {
+        if (c && c.challengeId) window.__extChallengeId = c.challengeId;
+    }).catch(() => {});
+
     revealAnswerBreakdown(true);
 }
 
@@ -558,8 +576,8 @@ function drawResultCanvasCard() {
     ctx.fillText(`IQ ${res.estimated}`, 110, 290);
 
     ctx.fillStyle = '#4f46e5';
-    ctx.font = 'bold 30px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif';
-    ctx.fillText(copy.cardPercentile(res.percentile), 110, 345);
+    ctx.font = 'bold 23px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif';
+    ctx.fillText(copy.cardPercentile(res.percentile), 110, 345, 510);
 
     ctx.fillStyle = '#4b5563';
     ctx.font = '24px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif';
@@ -599,6 +617,95 @@ function drawResultCanvasCard() {
     ctx.fillStyle = '#9ca3af';
     ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif';
     ctx.fillText('https://iqtestnow.org', 110, 530);
+}
+
+function getExtendedShareUrl() {
+    const res = extState.result;
+    const base = `https://iqtestnow.org/${extState.lang}/full-tests.html`;
+    if (!res) return base;
+    const params = new URLSearchParams({
+        iq: res.estimated,
+        min: res.min,
+        max: res.max,
+        score: res.score,
+        total: res.total,
+        src: 'extended'
+    });
+    if (window.__extChallengeId) params.set('challenge', window.__extChallengeId);
+    const name = window.__extUserName || (document.getElementById('extUserName')?.value || '').trim();
+    if (name) params.set('from', name);
+    return `${base}?${params.toString()}`;
+}
+
+function getExtendedShareText() {
+    const res = extState.result || { estimated: 120, percentile: 88 };
+    const topPct = Math.max(1, 100 - res.percentile);
+    return extState.lang === 'en'
+        ? `🧠 I scored IQ ≈ ${res.estimated} (Top ${topPct}%) on the 15-minute IQ test! Think you can beat my score?`
+        : `🧠 Я набрал(а) IQ ≈ ${res.estimated} (Топ ${topPct}%) в 15-минутном IQ тесте! Сможешь обойти мой результат?`;
+}
+
+function showExtShareCopied() {
+    const el = document.getElementById('extShareSuccess');
+    if (!el) return;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 2500);
+}
+
+function copyExtendedShareLink() {
+    const url = getExtendedShareUrl();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(showExtShareCopied).catch(() => {});
+    } else {
+        const tmp = document.createElement('input');
+        tmp.value = url;
+        document.body.appendChild(tmp);
+        tmp.select();
+        document.execCommand('copy');
+        document.body.removeChild(tmp);
+        showExtShareCopied();
+    }
+}
+
+function bindExtendedShareButtons() {
+    const nativeBtn = document.getElementById('extNativeShareBtn');
+    if (nativeBtn) {
+        nativeBtn.addEventListener('click', async () => {
+            const url = getExtendedShareUrl();
+            const text = getExtendedShareText();
+            if (typeof clarity === 'function') clarity('event', 'ext_share_native');
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: 'IQ Test Challenge', text, url });
+                    return;
+                } catch (err) {}
+            }
+            copyExtendedShareLink();
+        });
+    }
+
+    const openIntent = (key, buildUrl) => {
+        const btn = document.getElementById(key);
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+            if (typeof clarity === 'function') clarity('event', key);
+            window.open(buildUrl(getExtendedShareUrl(), getExtendedShareText()), '_blank', 'noopener');
+        });
+    };
+
+    openIntent('extShareWhatsApp', (u, t) => `https://wa.me/?text=${encodeURIComponent(t + ' ' + u)}`);
+    openIntent('extShareTelegram', (u, t) => `https://t.me/share/url?url=${encodeURIComponent(u)}&text=${encodeURIComponent(t)}`);
+    openIntent('extShareTwitter', (u, t) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(t)}&url=${encodeURIComponent(u)}`);
+    openIntent('extShareFacebook', (u) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}`);
+    openIntent('extShareVK', (u, t) => `https://vk.com/share.php?url=${encodeURIComponent(u)}&title=${encodeURIComponent(t)}`);
+
+    const copyBtn = document.getElementById('extShareLink');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+            if (typeof clarity === 'function') clarity('event', 'ext_share_link_copy');
+            copyExtendedShareLink();
+        });
+    }
 }
 
 function downloadResultCardPng() {
