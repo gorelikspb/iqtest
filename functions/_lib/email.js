@@ -39,9 +39,12 @@ const COPY = {
   ru: {
     htmlLang: 'ru',
     subject: (iq) => `Результаты IQ теста — IQ ≈ ${iq}`,
+    extendedSubject: (iq) => `Результаты расширенного IQ теста (15 мин) — IQ ≈ ${iq}`,
     heading: '🧠 Результаты IQ теста',
+    extendedHeading: '🧠 Результаты расширенного IQ теста (15 мин)',
     hello: (name) => `Привет, ${name}!`,
     intro: 'Ты прошел быстрый IQ тест и получил результат:',
+    extendedIntro: 'Ты прошел расширенный 15-минутный IQ тест (25 вопросов) и получил результат:',
     range: 'Диапазон',
     correct: 'Правильных ответов',
     of: 'из',
@@ -63,9 +66,12 @@ const COPY = {
   en: {
     htmlLang: 'en',
     subject: (iq) => `Your IQ test results — IQ ≈ ${iq}`,
+    extendedSubject: (iq) => `Your Extended 15-Minute IQ Test Results — IQ ≈ ${iq}`,
     heading: '🧠 Your IQ test results',
+    extendedHeading: '🧠 Your Extended 15-Minute IQ Test Results',
     hello: (name) => `Hi, ${name}!`,
     intro: 'You completed the quick IQ test. Here is your result:',
+    extendedIntro: 'You completed the extended 15-minute IQ test (25 questions). Here is your result:',
     range: 'Range',
     correct: 'Correct answers',
     of: 'of',
@@ -141,6 +147,12 @@ export function sitePages(lang) {
   };
 }
 
+export function isExtendedTest(data) {
+  const src = String(data?.source || '').toLowerCase();
+  const total = Number(data?.iqResult?.total);
+  return src.includes('extended') || (Number.isFinite(total) && total > 7);
+}
+
 export function buildShareUrl(data, lang) {
   const locale = lang === 'en' ? 'en' : 'ru';
   const iq = data?.iqResult || {};
@@ -173,7 +185,8 @@ export function buildShareUrl(data, lang) {
   if (totalVal != null && totalVal !== '') params.set('total', String(totalVal));
 
   const query = params.toString();
-  return `${SITE_ORIGIN}/${locale}/index.html${query ? `?${query}` : ''}`;
+  const page = isExtendedTest(data) ? 'full-tests.html' : 'index.html';
+  return `${SITE_ORIGIN}/${locale}/${page}${query ? `?${query}` : ''}`;
 }
 
 export function buildFromAddress(env = {}) {
@@ -210,6 +223,7 @@ function resultFields(data, lang) {
   const pages = sitePages(lang);
   const shareUrl = buildShareUrl(data, lang);
   const name = displayName(data, lang);
+  const extended = isExtendedTest(data);
   return {
     t,
     iq,
@@ -219,16 +233,18 @@ function resultFields(data, lang) {
     level: iqLevelLabel(iq.estimated, lang),
     score: iq.score ?? 'N/A',
     total: iq.total ?? 'N/A',
-    subject: t.subject(iq.estimated)
+    heading: extended ? t.extendedHeading : t.heading,
+    intro: extended ? t.extendedIntro : t.intro,
+    subject: extended ? t.extendedSubject(iq.estimated) : t.subject(iq.estimated)
   };
 }
 
 export function buildResultsEmailText(data, lang = 'ru') {
-  const { t, iq, pages, shareUrl, name, level, score, total, subject } = resultFields(data, lang);
+  const { t, iq, pages, shareUrl, name, level, score, total, intro, subject } = resultFields(data, lang);
   const lines = [
     t.hello(name),
     '',
-    t.intro,
+    intro,
     '',
     `IQ ≈ ${iq.estimated}`,
     `${t.range}: ${iq.min} - ${iq.max}`,
@@ -253,7 +269,7 @@ export function buildResultsEmailText(data, lang = 'ru') {
 }
 
 export function buildResultsEmail(data, lang = 'ru') {
-  const { t, iq, pages, shareUrl, name, level, score, total, subject } = resultFields(data, lang);
+  const { t, iq, pages, shareUrl, name, level, score, total, heading, intro, subject } = resultFields(data, lang);
   const safeName = escapeHtml(name);
   const safeShareUrl = escapeHtml(shareUrl);
   const safeHome = escapeHtml(pages.home);
@@ -269,10 +285,10 @@ export function buildResultsEmail(data, lang = 'ru') {
 <body>
   <div class="container">
     <div class="header">
-      <h1>${escapeHtml(t.heading)}</h1>
+      <h1>${escapeHtml(heading)}</h1>
     </div>
     <p>${t.hello(safeName)}</p>
-    <p>${escapeHtml(t.intro)}</p>
+    <p>${escapeHtml(intro)}</p>
     <div class="result-box">
       <div class="iq-value">≈ ${escapeHtml(iq.estimated)}</div>
       <div class="iq-range">${escapeHtml(t.range)}: ${escapeHtml(iq.min)} - ${escapeHtml(iq.max)}</div>
