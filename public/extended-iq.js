@@ -125,8 +125,33 @@ function getExtLang() {
     return htmlLang === 'en' ? 'en' : 'ru';
 }
 
+function setupExtendedChallengeBanner() {
+    const params = new URLSearchParams(window.location.search);
+    const friendIq = parseInt(params.get('iq'), 10);
+    const challengeId = (params.get('challenge') || '').trim();
+    const friendName = (params.get('from') || '').trim();
+    if (!Number.isFinite(friendIq) && !challengeId) return;
+    try {
+        sessionStorage.setItem('iq_active_challenge', JSON.stringify({ challengeId, friendIq: Number.isFinite(friendIq) ? friendIq : null, friendName }));
+    } catch (e) {}
+    const intro = document.getElementById('extendedIntro');
+    const startBtn = document.getElementById('startExtendedBtn');
+    if (!intro || !startBtn || document.getElementById('extChallengeBanner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'extChallengeBanner';
+    banner.style.cssText = 'background: linear-gradient(135deg, #eef2ff, #f5f3ff); border: 2px solid #6366f1; border-radius: 12px; padding: 16px 20px; margin: 14px 0 18px; color: #1e1b4b;';
+    const who = friendName ? friendName : (extState.lang === 'en' ? 'Your friend' : 'Ваш друг');
+    const scoreText = Number.isFinite(friendIq) ? `IQ ≈ ${friendIq}` : '';
+    const fallbackHref = 'index.html' + window.location.search;
+    banner.innerHTML = extState.lang === 'en'
+        ? `<div style="font-size:1.05em;margin-bottom:8px;">🔥 <strong>IQ Challenge:</strong> ${who} scored <strong>${scoreText}</strong>! Take the 15-minute test to beat their score.</div><div style="font-size:0.92em;">⏱️ Don't have 15 minutes? <a href="${fallbackHref}" style="color:#4f46e5;font-weight:600;text-decoration:underline;">Take the 3-minute quick version →</a></div>`
+        : `<div style="font-size:1.05em;margin-bottom:8px;">🔥 <strong>Вызов от друга:</strong> ${who} набрал(а) <strong>${scoreText}</strong>! Пройдите 15-минутный тест и проверьте, сможете ли обойти результат.</div><div style="font-size:0.92em;">⏱️ Нет 15 минут? <a href="${fallbackHref}" style="color:#4f46e5;font-weight:600;text-decoration:underline;">Пройти быструю версию за 3 минуты →</a></div>`;
+    intro.insertBefore(banner, startBtn);
+}
+
 function initExtendedIqTest() {
     extState.lang = getExtLang();
+    setupExtendedChallengeBanner();
     const startBtn = document.getElementById('startExtendedBtn');
     if (startBtn) {
         startBtn.addEventListener('click', function(e) {
@@ -368,6 +393,25 @@ function finishExtendedQuiz() {
 
     drawResultCanvasCard();
 
+    try {
+        const chRaw = sessionStorage.getItem('iq_active_challenge');
+        if (chRaw) {
+            const ch = JSON.parse(chRaw);
+            const resultSec = document.getElementById('extendedResults');
+            if (resultSec && ch.friendIq && !document.getElementById('extDuelComparison')) {
+                const cmp = document.createElement('div');
+                cmp.id = 'extDuelComparison';
+                cmp.style.cssText = 'background:#f0fdf4;border:2px solid #22c55e;border-radius:12px;padding:14px 18px;margin:14px 0;text-align:center;font-weight:600;color:#14532d;';
+                const fName = ch.friendName || (extState.lang === 'en' ? 'Friend' : 'Друг');
+                const diff = res.estimated - ch.friendIq;
+                cmp.textContent = extState.lang === 'en'
+                    ? (diff > 0 ? `🏆 You: IQ ≈ ${res.estimated} vs ${fName}: ${ch.friendIq} — You are ahead by +${diff}!` : diff === 0 ? `🤝 Tie! Both scored IQ ≈ ${res.estimated}!` : `⚔️ You: IQ ≈ ${res.estimated} vs ${fName}: ${ch.friendIq} — ${fName} is ahead by ${-diff}.`) 
+                    : (diff > 0 ? `🏆 Вы: IQ ≈ ${res.estimated} против ${fName}: ${ch.friendIq} — Вы впереди на +${diff}!` : diff === 0 ? `🤝 Ничья! Оба набрали IQ ≈ ${res.estimated}!` : `⚔️ Вы: IQ ≈ ${res.estimated} против ${fName}: ${ch.friendIq} — ${fName} впереди на ${-diff}.`);
+                resultSec.insertBefore(cmp, resultSec.firstChild);
+            }
+        }
+    } catch (e) {}
+
     // Auto-unlock if user already provided email earlier in session
     const savedEmail = localStorage.getItem('extUnlockedEmail');
     if (savedEmail) {
@@ -407,6 +451,9 @@ async function handleExtendedUnlockSubmit(e) {
             score: res.score,
             total: res.total
         },
+        challengeId: (() => { try { return JSON.parse(sessionStorage.getItem('iq_active_challenge') || '{}').challengeId || ''; } catch (e) { return ''; } })(),
+        traffic_source: (() => { try { return sessionStorage.getItem('iq_traffic_source') || 'direct'; } catch (e) { return 'direct'; } })(),
+        ai_referrer: (() => { try { return sessionStorage.getItem('iq_ai_referrer') || ''; } catch (e) { return ''; } })(),
         timestamp: new Date().toISOString()
     };
 

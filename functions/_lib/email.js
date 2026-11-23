@@ -458,3 +458,63 @@ export function resendDomainHint(fromAddress, resendMessage) {
   if (!looksLikeSandbox) return null;
   return 'Resend will not deliver to arbitrary inboxes until a sending domain is verified. Add and verify iqtestnow.org (or a subdomain) at https://resend.com/domains, then set the Worker secret FROM_EMAIL to e.g. "IQ Test <noreply@iqtestnow.org>".';
 }
+
+export function buildChallengeNotificationResendBody(challenge, challenger = {}, env = {}) {
+  const lang = challenge?.lang === 'en' ? 'en' : 'ru';
+  const pages = sitePages(lang);
+  const challengerName = escapeHtml(String(challenger?.challengerName || challenger?.name || (lang === 'en' ? 'Your friend' : 'Ваш друг')).trim());
+  const challengerIq = Number(challenger?.challengerIq ?? challenger?.iqResult?.estimated) || '?';
+  const creatorName = escapeHtml(String(challenge?.creator_name || (lang === 'en' ? 'there' : 'друг')).trim());
+  const creatorIq = challenge?.creator_iq ?? '?';
+  const isQuickCreator = challenge?.creator_test_type === 'quick';
+  const targetUrl = `${SITE_ORIGIN}/${lang}/full-tests.html`;
+
+  const subject = lang === 'en'
+    ? `🔥 ${challengerName} accepted your IQ challenge (IQ ≈ ${challengerIq})!`
+    : `🔥 ${challengerName} принял ваш IQ-вызов (IQ ≈ ${challengerIq})!`;
+
+  const ctaText = lang === 'en'
+    ? (isQuickCreator ? 'Take the 15-Minute Extended Test Now' : 'Take a Rematch on the 15-Min Test')
+    : (isQuickCreator ? 'Пройти расширенный 15-минутный тест' : 'Сыграть реванш в 15-минутном тесте');
+
+  const promptLine = lang === 'en'
+    ? (isQuickCreator
+        ? `Your previous score (${creatorIq}) was from the 3-minute quick test. Ready to prove it in the full 15-minute (25-question) assessment?`
+        : `Your previous 15-minute score was IQ ≈ ${creatorIq}. Want to beat their score?`)
+    : (isQuickCreator
+        ? `Ваш прошлый результат (${creatorIq}) был из быстрого 3-минутного теста. Готовы подтвердить его в полной 15-минутной версии (25 вопросов)?`
+        : `Ваш прошлый результат в расширенном тесте: IQ ≈ ${creatorIq}. Хотите улучшить его?`);
+
+  const html = `<!DOCTYPE html>
+<html lang="${lang}">
+<head><meta charset="UTF-8"><style>${emailStyles()}</style></head>
+<body>
+  <div class="container">
+    <div class="header"><h1>🔥 ${lang === 'en' ? 'IQ Challenge Update' : 'Ответ на ваш IQ-вызов'}</h1></div>
+    <p>${lang === 'en' ? `Hi, ${creatorName}!` : `Привет, ${creatorName}!`}</p>
+    <p>${lang === 'en'
+      ? `<strong>${challengerName}</strong> just completed the IQ challenge and scored:`
+      : `<strong>${challengerName}</strong> только что принял(а) ваш вызов и набрал(а):`}</p>
+    <div class="result-box">
+      <div class="iq-value">≈ ${escapeHtml(challengerIq)}</div>
+      <div class="iq-level">${lang === 'en' ? 'Extended 15-Minute Assessment' : 'Расширенный 15-минутный тест'}</div>
+    </div>
+    <p>${promptLine}</p>
+    <p style="text-align: center;"><a href="${escapeHtml(targetUrl)}" class="share-button">${escapeHtml(ctaText)}</a></p>
+    <div class="footer"><p><a href="${escapeHtml(pages.home)}">iqtestnow.org</a></p></div>
+  </div>
+</body>
+</html>`;
+
+  const text = `${subject}\n\n${promptLine}\n${targetUrl}`;
+  return {
+    body: {
+      from: buildFromAddress(env),
+      to: [normalizeEmail(challenge.creator_email)],
+      reply_to: env.REPLY_TO || normalizeEmail(env.ADMIN_EMAIL) || normalizeEmail(challenge.creator_email),
+      subject,
+      html,
+      text
+    }
+  };
+}

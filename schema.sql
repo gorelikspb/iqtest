@@ -20,3 +20,13 @@ CREATE TABLE IF NOT EXISTS leads (
 
 CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email);
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
+
+CREATE TABLE IF NOT EXISTS challenges (
+  id TEXT PRIMARY KEY,
+  creator_name TEXT,
+  creator_email TEXT,
+  creator_iq INTEGER,
+  creator_test_type TEXT DEFAULT 'quick',
+  lang TEXT DEFAULT 'en',
+  created_at TEXT DEFAULT (datetime('now'))
+);

@@ -689,6 +689,21 @@ async function handleSendResultsSubmit(e) {
             // Показываем алерт пользователю
             alert(t('ui.thanksResults', { name: userName, iq: iqResult.estimated }));
             
+            fetch(WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'create-challenge',
+                    creator_name: userName,
+                    creator_email: userEmail,
+                    creator_iq: iqResult.estimated,
+                    creator_test_type: 'quick',
+                    lang: getEmailLang()
+                })
+            }).then(r => r.json()).then(c => {
+                if (c?.challengeId) window.__iqChallengeId = c.challengeId;
+            }).catch(() => {});
+
             // Показываем успешное сообщение
             document.getElementById('sendResultsForm').style.display = 'none';
             document.getElementById('sendResultsSuccess').style.display = 'block';
@@ -885,14 +900,10 @@ function getShareUrl() {
     const productionUrl = 'https://iqtestnow.org';
     const isLocal = window.location.protocol === 'file:';
     
-    let baseUrl;
-    if (isLocal) {
-        // Для локальной разработки используем продакшн URL
-        const currentLang = getCurrentLanguage();
-        baseUrl = productionUrl + '/' + currentLang + '/index.html';
-    } else {
-        baseUrl = window.location.origin + window.location.pathname;
-    }
+    const currentLang = getCurrentLanguage();
+    const baseUrl = isLocal
+        ? `${productionUrl}/${currentLang}/full-tests.html`
+        : `${window.location.origin}/${currentLang}/full-tests.html`;
     
     try {
         const params = new URLSearchParams({
@@ -900,8 +911,12 @@ function getShareUrl() {
             min: iqResult.min,
             max: iqResult.max,
             score: score,
-            total: questions.length
+            total: questions.length,
+            src: 'quick'
         });
+        if (window.__iqChallengeId) params.set('challenge', window.__iqChallengeId);
+        const savedName = (document.getElementById('sendResultsName')?.value || '').trim();
+        if (savedName) params.set('from', savedName);
         return `${baseUrl}?${params.toString()}`;
     } catch (error) {
         console.error('❌ Ошибка создания URL для шаринга:', error);

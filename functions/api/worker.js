@@ -17,7 +17,8 @@ import {
   shouldSendResultsEmail,
   buildUserResultsResendBody,
   buildAdminResendBody,
-  resendDomainHint
+  resendDomainHint,
+  buildChallengeNotificationResendBody
 } from '../_lib/email.js';
 
 const corsHeaders = {
@@ -97,6 +98,50 @@ export default {
 
     try {
       const data = await request.json();
+
+      if (data?.type === 'create-challenge') {
+        const id = crypto.randomUUID().replace(/-/g, '').slice(0, 8);
+        const lang = resolveLang(data);
+        const creatorEmail = normalizeEmail(data?.creator_email);
+        if (env?.DB) {
+          try {
+            await env.DB.prepare(
+              `INSERT INTO challenges (id, creator_name, creator_email, creator_iq, creator_test_type, lang) VALUES (?, ?, ?, ?, ?, ?)`
+            ).bind(
+              id,
+              data?.creator_name ? String(data.creator_name).slice(0, 120) : null,
+              isValidEmail(creatorEmail) ? creatorEmail : null,
+              Number.isFinite(Number(data?.creator_iq)) ? Number(data.creator_iq) : null,
+              data?.creator_test_type === 'extended' ? 'extended' : 'quick',
+              lang
+            ).run();
+          } catch (err) {
+            console.error('Challenge create error:', err);
+          }
+        }
+        return jsonResponse({ success: true, challengeId: id });
+      }
+
+      if (data?.type === 'complete-challenge') {
+        let notified = false;
+        const cid = String(data?.challengeId || '').trim();
+        if (cid && env?.DB && env?.RESEND_API_KEY) {
+          try {
+            const challenge = await env.DB.prepare('SELECT * FROM challenges WHERE id = ?').bind(cid).first();
+            const cEmail = normalizeEmail(challenge?.creator_email);
+            const fEmail = normalizeEmail(data?.challengerEmail);
+            if (challenge && isValidEmail(cEmail) && cEmail.toLowerCase() !== fEmail.toLowerCase()) {
+              const { body } = buildChallengeNotificationResendBody(challenge, data, env);
+              const sent = await sendResend(env, body);
+              notified = Boolean(sent?.ok);
+            }
+          } catch (err) {
+            console.error('Challenge notify error:', err);
+          }
+        }
+        return jsonResponse({ success: true, notified });
+      }
+
       const email = normalizeEmail(data?.email);
       if (!isValidEmail(email)) {
         return jsonResponse({ success: false, error: 'Valid email is required' }, 400);
@@ -177,6 +222,19 @@ export default {
       const adminSent = await sendResend(env, adminBody);
       if (!adminSent.ok) {
         console.error('Admin email failed:', adminSent.result);
+      }
+
+      if (data?.challengeId && env?.DB && env?.RESEND_API_KEY) {
+        try {
+          const challenge = await env.DB.prepare('SELECT * FROM challenges WHERE id = ?').bind(String(data.challengeId).trim()).first();
+          const cEmail = normalizeEmail(challenge?.creator_email);
+          if (challenge && isValidEmail(cEmail) && cEmail.toLowerCase() !== email.toLowerCase()) {
+            const { body } = buildChallengeNotificationResendBody(challenge, { challengerName: data?.name, challengerIq: data?.iqResult?.estimated }, env);
+            await sendResend(env, body);
+          }
+        } catch (chErr) {
+          console.error('Challenge auto-notify error:', chErr);
+        }
       }
 
       if (shouldSendResultsEmail(data) && !userEmailSent) {
