@@ -377,7 +377,7 @@ export function buildAdminEmail(data, { userEmailSent, userEmailError } = {}) {
          <p><strong>Сегодня:</strong> открой новое письмо (не Forward) FROM <code>${OPERATOR_FROM}</code> TO <code>${escapeHtml(data.email)}</code>. Тема и текст ниже уже заполнены. Инструкция: docs/SEND_RESULTS.md</p>`)
     : '';
 
-  const composeBlock = results
+  const composeBlock = results && !userEmailSent
     ? `<h3>Черновик для ${OPERATOR_FROM}</h3>
       <div class="data-box">
         <div class="data-row"><span class="data-label">From:</span> ${OPERATOR_FROM}</div>
